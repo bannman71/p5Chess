@@ -3,8 +3,7 @@ const BLACK = 'rgb(140,162,173)';
 const WHITE = 'rgb(222,237,230)';
 
 let IMAGES = {};
-var pieces = [];
-var occupiedSquares = create2dArray(8,8);
+
 
 // piece[i].row = piece.row -> stop there
 
@@ -26,12 +25,15 @@ function setup() {
     canv = createCanvas(windowHeight * 0.8, windowHeight * 0.8);
 
     PIECE_SCALE = 0.75;
-    BLOCK_SIZE = (windowHeight * 0.8) / 8; //can be height but it is a square
+    BLOCK_SIZE = (windowHeight * 0.8) / 8; //can be width but it is a square
     SPACING = Math.floor((BLOCK_SIZE * (1 - PIECE_SCALE)) / 2);
 
-    background(WHITE);
 
-    FENToBoard('rnbqkbnr/1ppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR');
+    var board = new Board('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR');
+
+    
+
+    background(WHITE);
 
     centerCanvas();
 } 
@@ -43,7 +45,6 @@ function draw() {
 
     if (MouseDown){
         drawPieceAtMousepos(pieceAtMouse,mouseX,mouseY);
-
     }
 
 }
@@ -58,6 +59,7 @@ function mousePressed(){
 
 function mouseReleased(){
     MouseDown = false;
+    print(pieceAtMouse.isLegal(Math.floor(mouseY / BLOCK_SIZE),Math.floor(mouseX / BLOCK_SIZE)));
 }
 
 function windowResized(){

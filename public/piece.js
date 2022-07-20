@@ -18,22 +18,27 @@ class PieceType{
     static black = 16
 }
 
-
-
-class Piece{
+class Piece extends Board {
 
     constructor(pieceType, row, col, colour){
         this.pieceType = pieceType;
         this.row = row;
         this.col = col;
         this.colour = colour;
+        super(availablePieces);
+        super(occupiedSquares);
     }
 
     colourAndPiece(){
         return this.colour ^ this.pieceType;
     }
 
+    isOppositeColour(destRow,destCol){
+        return (this.colour & this.occupiedSquares[destRow][destCol]) === 0;
+    }
+
     isLegal(destRow,destCol){
+        var destPos = destRow + '' + destCol;
         const rankFileIntervals = [
             {dx: 1,dy: 0}, 
             {dx: -1,dy: 0}, 
@@ -46,15 +51,26 @@ class Piece{
             {dx: 1, dy: -1},
             {dx: -1, dy: 1}
         ]
-        
+
         if (this.row === destRow && this.col === destCol){
             return false;
         }
 
-        if (this.pieceType === PieceType.rook){
-            if ([destRow,destCol] in this.legal_squares(this.row,this.col,rankFileIntervals)) return true;
-        }
+        switch (this.pieceType) {
+            case PieceType.rook:
+                return this.legalSquares(this.row,this.col,rankFileIntervals).includes(destPos);
+            case PieceType.queen:
+                return this.legalSquares(this.row, this.col, rankFileIntervals + diagIntervals).includes(destPos);
+            case PieceType.bishop:
+                return this.legalSquares(this.row, this.col, diagIntervals).includes(destPos);
+            case PieceType.knight:
+                if (Math.abs(dCol - sCol) == 2 && Math.abs(dRow-sRow) == 1){
+                    return this.isOppositeColour(destRow, destCol);
+                }else if ((Math.abs(dRow - sRow) == 2 && Math.abs(dCol-sCol) == 1)) return this.isOppositeColour(destRow, destCol)
+                
+       }
 
+        return false;
     }
 
     is_on_board(Row,Col){
@@ -64,7 +80,7 @@ class Piece{
         return false;
     }
 
-    legal_squares(row,col,intervals){
+    legalSquares(row,col,intervals){
         var legalCoords = [];
 
         for (let options of intervals){
@@ -72,12 +88,12 @@ class Piece{
             var row_temp = row + options.dy;
 
             while(this.is_on_board(row_temp,col_temp)){ //while hasn't gone outside of the array
-                if (occupiedSquares[row_temp][col_temp] === 0){
-                    legalCoords.push([row_temp,col_temp]);
+                if (this.occupiedSquares[row_temp][col_temp] === 0){
+                    legalCoords.push(row_temp + '' + col_temp);
                 }
                 else{
-                    if ((occupiedSquares[row_temp][col_temp] & this.colour) === 0){ // opposite colours
-                        legalCoords.push([row_temp,col_temp]);
+                    if ((this.occupiedSquares[row_temp][col_temp] & this.colour) === 0){ // opposite colours
+                        legalCoords.push(row_temp + '' + col_temp);
                     }
                     break;
                 } 
