@@ -4,6 +4,7 @@ const WHITE = 'rgb(222,237,230)';
 
 let IMAGES = {};
 
+let board;
 
 // piece[i].row = piece.row -> stop there
 
@@ -27,11 +28,8 @@ function setup() {
     PIECE_SCALE = 0.75;
     BLOCK_SIZE = (windowHeight * 0.8) / 8; //can be width but it is a square
     SPACING = Math.floor((BLOCK_SIZE * (1 - PIECE_SCALE)) / 2);
-
-
-    var board = new Board('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR');
-
     
+    board = new Board('rnbqkbnr/1ppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR');
 
     background(WHITE);
 
@@ -41,7 +39,7 @@ function setup() {
 function draw() {
     background(WHITE);
     draw_grid();
-    drawAllPieces();
+    drawAllPieces(board.availablePieces);
 
     if (MouseDown){
         drawPieceAtMousepos(pieceAtMouse,mouseX,mouseY);
@@ -52,14 +50,16 @@ function draw() {
 function mousePressed(){
     print('downn')
     if (MouseDown === false){   
-        pieceAtMouse = getPieceAtMousepos(mouseX,mouseY);
+        pieceAtMouse = getPieceAtMousepos(board.availablePieces,mouseX,mouseY); //returns type Piece
         MouseDown = true;
     }
 }
 
 function mouseReleased(){
     MouseDown = false;
-    print(pieceAtMouse.isLegal(Math.floor(mouseY / BLOCK_SIZE),Math.floor(mouseX / BLOCK_SIZE)));
+    //board.islegal( clickedPiece, dest)
+    let destCoords = getMouseCoord(mouseX,mouseY);
+    print(board.isLegal(pieceAtMouse,destCoords.x,destCoords.y));
 }
 
 function windowResized(){
@@ -70,16 +70,6 @@ function windowResized(){
 }
 
 
-function create2dArray(rows,cols){
-    arr = []
-    for(let i = 0; i < cols; i++){
-        arr[i] = [];
-        for (let j = 0; j < rows; j++){
-            arr[i][j] = 0;
-        }
-    }
-    return arr;
-}
 
 
 
