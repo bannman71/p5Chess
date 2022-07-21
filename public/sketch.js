@@ -6,9 +6,7 @@ let IMAGES = {};
 
 let board;
 
-// piece[i].row = piece.row -> stop there
-
-let MouseDown = false;
+let MouseDown;
 let pieceAtMouse;
 
 let BIN_PIECES = {
@@ -31,15 +29,13 @@ function setup() {
     
     board = new Board('rnbqkbnr/1ppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR');
 
-    background(WHITE);
-
     centerCanvas();
 } 
 
 function draw() {
     background(WHITE);
     draw_grid();
-    drawAllPieces(board.availablePieces);
+    drawAllPieces(board.avPieces);
 
     if (MouseDown){
         drawPieceAtMousepos(pieceAtMouse,mouseX,mouseY);
@@ -48,18 +44,19 @@ function draw() {
 }
 
 function mousePressed(){
-    print('downn')
-    if (MouseDown === false){   
-        pieceAtMouse = getPieceAtMousepos(board.availablePieces,mouseX,mouseY); //returns type Piece
-        MouseDown = true;
-    }
+  
+    pieceAtMouse = getPieceAtMousepos(board.avPieces,mouseX,mouseY); //returns type Piece
+    MouseDown = true;
+    
 }
 
 function mouseReleased(){
     MouseDown = false;
-    //board.islegal( clickedPiece, dest)
-    let destCoords = getMouseCoord(mouseX,mouseY);
-    print(board.isLegal(pieceAtMouse,destCoords.x,destCoords.y));
+
+    let destCoords = getMouseCoord(mouseX,mouseY); // returns coord for array [0,0] [1,1] etc.
+    if (board.isLegal(pieceAtMouse,destCoords.y,destCoords.x)){ //x and y are flipped as y is the equivalent to row
+        pieceAtMouse.updatePos(board.avPieces,board.occSquares,destCoords.y,destCoords.x);
+    }
 }
 
 function windowResized(){

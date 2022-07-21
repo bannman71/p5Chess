@@ -1,6 +1,5 @@
 
 class Coords{
-
     static x;
     static y;    
 }
@@ -12,15 +11,16 @@ function getMouseCoord(x,y){
     return Coords;
 }
 
-function getPieceAtMousepos(pieces,x,y){
+function getPieceAtMousepos(piece,x,y){
     x = Math.floor(x / BLOCK_SIZE);
     y = Math.floor(y / BLOCK_SIZE);
 
-    for (let i = 0; i < pieces.length; i++){
-        if(pieces[i].row === y && pieces[i].col === x){
-            return pieces[i];
+    for (let i = 0; i < piece.length; i++){
+        if(piece[i].row === y && piece[i].col === x){
+            return piece[i];
         }
     }
+    return 0;
 }
 
 
@@ -30,11 +30,14 @@ function drawPieceAtMousepos(piece, x, y){
     x -= BLOCK_SIZE * PIECE_SCALE / 2;  // centers piece
     y -= BLOCK_SIZE * PIECE_SCALE / 2;
 
-    let piece_number = piece.colourAndPiece();
+    if (piece !== 0){
 
-    image(IMAGES[piece_number], 
-    Math.min(height - BLOCK_SIZE + SPACING, Math.max(SPACING, x)), 
-    Math.min(height - BLOCK_SIZE + SPACING, Math.max(SPACING, y)), BLOCK_SIZE * PIECE_SCALE, BLOCK_SIZE * PIECE_SCALE);
+        let piece_number = piece.colourAndPiece();
+
+        image(IMAGES[piece_number], 
+        Math.min(height - BLOCK_SIZE + SPACING, Math.max(SPACING, x)), 
+        Math.min(height - BLOCK_SIZE + SPACING, Math.max(SPACING, y)), BLOCK_SIZE * PIECE_SCALE, BLOCK_SIZE * PIECE_SCALE);
+    }
 }
 
 function draw_piece(piece,coordX,coordY){
@@ -54,9 +57,9 @@ function draw_grid(){
     }
 }
 
-function drawAllPieces(availablePieces){
-    for (let i = 0; i < availablePieces.length; i++){
-        draw_piece(availablePieces[i].colourAndPiece(), availablePieces[i].col , availablePieces[i].row);
+function drawAllPieces(avPieces){
+    for (let i = 0; i < avPieces.length; i++){
+        draw_piece(avPieces[i].colourAndPiece(), avPieces[i].col , avPieces[i].row);
     }
 }
 

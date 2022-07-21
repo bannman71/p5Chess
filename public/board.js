@@ -13,8 +13,8 @@ function create2dArray(rows,cols){
 class Board {
 
     constructor(FEN){
-        this.availablePieces = [];
-        this.occupiedSquares = create2dArray(8,8);
+        this.avPieces = [];
+        this.occSquares = create2dArray(8,8);
         this.FENToBoard(FEN);
     }
 
@@ -32,13 +32,13 @@ class Board {
     
             if ((/[a-z]/).test(FEN[FENIterator])){ // if lowercase (black piece)
                 var newPiece = new Piece(PieceType.type[FEN[FENIterator]],row,col,PieceType.black);
-                this.occupiedSquares[row][col] = PieceType.black;
-                this.availablePieces.push(newPiece);
+                this.occSquares[row][col] = PieceType.black;
+                this.avPieces.push(newPiece);
             }
             else if ((/[A-Z]/).test(FEN[FENIterator])){ //if uppercase (white piece)
                 var newPiece = new Piece(PieceType.type[FEN[FENIterator]],row,col,PieceType.white);
-                this.occupiedSquares[row][col] = PieceType.white;
-                this.availablePieces.push(newPiece);
+                this.occSquares[row][col] = PieceType.white;
+                this.avPieces.push(newPiece);
             }
     
             if (col == 8){
@@ -78,16 +78,53 @@ class Board {
             case PieceType.rook:
                 return this.legalSquares(piece,rankFileIntervals).includes(destPos);
             case PieceType.queen:
-                return this.legalSquares(piece, rankFileIntervals + diagIntervals).includes(destPos);
+                return this.legalSquares(piece, rankFileIntervals.concat(diagIntervals)).includes(destPos);
             case PieceType.bishop:
                 return this.legalSquares(piece, diagIntervals).includes(destPos);
             case PieceType.knight:
-                if (Math.abs(dCol - sCol) == 2 && Math.abs(dRow-sRow) == 1){
-                    return this.isOppositeColour(destRow, destCol);
-                }else if ((Math.abs(dRow - sRow) == 2 && Math.abs(dCol-sCol) == 1)) return this.isOppositeColour(destRow, destCol)
-                
-       }
+                if (Math.abs(destCol - piece.col) == 2 && Math.abs(destRow-piece.row) == 1){
+                    return piece.isOppositeColour(this.occSquares,destRow, destCol);
+                }else if ((Math.abs(destRow - piece.row) == 2 && Math.abs(destCol-piece.col) == 1)) return piece.isOppositeColour(this.occSquares,destRow, destCol) 
+            case PieceType.king:
+                return  (!Math.abs(destRow - piece.row) > 1 && !Math.abs(destCol - piece.col) > 1) && piece.isOppositeColour(this.occSquares,destRow,destCol);
+        
+        }
 
+        if (piece.colourAndPiece() == (PieceType.pawn ^ PieceType.white)){    
+            if (piece.col === destCol){
+                if (piece.row === 6){  // if white pawn on starting square
+                    if (piece.row - destRow === 2){
+                        return (this.occSquares[4][destCol] == PieceType.none) && (this.occSquares[5][destCol] == PieceType.none);
+                    }
+                    else if (piece.row - destRow === 1){
+                        return this.occSquares[5][destCol] == PieceType.none;
+                    }
+                }        
+                else{
+                    if (piece.row-destRow == 1){
+                        return this.occSquares[destRow][destCol] == PieceType.none;
+                    }
+                }
+            }
+        }
+        else if(piece.colourAndPiece() == (PieceType.pawn ^ PieceType.black)){
+            if (piece.col === destCol){
+                if (piece.row === 1){  // if black pawn on starting square
+                    if (destRow - piece.row === 2){
+                        return (this.occSquares[3][destCol] == PieceType.none) && (this.occSquares[2][destCol] == PieceType.none);
+                    }
+                    else if (destRow - piece.row === 1){
+                        return (this.occSquares[2][destCol] == PieceType.none);
+                    }
+                }        
+                else{
+                    if (destRow - piece.row == 1){
+                        return this.occSquares[destRow][destCol] == PieceType.none;
+                    }
+                }
+            }
+        }
+        
         return false;
     }
 
@@ -106,11 +143,11 @@ class Board {
             var row_temp = piece.row + options.dy;
 
             while(this.is_on_board(row_temp,col_temp)){ //while hasn't gone outside of the array
-                if (this.occupiedSquares[row_temp][col_temp] === 0){
+                if (this.occSquares[row_temp][col_temp] === 0){
                     legalCoords.push(row_temp + '' + col_temp);
                 }
                 else{
-                    if ((this.occupiedSquares[row_temp][col_temp] & piece.colour) === 0){ // opposite colours
+                    if ((this.occSquares[row_temp][col_temp] & piece.colour) === 0){ // opposite colours
                         legalCoords.push(row_temp + '' + col_temp);
                     }
                     break;
@@ -122,14 +159,7 @@ class Board {
         return legalCoords;
     }
 
-
-    isOppositeColour(piece,destRow,destCol){
-        return (piece.colour & occupiedSquares[destRow][destCol]) === 0;
-    }
-
 }
-
-
 class PieceType{
 
     static type = {
@@ -162,8 +192,23 @@ class Piece {
         return this.colour ^ this.pieceType;
     }
 
-  
+    updatePos(avPieces,occSquares,newRow,newCol){
+        occSquares[this.row][this.col] = 0;
 
+        for (let i = 0; i < avPieces.length; i++){
+            if ((avPieces[i].row === newRow && avPieces[i].col === newCol) && avPieces[i].colourAndPiece() !== this.colourAndPiece()){
+                avPieces.splice(i,1);
+                break;
+            }
+        }
 
+        occSquares[newRow][newCol] = this.colour;
+        this.row = newRow;
+        this.col = newCol;
+    }
+
+    isOppositeColour(occSquares,destRow,destCol){
+        return (this.colour & occSquares[destRow][destCol]) === 0;
+    }
 
 }
