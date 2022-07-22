@@ -27,8 +27,8 @@ function setup() {
     BLOCK_SIZE = (windowHeight * 0.8) / 8; //can be width but it is a square
     SPACING = Math.floor((BLOCK_SIZE * (1 - PIECE_SCALE)) / 2);
     
-    board = new Board('rnbqkbnr/1ppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR');
-
+    board = new Board('r3k2r/5N2/8/8/8/8/PPPPPPP1/RNBQKBNR');
+//'rnbqkbnr/1ppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR'
     centerCanvas();
 } 
 
@@ -57,7 +57,7 @@ function mouseReleased(){
         let destCoords = getMouseCoord(mouseX,mouseY); // returns coord for array [0,0] [1,1] etc.
 
         board.makeLegalMove(pieceAtMouse,destCoords.y,destCoords.x) //x and y are flipped as y is the equivalent to row
-           
+          
     }   
 }
 
@@ -67,9 +67,4 @@ function windowResized(){
     BLOCK_SIZE = (windowHeight * 0.8) / 8; //can be width but it is a square
     SPACING = Math.floor((BLOCK_SIZE * (1 - PIECE_SCALE)) / 2);
 }
-
-
-
-
-
 

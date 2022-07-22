@@ -17,12 +17,14 @@ class Board {
         this.occSquares = create2dArray(8,8);
         this.FENToBoard(FEN); // fills up avPieces and occSquares (sus)
         this.moveCounter = 0;
-        this.whiteToMove = false;
+        this.whiteToMove = true;
 
         this.blackShortCastlingRights = true;
         this.blackLongCastlingRights = true;
         this.whiteShortCastlingRights = true;
         this.whiteLongCastlingRights = true;
+
+        this.inCheck = false;
     }
 
     FENToBoard(FEN){
@@ -85,9 +87,6 @@ class Board {
         if (piece.row === destRow && piece.col === destCol){
             return false;
         }
-
-        /* || (this.whiteToMove === false && this.bCastlingRights)*/
-   
 
         switch (piece.pieceType) {
             case PieceType.rook:
@@ -173,7 +172,6 @@ class Board {
                     }
                 }
                 break;
-            
         }
 
         if (piece.colourAndPiece() == (PieceType.pawn ^ PieceType.white)){    
@@ -242,8 +240,11 @@ class Board {
         }
         
         
-        if (legalMove && (piece.colour === PieceType.black)) this.moveCounter++;
-    
+        if (legalMove){
+            if (piece.colour === PieceType.black) this.moveCounter++;
+            this.changeTurn();
+            this.checkRookCapture();
+        }
     }
 
     updatePiecePos(piece, newRow, newCol){
@@ -301,14 +302,14 @@ class Board {
         }
     }
 
-    is_on_board(Row,Col){
+    is_on_board(Row,Col){ //is used in legal squares so that it doent iterate outside the board
         if (Row >= 0 && Row < 8 && Col >= 0 && Col < 8){
             return true;
         }
         return false;
     }
 
-    legalSquares(piece,intervals){
+    legalSquares(piece,intervals){ //gets all available squares for piece passed in
         var legalCoords = [];
 
         for (let options of intervals){
@@ -332,13 +333,13 @@ class Board {
         return legalCoords;
     }
 
-    changeTurn(){
+    changeTurn(){ // black -> white || white -> black
         if (this.whiteToMove === true){
             this.whiteToMove = false;
         }else this.whiteToMove = true;
     }
 
-    checkKingRank(king,dir){
+    checkKingRank(king,dir){ //checks if there are pieces on the way of castling
         for (let i = dir; Math.abs(i) <= 4; i += dir){
             if (this.occSquares[king.row][king.col + i] !== 0){ //if piece has been hit
                 //if piece is same colour rook on the 'h' square
@@ -360,6 +361,14 @@ class Board {
             if (long) this.blackLongCastlingRights = false;
         }
     }
+
+    checkRookCapture(){ //if a rook is captured castling rights need to be taken away
+        if (this.occSquares[0][0] !== 16)this.blackLongCastlingRights = false; //black 'a' rook
+        else if (this.occSquares[0][7] !== 16) this.blackShortCastlingRights = false; //black 'h' rook
+        else if (this.occSquares[7][0] !== 8) this.whiteLongCastlingRights = false; //white 'a' rook
+        else if(this.occSquares[7][7] !== 8) this.whiteShortCastlingRights = false; //white 'h' rook
+    }
+
 }
 class PieceType{
 
