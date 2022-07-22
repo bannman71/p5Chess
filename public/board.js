@@ -17,7 +17,7 @@ class Board {
         this.occSquares = create2dArray(8,8);
         this.FENToBoard(FEN); // fills up avPieces and occSquares (sus)
         this.moveCounter = 0;
-        this.whiteToMove = true;
+        this.whiteToMove = false;
 
         this.blackShortCastlingRights = true;
         this.blackLongCastlingRights = true;
@@ -92,9 +92,8 @@ class Board {
         switch (piece.pieceType) {
             case PieceType.rook:
                 if (this.legalSquares(piece,rankFileIntervals).includes(destPos)){
-                    print('rook');
-                    if (piece.col = 7) this.removeCastlingRights(true, false);
-                    else if (piece.col = 0) this.removeCastlingRights(false, true)
+                    if (piece.col === 7) this.removeCastlingRights(true, false);
+                    else if (piece.col === 0) this.removeCastlingRights(false, true)
 
                     this.updatePiecePos(piece,destRow,destCol);
 
@@ -137,6 +136,15 @@ class Board {
                           
                             legalMove = true;
                         }
+                        
+                    }else if (this.whiteToMove == false && this.blackShortCastlingRights === true){
+                        print('in there');
+                        if (this.checkKingRank(piece,1)){ // checks if there are pieces in the way (dir 1 = right)
+                            this.castles(piece,destCol); //is a legal castle move
+                            this.removeCastlingRights(true,true);
+                          
+                            legalMove = true;
+                        }
                     }
                 }  
                 else if(destCol - piece.col <= -2 && piece.row === destRow){ //if attempts to long castle
@@ -147,6 +155,13 @@ class Board {
                             this.removeCastlingRights(true,true);
                             
                             legalMove = true
+                        }
+                    }else if (this.whiteToMove == false && this.blackLongCastlingRights === true){
+                        if (this.checkKingRank(piece,1)){ // checks if there are pieces in the way (dir 1 = right)
+                            this.castles(piece,destCol); //is a legal castle move
+                            this.removeCastlingRights(true,true);
+                          
+                            legalMove = true;
                         }
                     }
                 }
@@ -286,9 +301,6 @@ class Board {
         }
     }
 
-
-
-
     is_on_board(Row,Col){
         if (Row >= 0 && Row < 8 && Col >= 0 && Col < 8){
             return true;
@@ -339,7 +351,6 @@ class Board {
     }
 
     removeCastlingRights(short,long){
-        print('has been called');
         if (this.whiteToMove){
             if (short) this.whiteShortCastlingRights = false;
             if (long) this.whiteLongCastlingRights = false;
