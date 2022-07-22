@@ -53,10 +53,12 @@ function mousePressed(){
 function mouseReleased(){
     MouseDown = false;
 
-    let destCoords = getMouseCoord(mouseX,mouseY); // returns coord for array [0,0] [1,1] etc.
-    if (board.isLegal(pieceAtMouse,destCoords.y,destCoords.x)){ //x and y are flipped as y is the equivalent to row
-        pieceAtMouse.updatePos(board.avPieces,board.occSquares,destCoords.y,destCoords.x);
-    }
+    if (pieceAtMouse !== 0){
+        let destCoords = getMouseCoord(mouseX,mouseY); // returns coord for array [0,0] [1,1] etc.
+
+        board.makeLegalMove(pieceAtMouse,destCoords.y,destCoords.x) //x and y are flipped as y is the equivalent to row
+           
+    }   
 }
 
 function windowResized(){

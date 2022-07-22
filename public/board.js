@@ -15,7 +15,14 @@ class Board {
     constructor(FEN){
         this.avPieces = [];
         this.occSquares = create2dArray(8,8);
-        this.FENToBoard(FEN);
+        this.FENToBoard(FEN); // fills up avPieces and occSquares (sus)
+        this.moveCounter = 0;
+        this.whiteToMove = true;
+
+        this.blackShortCastlingRights = true;
+        this.blackLongCastlingRights = true;
+        this.whiteShortCastlingRights = true;
+        this.whiteLongCastlingRights = true;
     }
 
     FENToBoard(FEN){
@@ -55,8 +62,10 @@ class Board {
 
     }
 
-    isLegal(piece,destRow,destCol){
+    makeLegalMove(piece,destRow,destCol){
         var destPos = destRow + '' + destCol;
+        let legalMove = false;
+
         const rankFileIntervals = [
             {dx: 1,dy: 0}, 
             {dx: -1,dy: 0}, 
@@ -70,40 +79,116 @@ class Board {
             {dx: -1, dy: 1}
         ]
 
+        if (this.whiteToMove === true && piece.colour === PieceType.black) return false;
+        if (this.whiteToMove === false && piece.colour === PieceType.white) return false;
+
         if (piece.row === destRow && piece.col === destCol){
             return false;
         }
 
+        /* || (this.whiteToMove === false && this.bCastlingRights)*/
+   
+
         switch (piece.pieceType) {
             case PieceType.rook:
-                return this.legalSquares(piece,rankFileIntervals).includes(destPos);
+                if (this.legalSquares(piece,rankFileIntervals).includes(destPos)){
+                    print('rook');
+                    if (piece.col = 7) this.removeCastlingRights(true, false);
+                    else if (piece.col = 0) this.removeCastlingRights(false, true)
+
+                    this.updatePiecePos(piece,destRow,destCol);
+
+                    legalMove = true;
+                }
+                break;
             case PieceType.queen:
-                return this.legalSquares(piece, rankFileIntervals.concat(diagIntervals)).includes(destPos);
+                if (this.legalSquares(piece, rankFileIntervals.concat(diagIntervals)).includes(destPos)){
+                    this.updatePiecePos(piece,destRow,destCol);
+                    legalMove = true;
+                }
+                break;
             case PieceType.bishop:
-                return this.legalSquares(piece, diagIntervals).includes(destPos);
+                if (this.legalSquares(piece, diagIntervals).includes(destPos)){
+                    this.updatePiecePos(piece,destRow,destCol);
+                    legalMove = true;
+                }
+                break;
             case PieceType.knight:
-                if (Math.abs(destCol - piece.col) == 2 && Math.abs(destRow-piece.row) == 1){
-                    return piece.isOppositeColour(this.occSquares,destRow, destCol);
-                }else if ((Math.abs(destRow - piece.row) == 2 && Math.abs(destCol-piece.col) == 1)) return piece.isOppositeColour(this.occSquares,destRow, destCol) 
+                print(Math.abs(destCol - piece.col));
+                print(Math.abs(destRow-piece.row));
+                if ((Math.abs(destCol - piece.col)) == 2 && (Math.abs(destRow-piece.row) == 1)){
+                    if(piece.isOppositeColour(this.occSquares,destRow, destCol)){
+                        this.updatePiecePos(piece,destRow,destCol);
+                        legalMove = true;
+                    }
+                }else if ((Math.abs(destRow - piece.row) === 2) && (Math.abs(destCol-piece.col) === 1)) {
+                    if(piece.isOppositeColour(this.occSquares,destRow, destCol)){
+                        this.updatePiecePos(piece,destRow,destCol);
+                        legalMove = true;
+                    }
+                } 
+                break;
             case PieceType.king:
-                return  (!Math.abs(destRow - piece.row) > 1 && !Math.abs(destCol - piece.col) > 1) && piece.isOppositeColour(this.occSquares,destRow,destCol);
-        
+                if ((destCol - piece.col) >= 2 && piece.row === destRow){ //if attempts to short castle
+                    if((this.whiteToMove && this.whiteShortCastlingRights) === true){
+                        if (this.checkKingRank(piece,1)){ // checks if there are pieces in the way (dir 1 = right)
+                            this.castles(piece,destCol); //is a legal castle move
+                            this.removeCastlingRights(true,true);
+                          
+                            legalMove = true;
+                        }
+                    }
+                }  
+                else if(destCol - piece.col <= -2 && piece.row === destRow){ //if attempts to long castle
+                    print('left');
+                    if((this.whiteToMove && this.whiteLongCastlingRights) === true ){
+                        if (this.checkKingRank(piece,-1)){
+                            this.castles(piece,destCol);
+                            this.removeCastlingRights(true,true);
+                            
+                            legalMove = true
+                        }
+                    }
+                }
+                else{
+                    if(!(Math.abs(destRow - piece.row) > 1 && Math.abs(destCol - piece.col) > 1) && (piece.isOppositeColour(this.occSquares,destRow,destCol))){
+                        this.removeCastlingRights(true,true);
+                        this.updatePiecePos(piece,destRow,destCol);
+                        legalMove = true;
+                    }
+                }
+                break;
+            
         }
 
         if (piece.colourAndPiece() == (PieceType.pawn ^ PieceType.white)){    
             if (piece.col === destCol){
                 if (piece.row === 6){  // if white pawn on starting square
-                    if (piece.row - destRow === 2){
-                        return (this.occSquares[4][destCol] == PieceType.none) && (this.occSquares[5][destCol] == PieceType.none);
+                    if (piece.row - destRow === 2){ // if moves twice
+                        if ((this.occSquares[4][destCol] == PieceType.none) && (this.occSquares[5][destCol] == PieceType.none)){
+                            this.updatePiecePos(piece,destRow,destCol);
+                            legalMove = true;
+                        }
                     }
-                    else if (piece.row - destRow === 1){
-                        return this.occSquares[5][destCol] == PieceType.none;
+                    else if (piece.row - destRow === 1){ // if moves once
+                        if (this.occSquares[5][destCol] == PieceType.none){
+                            this.updatePiecePos(piece,destRow,destCol);
+                            legalMove = true;
+                        }
                     }
                 }        
                 else{
-                    if (piece.row-destRow == 1){
-                        return this.occSquares[destRow][destCol] == PieceType.none;
+                    if (piece.row-destRow == 1){ //if not on starting square
+                        if (this.occSquares[destRow][destCol] == PieceType.none){
+                            this.updatePiecePos(piece,destRow,destCol);
+                            legalMove = true;
+                        }
                     }
+                }
+            }else if ((piece.row - destRow === 1) && (piece.col - destCol === 1 || piece.col - destCol === -1)){ //diagonal capture
+                if ((this.occSquares[destRow][destCol] !== 0) && (piece.isOppositeColour(this.occSquares,destRow,destCol))){
+                    this.updatePiecePos(piece,destRow,destCol);
+                    legalMove = true;
                 }
             }
         }
@@ -111,22 +196,98 @@ class Board {
             if (piece.col === destCol){
                 if (piece.row === 1){  // if black pawn on starting square
                     if (destRow - piece.row === 2){
-                        return (this.occSquares[3][destCol] == PieceType.none) && (this.occSquares[2][destCol] == PieceType.none);
+                        if ((this.occSquares[3][destCol] == PieceType.none) && (this.occSquares[2][destCol] == PieceType.none)){
+                            this.updatePiecePos(piece,destRow,destCol);
+                            legalMove = true;
+                        }
                     }
                     else if (destRow - piece.row === 1){
-                        return (this.occSquares[2][destCol] == PieceType.none);
+                        if ((this.occSquares[2][destCol] == PieceType.none)){
+                            this.updatePiecePos(piece,destRow,destCol);
+                            legalMove = true;
+                        }
                     }
                 }        
                 else{
                     if (destRow - piece.row == 1){
-                        return this.occSquares[destRow][destCol] == PieceType.none;
+                        if (this.occSquares[destRow][destCol] == PieceType.none){
+                            this.updatePiecePos(piece,destRow,destCol);
+                            legalMove = true;
+                        }
                     }
                 }
             }
+            else if ((destRow - piece.row === 1) && (piece.col - destCol === 1 || piece.col - destCol === -1)){ //diagonal capture
+                if ((this.occSquares[destRow][destCol] !== 0 ) && (piece.isOppositeColour(this.occSquares,destRow,destCol))){
+                    this.updatePiecePos(piece,destRow,destCol);
+                    legalMove = true;
+                }
+
+            }
         }
         
-        return false;
+        
+        if (legalMove && (piece.colour === PieceType.black)) this.moveCounter++;
+    
     }
+
+    updatePiecePos(piece, newRow, newCol){
+
+        if (!(this.occSquares[newRow][newCol] === 0)){
+            for (let i = 0; i < this.avPieces.length; i++){
+                //searches for all pieces except itself
+                if ((this.avPieces[i].row === newRow && this.avPieces[i].col === newCol) && this.avPieces[i].colourAndPiece() !== piece.colourAndPiece()){ 
+                    this.avPieces.splice(i,1); //gets rid of the piece (captures it)
+                    break;
+                }
+            }
+        }
+
+        this.occSquares[piece.row][piece.col] = 0;
+        this.occSquares[newRow][newCol] = piece.colour;
+        piece.updateSquare(newRow,newCol);
+    }
+
+    castles(king,newCol){
+
+        if (newCol - king.col >= 2){ 
+            for (let i = 0; i < this.avPieces.length; i++){
+                if (this.avPieces[i].row === king.row && this.avPieces[i].col == 7 && this.avPieces[i].colour === king.colour){ // if its a short rook
+
+                    this.avPieces[i].updateSquare(this.avPieces[i].row, 5); //change rooks position
+
+                    this.occSquares[this.avPieces[i].row][7] = 0; 
+                    this.occSquares[this.avPieces[i].row][5] = this.avPieces[i].colour;
+
+                    this.occSquares[king.row][4] = 0;
+                    this.occSquares[king.row][6] = king.colour;
+
+                    break;
+                }
+            }
+            king.updateSquare(king.row, 6);
+        }
+        else if(newCol - king.col <= -2 ){
+            for (let i = 0; i < this.avPieces.length; i++){
+                if (this.avPieces[i].row == king.row && this.avPieces[i].col == 0 && this.avPieces[i].colour === king.colour){ // if its a long rook
+
+                    this.avPieces[i].updateSquare(this.avPieces[i].row, 3); //change rooks position
+
+                    this.occSquares[this.avPieces[i].row][0] = 0;
+                    this.occSquares[this.avPieces[i].row][2] = this.avPieces[i].colour;
+
+                    this.occSquares[king.row][4] = 0;
+                    this.occSquares[king.row][2] = king.colour;
+
+                    break;
+                }
+            }
+            king.updateSquare(king.row, 2);
+        }
+    }
+
+
+
 
     is_on_board(Row,Col){
         if (Row >= 0 && Row < 8 && Col >= 0 && Col < 8){
@@ -159,6 +320,35 @@ class Board {
         return legalCoords;
     }
 
+    changeTurn(){
+        if (this.whiteToMove === true){
+            this.whiteToMove = false;
+        }else this.whiteToMove = true;
+    }
+
+    checkKingRank(king,dir){
+        for (let i = dir; Math.abs(i) <= 4; i += dir){
+            if (this.occSquares[king.row][king.col + i] !== 0){ //if piece has been hit
+                //if piece is same colour rook on the 'h' square
+                if ((king.col + i == 7) && this.occSquares[king.row][king.col + i] === king.colour) return true; 
+                //if piece is same colour rook on 'a' square
+                else if((king.col + i == 0) && this.occSquares[king.row][king.col + i] === king.colour) return true;
+            }
+        }
+        return false;
+    }
+
+    removeCastlingRights(short,long){
+        print('has been called');
+        if (this.whiteToMove){
+            if (short) this.whiteShortCastlingRights = false;
+            if (long) this.whiteLongCastlingRights = false;
+        } 
+        else{
+            if (short) this.blackShortCastlingRights = false; 
+            if (long) this.blackLongCastlingRights = false;
+        }
+    }
 }
 class PieceType{
 
@@ -192,17 +382,7 @@ class Piece {
         return this.colour ^ this.pieceType;
     }
 
-    updatePos(avPieces,occSquares,newRow,newCol){
-        occSquares[this.row][this.col] = 0;
-
-        for (let i = 0; i < avPieces.length; i++){
-            if ((avPieces[i].row === newRow && avPieces[i].col === newCol) && avPieces[i].colourAndPiece() !== this.colourAndPiece()){
-                avPieces.splice(i,1);
-                break;
-            }
-        }
-
-        occSquares[newRow][newCol] = this.colour;
+    updateSquare(newRow,newCol){
         this.row = newRow;
         this.col = newCol;
     }
