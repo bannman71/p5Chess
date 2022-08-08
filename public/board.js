@@ -64,9 +64,8 @@ class Board {
 
     }
 
-    makeLegalMove(piece,destRow,destCol){
+    isLegalMove(piece,destRow,destCol){
         var destPos = destRow + '' + destCol;
-        let legalMove = false;
 
         const rankFileIntervals = [
             {dx: 1,dy: 0}, 
@@ -79,6 +78,16 @@ class Board {
             {dx: -1, dy : -1},
             {dx: 1, dy: -1},
             {dx: -1, dy: 1}
+        ]
+        const knightIntervals = [
+            {dx: 1, dy: -2},
+            {dx: -1, dy: -2},
+            {dx: 1, dy: 2},
+            {dx: -1, dy: 2},
+            {dx: 2, dy: 1},
+            {dx: -2, dy: -1},
+            {dx: 2, dy: 1},
+            {dx: -2, dy: 1},
         ]
 
         if (this.whiteToMove === true && piece.colour === PieceType.black) return false;
@@ -93,38 +102,23 @@ class Board {
                 if (this.legalSquares(piece,rankFileIntervals).includes(destPos)){
                     if (piece.col === 7) this.removeCastlingRights(true, false);
                     else if (piece.col === 0) this.removeCastlingRights(false, true)
-
-                    this.updatePiecePos(piece,destRow,destCol);
-
-                    legalMove = true;
+                    return true;
                 }
                 break;
             case PieceType.queen:
                 if (this.legalSquares(piece, rankFileIntervals.concat(diagIntervals)).includes(destPos)){
-                    this.updatePiecePos(piece,destRow,destCol);
-                    legalMove = true;
+                    return true;
                 }
                 break;
             case PieceType.bishop:
                 if (this.legalSquares(piece, diagIntervals).includes(destPos)){
-                    this.updatePiecePos(piece,destRow,destCol);
-                    legalMove = true;
+                    return true;
                 }
                 break;
             case PieceType.knight:
-                print(Math.abs(destCol - piece.col));
-                print(Math.abs(destRow-piece.row));
-                if ((Math.abs(destCol - piece.col)) == 2 && (Math.abs(destRow-piece.row) == 1)){
-                    if(piece.isOppositeColour(this.occSquares,destRow, destCol)){
-                        this.updatePiecePos(piece,destRow,destCol);
-                        legalMove = true;
-                    }
-                }else if ((Math.abs(destRow - piece.row) === 2) && (Math.abs(destCol-piece.col) === 1)) {
-                    if(piece.isOppositeColour(this.occSquares,destRow, destCol)){
-                        this.updatePiecePos(piece,destRow,destCol);
-                        legalMove = true;
-                    }
-                } 
+                if (this.legalSquares(piece, knightIntervals).includes(destPos)){
+                    return true;
+                }
                 break;
             case PieceType.king:
                 if ((destCol - piece.col) >= 2 && piece.row === destRow){ //if attempts to short castle
@@ -133,42 +127,39 @@ class Board {
                             this.castles(piece,destCol); //is a legal castle move
                             this.removeCastlingRights(true,true);
                           
-                            legalMove = true;
+                            return true;
                         }
                         
                     }else if (this.whiteToMove == false && this.blackShortCastlingRights === true){
-                        print('in there');
                         if (this.checkKingRank(piece,1)){ // checks if there are pieces in the way (dir 1 = right)
-                            this.castles(piece,destCol); //is a legal castle move
+                            this.castles(piece,destCol); 
                             this.removeCastlingRights(true,true);
                           
-                            legalMove = true;
+                            return true;
                         }
                     }
                 }  
                 else if(destCol - piece.col <= -2 && piece.row === destRow){ //if attempts to long castle
-                    print('left');
                     if((this.whiteToMove && this.whiteLongCastlingRights) === true ){
                         if (this.checkKingRank(piece,-1)){
                             this.castles(piece,destCol);
                             this.removeCastlingRights(true,true);
                             
-                            legalMove = true
+                            return true;
                         }
                     }else if (this.whiteToMove == false && this.blackLongCastlingRights === true){
                         if (this.checkKingRank(piece,1)){ // checks if there are pieces in the way (dir 1 = right)
-                            this.castles(piece,destCol); //is a legal castle move
+                            this.castles(piece,destCol); 
                             this.removeCastlingRights(true,true);
-                          
-                            legalMove = true;
+                
+                            return true;
                         }
                     }
                 }
                 else{
                     if(!(Math.abs(destRow - piece.row) > 1 && Math.abs(destCol - piece.col) > 1) && (piece.isOppositeColour(this.occSquares,destRow,destCol))){
                         this.removeCastlingRights(true,true);
-                        this.updatePiecePos(piece,destRow,destCol);
-                        legalMove = true;
+                        return true;
                     }
                 }
                 break;
@@ -180,13 +171,13 @@ class Board {
                     if (piece.row - destRow === 2){ // if moves twice
                         if ((this.occSquares[4][destCol] == PieceType.none) && (this.occSquares[5][destCol] == PieceType.none)){
                             this.updatePiecePos(piece,destRow,destCol);
-                            legalMove = true;
+                            return true;
                         }
                     }
                     else if (piece.row - destRow === 1){ // if moves once
                         if (this.occSquares[5][destCol] == PieceType.none){
                             this.updatePiecePos(piece,destRow,destCol);
-                            legalMove = true;
+                            return true;
                         }
                     }
                 }        
@@ -194,14 +185,14 @@ class Board {
                     if (piece.row-destRow == 1){ //if not on starting square
                         if (this.occSquares[destRow][destCol] == PieceType.none){
                             this.updatePiecePos(piece,destRow,destCol);
-                            legalMove = true;
+                            return true;
                         }
                     }
                 }
             }else if ((piece.row - destRow === 1) && (piece.col - destCol === 1 || piece.col - destCol === -1)){ //diagonal capture
                 if ((this.occSquares[destRow][destCol] !== 0) && (piece.isOppositeColour(this.occSquares,destRow,destCol))){
                     this.updatePiecePos(piece,destRow,destCol);
-                    legalMove = true;
+                    return true;
                 }
             }
         }
@@ -211,13 +202,13 @@ class Board {
                     if (destRow - piece.row === 2){
                         if ((this.occSquares[3][destCol] == PieceType.none) && (this.occSquares[2][destCol] == PieceType.none)){
                             this.updatePiecePos(piece,destRow,destCol);
-                            legalMove = true;
+                            return true;
                         }
                     }
                     else if (destRow - piece.row === 1){
                         if ((this.occSquares[2][destCol] == PieceType.none)){
                             this.updatePiecePos(piece,destRow,destCol);
-                            legalMove = true;
+                            return true;
                         }
                     }
                 }        
@@ -225,7 +216,7 @@ class Board {
                     if (destRow - piece.row == 1){
                         if (this.occSquares[destRow][destCol] == PieceType.none){
                             this.updatePiecePos(piece,destRow,destCol);
-                            legalMove = true;
+                            return true;
                         }
                     }
                 }
@@ -233,34 +224,43 @@ class Board {
             else if ((destRow - piece.row === 1) && (piece.col - destCol === 1 || piece.col - destCol === -1)){ //diagonal capture
                 if ((this.occSquares[destRow][destCol] !== 0 ) && (piece.isOppositeColour(this.occSquares,destRow,destCol))){
                     this.updatePiecePos(piece,destRow,destCol);
-                    legalMove = true;
+                    return true;
                 }
 
             }
-        }
+        }  
         
-        
-        if (legalMove){
-            if (piece.colour === PieceType.black) this.moveCounter++;
-            this.changeTurn();
-            this.checkRookCapture();
-        }
     }
 
     updatePiecePos(piece, newRow, newCol){
 
-        if (!(this.occSquares[newRow][newCol] === 0)){
+        if (!(this.occSquares[newRow][newCol] === 0)){ // if a piece has been captured
             for (let i = 0; i < this.avPieces.length; i++){
                 //searches for all pieces except itself
-                if ((this.avPieces[i].row === newRow && this.avPieces[i].col === newCol) && this.avPieces[i].colourAndPiece() !== piece.colourAndPiece()){ 
+                if ((this.avPieces[i].row === newRow && this.avPieces[i].col === newCol) && (this.avPieces[i].colourAndPiece() !== piece.colourAndPiece())){ 
+                   
+                    if (this.avPieces[i].pieceType === PieceType.rook) { //has to remove castling rights so another rook cant be placed there and castle
+
+                        //scuffed but faster
+                        this.avPieces.splice(i,1); 
+                        
+                        this.occSquares[piece.row][piece.col] = 0; 
+                        this.occSquares[newRow][newCol] = piece.colour;
+
+                        this.checkRookCapture();
+                        piece.updateSquare(newRow,newCol);
+                        return;
+                    }
+
                     this.avPieces.splice(i,1); //gets rid of the piece (captures it)
                     break;
                 }
             }
         }
-
+      
         this.occSquares[piece.row][piece.col] = 0;
         this.occSquares[newRow][newCol] = piece.colour;
+      
         piece.updateSquare(newRow,newCol);
     }
 
@@ -302,9 +302,9 @@ class Board {
         }
     }
 
-    is_on_board(Row,Col){ //is used in legal squares so that it doent iterate outside the board
+    isOnBoard(Row,Col){ //is used in legal squares so that it doent iterate outside the board
         if (Row >= 0 && Row < 8 && Col >= 0 && Col < 8){
-            return true;
+            return true;;
         }
         return false;
     }
@@ -316,7 +316,7 @@ class Board {
             var col_temp =  piece.col + options.dx;
             var row_temp = piece.row + options.dy;
 
-            while(this.is_on_board(row_temp,col_temp)){ //while hasn't gone outside of the array
+            while(this.isOnBoard(row_temp,col_temp)){ //while hasn't gone outside of the array
                 if (this.occSquares[row_temp][col_temp] === 0){
                     legalCoords.push(row_temp + '' + col_temp);
                 }
@@ -343,7 +343,7 @@ class Board {
         for (let i = dir; Math.abs(i) <= 4; i += dir){
             if (this.occSquares[king.row][king.col + i] !== 0){ //if piece has been hit
                 //if piece is same colour rook on the 'h' square
-                if ((king.col + i == 7) && this.occSquares[king.row][king.col + i] === king.colour) return true; 
+                if ((king.col + i == 7) && this.occSquares[king.row][king.col + i] === king.colour) return true;
                 //if piece is same colour rook on 'a' square
                 else if((king.col + i == 0) && this.occSquares[king.row][king.col + i] === king.colour) return true;
             }
@@ -368,6 +368,16 @@ class Board {
         else if (this.occSquares[7][0] !== 8) this.whiteLongCastlingRights = false; //white 'a' rook
         else if(this.occSquares[7][7] !== 8) this.whiteShortCastlingRights = false; //white 'h' rook
     }
+
+
+    //make a move and check if its legal 
+    //generate an array of where all pieces attack in this new position
+    //if the king is in an attacked square (represented as 1) they are in check -> therefore disallow that move
+
+    generateBitMap(piece,newRow,newCol){
+        
+    }
+
 
 }
 class PieceType{

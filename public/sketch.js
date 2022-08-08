@@ -28,7 +28,7 @@ function setup() {
     SPACING = Math.floor((BLOCK_SIZE * (1 - PIECE_SCALE)) / 2);
     
     board = new Board('r3k2r/5N2/8/8/8/8/PPPPPPP1/RNBQKBNR');
-//'rnbqkbnr/1ppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR'
+    //'rnbqkbnr/1ppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR'
     centerCanvas();
 } 
 
@@ -56,7 +56,12 @@ function mouseReleased(){
     if (pieceAtMouse !== 0){
         let destCoords = getMouseCoord(mouseX,mouseY); // returns coord for array [0,0] [1,1] etc.
 
-        board.makeLegalMove(pieceAtMouse,destCoords.y,destCoords.x) //x and y are flipped as y is the equivalent to row
+        if(board.isLegalMove(pieceAtMouse,destCoords.y,destCoords.x)){
+            if (pieceAtMouse.colour === PieceType.black) board.moveCounter++;
+            board.changeTurn();
+            //board.generateBitMap(piece, destRow, destCol);
+            board.updatePiecePos(pieceAtMouse,destCoords.y,destCoords.x);
+        } //x and y are flipped as y is the equivalent to row
           
     }   
 }
