@@ -79,16 +79,7 @@ class Board {
             {dx: 1, dy: -1},
             {dx: -1, dy: 1}
         ]
-        const knightIntervals = [
-            {dx: 1, dy: -2},
-            {dx: -1, dy: -2},
-            {dx: 1, dy: 2},
-            {dx: -1, dy: 2},
-            {dx: 2, dy: 1},
-            {dx: -2, dy: -1},
-            {dx: 2, dy: 1},
-            {dx: -2, dy: 1},
-        ]
+        
 
         if (this.whiteToMove === true && piece.colour === PieceType.black) return false;
         if (this.whiteToMove === false && piece.colour === PieceType.white) return false;
@@ -116,7 +107,7 @@ class Board {
                 }
                 break;
             case PieceType.knight:
-                if (this.legalSquares(piece, knightIntervals).includes(destPos)){
+                if (this.knightLegalSquare(piece).includes(destPos)){
                     return true;
                 }
                 break;
@@ -333,6 +324,43 @@ class Board {
         return legalCoords;
     }
 
+    knightLegalSquare(piece){
+        var legalCoords = [];
+
+        const knightIntervals = [
+            {dx: 1, dy: -2},
+            {dx: -1, dy: -2},
+            {dx: 1, dy: 2},
+            {dx: -1, dy: 2},
+            {dx: 2, dy: 1},
+            {dx: -2, dy: -1},
+            {dx: 2, dy: -1},
+            {dx: -2, dy: 1},
+        ]
+
+
+        for (let options of knightIntervals){
+            var col_temp =  piece.col + options.dx;
+            var row_temp = piece.row + options.dy;
+
+            if (this.isOnBoard(row_temp,col_temp)){
+                if (this.occSquares[row_temp][col_temp] === 0){
+                    legalCoords.push(row_temp + '' + col_temp);
+                }
+                else{
+                    print('hello')
+                    if ((this.occSquares[row_temp][col_temp] & piece.colour) === 0){ // opposite colours
+                        legalCoords.push(row_temp + '' + col_temp);
+                    }
+                    break;
+                } 
+            }
+        }
+        
+        return legalCoords;
+    }
+
+
     changeTurn(){ // black -> white || white -> black
         if (this.whiteToMove === true){
             this.whiteToMove = false;
@@ -377,7 +405,6 @@ class Board {
     generateBitMap(piece,newRow,newCol){
         
     }
-
 
 }
 class PieceType{
