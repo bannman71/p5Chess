@@ -33,23 +33,101 @@ class Board {
         let FENIterator = 0;
         let finalRank = false;
         let finishedIterating = false;
-    
+
+        const rankFileIntervals = [
+            {dx: 1,dy: 0}, 
+            {dx: -1,dy: 0}, 
+            {dx: 0,dy: 1}, 
+            {dx: 0,dy: -1}
+        ]
+        const diagIntervals = [
+            {dx: 1, dy: 1},
+            {dx: -1, dy : -1},
+            {dx: 1, dy: -1},
+            {dx: -1, dy: 1}
+        ]
+        
+        const knightIntervals = [
+            {dx: 1, dy: -2},
+            {dx: -1, dy: -2},
+            {dx: 1, dy: 2},
+            {dx: -1, dy: 2},
+            {dx: 2, dy: 1},
+            {dx: -2, dy: -1},
+            {dx: 2, dy: -1},
+            {dx: -2, dy: 1},
+        ]
+        
+        const kingIntervals = [
+            {dx:1, dy: 0},
+            {dx:1, dy: 1},
+            {dx:1, dy: -1},
+            {dx:0, dy: 1},
+            {dx:0, dy: -1},
+            {dx:-1, dy: 0},
+            {dx:-1, dy: 1},
+            {dx:-1, dy: -1},
+        ]
+        
         while(!finishedIterating){
             if (!(/[A-Za-z]/).test(FEN[FENIterator]) && FEN[FENIterator] !== '/'){ // if its a number
                 col += FEN[FENIterator].charCodeAt(0) - 49;
             }
     
             if ((/[a-z]/).test(FEN[FENIterator])){ // if lowercase (black piece)
-                var newPiece = new Piece(PieceType.type[FEN[FENIterator]],row,col,PieceType.black);
+
+                switch (FEN[FENIterator]) {
+                    case 'b':
+                        var newPiece = new Piece(PieceType.type[FEN[FENIterator]],row,col,PieceType.black,diagIntervals);
+                        break;
+                    case 'r':
+                        var newPiece = new Piece(PieceType.type[FEN[FENIterator]],row,col,PieceType.black,rankFileIntervals);
+                        break;
+                    case 'q':
+                        var newPiece = new Piece(PieceType.type[FEN[FENIterator]],row,col,PieceType.black,rankFileIntervals.concat(diagIntervals));
+                        break;
+                    case 'n':
+                        var newPiece = new Piece(PieceType.type[FEN[FENIterator]],row,col,PieceType.black,knightIntervals);
+                        break;
+                    case 'k': 
+                        var newPiece = new Piece(PieceType.type[FEN[FENIterator]],row,col,PieceType.black,kingIntervals);
+                        break;
+                    case 'p':
+                        var newPiece = new Piece(PieceType.type[FEN[FENIterator]],row,col,PieceType.black,[{dx: 1, dy: 1}, {dx: -1, dy: 1}]);
+                        break;
+                }
+            
                 this.occSquares[row][col] = PieceType.black;
                 this.avPieces.push(newPiece);
+
             }
             else if ((/[A-Z]/).test(FEN[FENIterator])){ //if uppercase (white piece)
-                var newPiece = new Piece(PieceType.type[FEN[FENIterator]],row,col,PieceType.white);
+                switch (FEN[FENIterator]) {
+                    case 'B':
+                        var newPiece = new Piece(PieceType.type[FEN[FENIterator]],row,col,PieceType.white,diagIntervals);
+                        break;
+                    case 'R':
+                        var newPiece = new Piece(PieceType.type[FEN[FENIterator]],row,col,PieceType.white,rankFileIntervals);
+                        break;
+                    case 'Q':
+                        var newPiece = new Piece(PieceType.type[FEN[FENIterator]],row,col,PieceType.white,rankFileIntervals.concat(diagIntervals));
+                        break;
+                    case 'N':
+                        var newPiece = new Piece(PieceType.type[FEN[FENIterator]],row,col,PieceType.white,knightIntervals);
+                        break;
+                    case 'K': 
+                        var newPiece = new Piece(PieceType.type[FEN[FENIterator]],row,col,PieceType.white,kingIntervals);
+                        break;
+                    case 'P':
+                        var newPiece = new Piece(PieceType.type[FEN[FENIterator]],row,col,PieceType.white,[{dx: 1, dy: -1}, {dx: -1, dy: -1}]);
+                        break;
+                }
                 this.occSquares[row][col] = PieceType.white;
                 this.avPieces.push(newPiece);
+
             }
     
+            
             if (col == 8){
                 row += 1;
                 col = 0;
@@ -66,19 +144,6 @@ class Board {
 
     isLegalMove(piece,destRow,destCol){
         var destPos = destRow + '' + destCol;
-
-        const rankFileIntervals = [
-            {dx: 1,dy: 0}, 
-            {dx: -1,dy: 0}, 
-            {dx: 0,dy: 1}, 
-            {dx: 0,dy: -1}
-        ]
-        const diagIntervals = [
-            {dx: 1, dy: 1},
-            {dx: -1, dy : -1},
-            {dx: 1, dy: -1},
-            {dx: -1, dy: 1}
-        ]
         
 
         if (this.whiteToMove === true && piece.colour === PieceType.black) return false;
@@ -90,24 +155,24 @@ class Board {
 
         switch (piece.pieceType) {
             case PieceType.rook:
-                if (this.legalSquares(piece,rankFileIntervals).includes(destPos)){
+                if (this.legalSquares(piece).includes(destPos)){
                     if (piece.col === 7) this.removeCastlingRights(true, false);
                     else if (piece.col === 0) this.removeCastlingRights(false, true)
                     return true;
                 }
                 break;
             case PieceType.queen:
-                if (this.legalSquares(piece, rankFileIntervals.concat(diagIntervals)).includes(destPos)){
+                if (this.legalSquares(piece).includes(destPos)){
                     return true;
                 }
                 break;
             case PieceType.bishop:
-                if (this.legalSquares(piece, diagIntervals).includes(destPos)){
+                if (this.legalSquares(piece).includes(destPos)){
                     return true;
                 }
                 break;
             case PieceType.knight:
-                if (this.knightLegalSquare(piece).includes(destPos)){
+                if (this.knightLegalSquares(piece).includes(destPos)){
                     return true;
                 }
                 break;
@@ -300,10 +365,10 @@ class Board {
         return false;
     }
 
-    legalSquares(piece,intervals){ //gets all available squares for piece passed in
+    legalSquares(piece){ //gets all available squares for piece passed in
         var legalCoords = [];
 
-        for (let options of intervals){
+        for (let options of piece.intervals){
             var col_temp =  piece.col + options.dx;
             var row_temp = piece.row + options.dy;
 
@@ -324,22 +389,10 @@ class Board {
         return legalCoords;
     }
 
-    knightLegalSquare(piece){
+    knightLegalSquares(piece){
         var legalCoords = [];
 
-        const knightIntervals = [
-            {dx: 1, dy: -2},
-            {dx: -1, dy: -2},
-            {dx: 1, dy: 2},
-            {dx: -1, dy: 2},
-            {dx: 2, dy: 1},
-            {dx: -2, dy: -1},
-            {dx: 2, dy: -1},
-            {dx: -2, dy: 1},
-        ]
-
-
-        for (let options of knightIntervals){
+        for (let options of piece.intervals){
             var col_temp =  piece.col + options.dx;
             var row_temp = piece.row + options.dy;
 
@@ -360,6 +413,19 @@ class Board {
         return legalCoords;
     }
 
+    pawnDiagonals(piece){ //is used in bitmap so king cant walk into pawn check
+        var coords = [];
+
+        if (piece.colour === PieceType.black){
+            coords.push((piece.row + 1) + '' + (piece.col + 1));
+            coords.push((piece.row + 1) + '' + (piece.col - 1));
+            return coords;
+        }
+        
+        coords.push((piece.row - 1) + '' + (piece.col + 1));
+        coords.push((piece.row - 1) + '' + (piece.col - 1));
+        return coords;
+    }
 
     changeTurn(){ // black -> white || white -> black
         if (this.whiteToMove === true){
@@ -397,14 +463,76 @@ class Board {
         else if(this.occSquares[7][7] !== 8) this.whiteShortCastlingRights = false; //white 'h' rook
     }
 
-
     //make a move and check if its legal 
     //generate an array of where all pieces attack in this new position
     //if the king is in an attacked square (represented as 1) they are in check -> therefore disallow that move
 
-    generateBitMap(piece,newRow,newCol){
-        
+    maskSquares(){ //gets all available squares for piece passed in
+        var bitmap = this.occSquares;
+        let kingRow,kingCol;
+        let oppositeColouredPieces = [];
+
+        for (var i = 0; i < this.avPieces.length; i++){
+            if (this.avPieces[i].pieceType === PieceType.king){ //store coords of king
+                kingRow = this.avPieces[i].row;
+                kingCol = this.avPieces[i].col;
+                break;
+            }
+        }
+
+        if (this.whiteToMove === true){
+            for(var i = 0; i < this.avPieces.length; i++){
+                if (this.avPieces[i].colour === PieceType.black){
+                    oppositeColouredPieces.push(this.avPieces[i])
+                }
+            }
+        }
+        else{
+            for(var i = 0; i < this.avPieces.length; i++){
+                if (this.avPieces[i].colour === PieceType.white){
+                    oppositeColouredPieces.push(this.avPieces[i])
+                }
+            }
+        }
+
+        //when its blacks turn you need the bitmap generated from where white pieces attack
+        //maybe make an array of all white pieces on the board then do stuff with that
+
+
+        //when finding legal king moves
+        //you need where all the opposite coloured pieces are attacking
+
+
+        for (var i = 0; i < oppositeColouredPieces.length; i++){
+
+            //if ()
+
+            for (let options of intervals){
+                var col_temp =  oppositeColouredPieces[i].col + options.dx;
+                var row_temp = oppositeColouredPieces[i].row + options.dy;
+
+                while(this.isOnBoard(row_temp,col_temp)){ //while hasn't gone outside of the array
+                    if (this.occSquares[row_temp][col_temp] === 0){
+                        bitmap[row_temp][col_temp] = 1;
+                    }
+                    else{ //if a piece has been hit
+                        let kingHit = false;
+                    
+
+                        if ((this.occSquares[row_temp][col_temp] & oppositeColouredPieces[i].colour) === 0){ // opposite colours
+                            bitmap[row_temp][col_temp] = 1;
+                        }
+                        if (!kingHit) break; //if 
+                    } 
+                    col_temp += options.dx;
+                    row_temp += options.dy;
+                }
+            }
+        }
+        return bitmap;
     }
+
+
 
 }
 class PieceType{
@@ -428,11 +556,12 @@ class PieceType{
 
 class Piece {
 
-    constructor(pieceType, row, col, colour){
+    constructor(pieceType, row, col, colour,intervals){
         this.pieceType = pieceType;
         this.row = row;
         this.col = col;
         this.colour = colour;   
+        this.intervals = intervals;
     }
 
     colourAndPiece(){

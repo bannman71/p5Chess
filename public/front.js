@@ -23,8 +23,6 @@ function getPieceAtMousepos(piece,x,y){
     return 0;
 }
 
-
-
 function drawPieceAtMousepos(piece, x, y){
 
     x -= BLOCK_SIZE * PIECE_SCALE / 2;  // centers piece
