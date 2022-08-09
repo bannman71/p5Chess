@@ -230,7 +230,7 @@ class Board {
                     }
                 }
                 else{
-                    if(!(Math.abs(destRow - piece.row) > 1 || Math.abs(destCol - piece.col) > 1) && (piece.isOppositeColour(this.occSquares,destRow,destCol))){
+                    if(!(Math.abs(destRow - piece.row) > 1 || Math.abs(destCol - piece.col) > 1) && (piece.isOppositeColour(this.occSquares,destRow,destCol)) && !(this.maskMap[destRow][destCol] === 1)){
                         this.removeCastlingRights(true,true);
                         this.updatePiecePos(piece,destRow,destCol);
                         return true;
@@ -409,6 +409,9 @@ class Board {
     checkKingRank(king,dir){ //checks if there are pieces on the way of castling
         for (let i = dir; Math.abs(i) <= 4; i += dir){
             if (this.maskMap[king.row][king.col + i] !== 0){ //if piece has been hit
+
+                if (this.maskMap[king.row][king.col + i] === 1) return false;
+
                 //if piece is same colour rook on the 'h' square
                 if ((king.col + i == 7) && this.maskMap[king.row][king.col + i] === king.colour) return true;
                 //if piece is same colour rook on 'a' square
@@ -440,25 +443,20 @@ class Board {
     //generate an array of where all pieces attack in this new position
     //if the king is in an attacked square (represented as 1) they are in check -> therefore disallow that move
 
-    maskSquares(){ //gets all available squares 
+    findMaskSquares(){ //gets all available squares that the pieces can move to (excluding captures)
 
         let bitmap = create2dArray(8,8);
-        let kingRow,kingCol;
+        var kingRow,kingCol;
         let oppositeColouredPieces = [];
-
-        for (let i = 0; i < this.avPieces.length; i++){
-            if (this.avPieces[i].pieceType === PieceType.king){ //store coords of king
-                kingRow = this.avPieces[i].row;
-                kingCol = this.avPieces[i].col;
-                break;
-            }
-        }
-
 
         if (this.whiteToMove === true){
             for(let i = 0; i < this.avPieces.length; i++){
                 if (this.avPieces[i].colour === PieceType.black){
                     oppositeColouredPieces.push(this.avPieces[i])
+                }
+                if (this.avPieces[i].colourAndPiece() === (PieceType.king ^ PieceType.white)){
+                    kingRow = this.avPieces[i].row;
+                    kingCol = this.avPieces[i].col;
                 }
             }
         }
@@ -467,8 +465,14 @@ class Board {
                 if (this.avPieces[i].colour === PieceType.white){
                     oppositeColouredPieces.push(this.avPieces[i])
                 }
+                if (this.avPieces[i].colourAndPiece() === PieceType.king ^ PieceType.black){
+                    kingRow = this.avPieces[i].row;
+                    kingCol = this.avPieces[i].col;
+                }
             }
+            
         }
+
 
         for (var i = 0; i < oppositeColouredPieces.length; i++){
 
@@ -497,79 +501,7 @@ class Board {
                                 bitmap[row_temp][col_temp] = 1;
                             }
                             else{ //if a piece has been hit
-                                if (((row_temp === kingRow) && (col_temp === kingCol))) break;
-                               // if (!kingHit) break; //if the same coloured king has been hit then ignore it
-                            } 
-                            col_temp += options.dx;
-                            row_temp += options.dy;
-                        }
-                    }
-                    break;
-            }
-            
-        }
-
-        return bitmap;
-    }
-
-
-    generateBitMap(){
-        let bitmap = create2dArray(8,8);
-        let kingRow,kingCol;
-        let oppositeColouredPieces = [];
-
-        for (let i = 0; i < this.avPieces.length; i++){
-            if (this.avPieces[i].pieceType === PieceType.king){ //store coords of king
-                kingRow = this.avPieces[i].row;
-                kingCol = this.avPieces[i].col;
-                break;
-            }
-        }
-
-        if (this.whiteToMove === true){
-            for(let i = 0; i < this.avPieces.length; i++){
-                if (this.avPieces[i].colour === PieceType.black){
-                    oppositeColouredPieces.push(this.avPieces[i])
-                }
-            }
-        }
-        else{
-            for(let i = 0; i < this.avPieces.length; i++){
-                if (this.avPieces[i].colour === PieceType.white){
-                    oppositeColouredPieces.push(this.avPieces[i])
-                }
-            }
-        }
-
-        for (var i = 0; i < oppositeColouredPieces.length; i++){
-
-            switch (oppositeColouredPieces[i].pieceType){
-                case PieceType.knight: case PieceType.king: case PieceType.pawn:
-                
-                    for (let options of oppositeColouredPieces[i].intervals){
-                        var col_temp =  oppositeColouredPieces[i].col + options.dx;
-                        var row_temp = oppositeColouredPieces[i].row + options.dy;
-            
-                        if (isOnBoard(row_temp,col_temp)){
-                            if (this.occSquares[row_temp][col_temp] === 0){
-                                bitmap[row_temp][col_temp] = 1;
-                            }
-                        }
-                    }
-                    break;
-
-                default:
-                    for (let options of oppositeColouredPieces[i].intervals){
-                        var col_temp =  oppositeColouredPieces[i].col + options.dx;
-                        var row_temp = oppositeColouredPieces[i].row + options.dy;
-        
-                        while(isOnBoard(row_temp,col_temp)){ //while hasn't gone outside of the array
-                            if (this.occSquares[row_temp][col_temp] === 0 || this.occSquares[row_temp][col_temp] === 1){
-                                bitmap[row_temp][col_temp] = 1;
-                            }
-                            else{ //if a piece has been hit
                                 if (!((row_temp === kingRow) && (col_temp === kingCol))) break;
-                            // if (!kingHit) break; //if the same coloured king has been hit then ignore it
                             } 
                             col_temp += options.dx;
                             row_temp += options.dy;
@@ -581,9 +513,9 @@ class Board {
         }
 
         return bitmap;
-
     }
 
+    
     maskBitMap(bitmap){
         this.maskMap = create2dArray(8,8);
 
@@ -595,9 +527,7 @@ class Board {
 
             }
         }
-
     }
-
 
 }
 

@@ -59,7 +59,7 @@ function mouseReleased(){
     if (pieceAtMouse !== 0){
         let destCoords = getMouseCoord(mouseX,mouseY); // returns coord for array [0,0] [1,1] etc.
 
-        bitmap = board.generateBitMap();
+        bitmap = board.findMaskSquares();
         board.maskBitMap(bitmap);
 
         if(board.isLegalMove(pieceAtMouse,destCoords.y,destCoords.x)){
@@ -72,7 +72,7 @@ function mouseReleased(){
             if (pieceAtMouse.colour === PieceType.black) board.moveCounter++;
             board.changeTurn();
             
-            if (!pieceAtMouse.PieceType === PieceType.king ) board.updatePiecePos(pieceAtMouse,destCoords.y,destCoords.x); //king updates its position internally
+            if (!(pieceAtMouse.PieceType === PieceType.king)) board.updatePiecePos(pieceAtMouse,destCoords.y,destCoords.x); //king updates its position internally
             
         } //x and y are flipped as y is the equivalent to row
           
