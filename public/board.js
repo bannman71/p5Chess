@@ -153,7 +153,6 @@ class Board {
 
     isLegalMove(piece,destRow,destCol){
         var destPos = destRow + '' + destCol;
-        let kingRow,kingCol;
 
         if (this.whiteToMove === true && piece.colour === PieceType.black) return false;
         if (this.whiteToMove === false && piece.colour === PieceType.white) return false;
@@ -161,19 +160,7 @@ class Board {
         if (piece.row === destRow && piece.col === destCol){
             return false;
         }
-
-        for (let i = 0; i < this.avPieces.length; i++){
-            if (this.whiteToMove && this.avPieces[i].colourAndPiece() === (PieceType.king ^ PieceType.white)){
-                kingRow = this.avPieces[i].row;
-                kingCol = this.avPieces[i].col;
-            }
-            else if (!this.whiteToMove && this.avPieces[i].colourAndPiece() === (PieceType.king ^ PieceType.black)){
-                kingRow = this.avPieces[i].row;
-                kingCol = this.avPieces[i].col;
-            }
-        }
-        if (this.maskMap[kingRow][kingCol] === 1 ) return false;
-
+       
         switch (piece.pieceType) {
             case PieceType.rook:
                 if (this.legalSquares(piece).includes(destPos)){
@@ -317,6 +304,29 @@ class Board {
         }  
         
     }
+
+    checkKingInCheck(){
+        for (let i = 0; i < this.avPieces.length; i++){
+            if ((this.whiteToMove) && this.avPieces[i].colourAndPiece() === (PieceType.king ^ PieceType.white)){
+                kingRow = this.avPieces[i].row;
+                kingCol = this.avPieces[i].col;
+                break;
+            }
+            else if (!(this.whiteToMove) && this.avPieces[i].colourAndPiece() === (PieceType.king ^ PieceType.black)){
+                kingRow = this.avPieces[i].row;
+                kingCol = this.avPieces[i].col;
+                break;
+            }
+        }
+
+        print(kingRow);
+        print('col ' + kingCol);
+
+
+        if (this.maskMap[kingRow][kingCol] === 1) return false;
+        return true;
+    }
+
 
     updatePiecePos(piece, newRow, newCol){
 
@@ -463,7 +473,7 @@ class Board {
 
         if (this.whiteToMove === true){
             for(let i = 0; i < piecesToMove.length; i++){
-                if (piecesToMove[i].colour === PieceType.black && newPosition[piecesToMove[i].row][piecesToMove[i].col] === PieceType.black){
+                if (piecesToMove[i].colour === PieceType.black && (newPosition[piecesToMove[i].row][piecesToMove[i].col] === PieceType.black)){
                     oppositeColouredPieces.push(piecesToMove[i])
                 }
                 if (piecesToMove[i].colourAndPiece() === (PieceType.king ^ PieceType.white)){
@@ -477,14 +487,13 @@ class Board {
                 if ((piecesToMove[i].colour === PieceType.white) && (newPosition[piecesToMove[i].row][piecesToMove[i].col] === PieceType.white)){
                     oppositeColouredPieces.push(piecesToMove[i])
                 }
-                if (piecesToMove[i].colourAndPiece() === PieceType.king ^ PieceType.black){
+                if (piecesToMove[i].colourAndPiece() === (PieceType.king ^ PieceType.black)){
                     kingRow = piecesToMove[i].row;
                     kingCol = piecesToMove[i].col;
                 }
             }
             
         }
-
 
         for (var i = 0; i < oppositeColouredPieces.length; i++){
 
@@ -514,11 +523,7 @@ class Board {
                             }
                             else{ //if a piece has been hit
                                 if (((row_temp === kingRow) && (col_temp === kingCol))) { //if its the king then continue
-                                    print('hit king')
-                                    print(row_temp);
-                                    print(col_temp);
                                     bitmap[row_temp][col_temp] = 1;
-                                    
                                 }else break; 
                             } 
                             col_temp += options.dx;
@@ -539,7 +544,7 @@ class Board {
         print(newPosition);
         print(bitmap);
 
-        for(var i = 0; i < 8;i++){
+        for(var i = 0; i < 8; i++){
             for (var j = 0; j < 8; j++){
                 if ((bitmap[i][j] === 1)) this.maskMap[i][j] = 1;
                 else this.maskMap[i][j] = this.occSquares[i][j];
@@ -548,10 +553,14 @@ class Board {
         }
     }
 
-    createNextMoveBitmap(piece,piecesToMove, destRow, destCol){
+    checkNextMoveBitmap(piece,piecesToMove, destRow, destCol){
         let tempRow = piece.row;
         let tempCol = piece.col
         let pieceLoc;
+
+        let outOfCheck = true;
+
+        let kingRow,kingCol;
 
         let bitmap = create2dArray(8,8);
         
@@ -559,7 +568,7 @@ class Board {
 
     
         for (let i = 0; i < piecesToMove.length; i++){
-            if ((piecesToMove[i].row === piece.row) && (piecesToMove[i].col === piece.col)) {
+            if ((piecesToMove[i].row === piece.row) && (piecesToMove[i].col === piece.col)) { //move the piece
                 piecesToMove[i].row = destRow;
                 piecesToMove[i].col = destCol;
                 pieceLoc = i;
@@ -567,18 +576,34 @@ class Board {
             }
         }
 
-        for (var i = 0; i < piecesToMove.length; i++){
-            newPosition[piecesToMove[i].row][piecesToMove[i].col] = piecesToMove[i].colour;
+        for (let i = 0; i < piecesToMove.length; i++){ //find the king
+            if ((this.whiteToMove) && piecesToMove[i].colourAndPiece() === (PieceType.king ^ PieceType.white)){
+                kingRow = piecesToMove[i].row;
+                kingCol = piecesToMove[i].col;
+            }
+            else if (!(this.whiteToMove) && piecesToMove[i].colourAndPiece() === (PieceType.king ^ PieceType.black)){
+                kingRow = piecesToMove[i].row;
+                kingCol = piecesToMove[i].col;
+            }
+
+            newPosition[piecesToMove[i].row][piecesToMove[i].col] = piecesToMove[i].colour; //create an updated board
+            newPosition[destRow][destCol] = piece.colour;
         }
 
         bitmap = this.findMaskSquares(newPosition,piecesToMove);
         this.maskBitMap(newPosition,bitmap);
 
         print(this.maskMap);
+
+        if (this.maskMap[kingRow][kingCol] === 1) outOfCheck = false;
         
         piecesToMove[pieceLoc].row = tempRow;
         piecesToMove[pieceLoc].col = tempCol;
 
+        print(outOfCheck);
+
+
+        return outOfCheck;
     }
 
 
