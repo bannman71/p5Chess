@@ -28,7 +28,7 @@ function setup() {
     BLOCK_SIZE = (windowHeight * 0.8) / 8; //can be width but it is a square
     SPACING = Math.floor((BLOCK_SIZE * (1 - PIECE_SCALE)) / 2);
     
-    board = new Board('3r1r2/6n1/2q5/4k3/8/1K3Q2/1N6/R6R');
+    board = new Board('rnbqkbnr/p1pppppp/1p6/8/8/5NP1/PPPPPPBP/RNBQK2R');
     //r3k2r/5N2/8/8/8/8/PPPPPPP1/RNBQKBNR
     //1r1k1r2/6n1/2q5/8/8/5Q2/1N6/R2K3R
     //'rnbqkbnr/1ppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR'
@@ -55,24 +55,34 @@ function mousePressed(){
 
 function mouseReleased(){
     MouseDown = false;
+    board.castled = false;
+    let isLegal = false;
 
     if (pieceAtMouse !== 0){
         let destCoords = getMouseCoord(mouseX,mouseY); // returns coord for array [0,0] [1,1] etc.
+    
 
-        // bitmap = board.findMaskSquares();
-        // board.maskBitMap(bitmap);
+        if (pieceAtMouse.pieceType === PieceType.king){
+            if(board.checkNextMoveBitmap(pieceAtMouse,board.avPieces,destCoords.y,destCoords.x) === true){ //king moves need the bitmap before due to castling through a check
+                if (board.isLegalKingMove(pieceAtMouse,destCoords.y,destCoords.x)) isLegal = true;
+            }
+        } else {
+            if (board.isLegalMove(pieceAtMouse,destCoords.y,destCoords.x)){
+                if (board.checkNextMoveBitmap(pieceAtMouse,board.avPieces,destCoords.y,destCoords.x) === true) isLegal = true;
+            }
 
-       // board.createNextMoveBitmap(pieceAtMouse,board.avPieces,destCoords.y,destCoords.x);
-        if (board.checkNextMoveBitmap(pieceAtMouse,board.avPieces,destCoords.y,destCoords.x) === true){
-            if(board.isLegalMove(pieceAtMouse,destCoords.y,destCoords.x)){
+        }
 
-                if (pieceAtMouse.colour === PieceType.black) board.moveCounter++;
-                board.changeTurn();
-                
-                if (!(pieceAtMouse.PieceType === PieceType.king)) board.updatePiecePos(pieceAtMouse,destCoords.y,destCoords.x); //king updates its position internally
-                
-            } //x and y are flipped as y is the equivalent to row
-        }   
+        if (isLegal){
+
+            if (pieceAtMouse.colour === PieceType.black) board.moveCounter++;
+            board.changeTurn();
+            
+            if (!board.castled) board.updatePiecePos(pieceAtMouse,destCoords.y,destCoords.x); //castling changes position inside the castles function
+         
+        }
+        
+        
     }   
 }
 
