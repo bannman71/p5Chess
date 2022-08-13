@@ -166,7 +166,7 @@ class Board {
             return false;
         }
        
-        switch (piece.pieceType) {
+        switch (piece.type) {
             case PieceType.rook:
                 if (this.legalSquares(piece).includes(destPos)){
                     if (piece.col === 7) this.removeCastlingRights(true, false);
@@ -375,7 +375,7 @@ class Board {
                 //searches for all pieces except itself
                 if ((this.avPieces[i].row === newRow && this.avPieces[i].col === newCol) && (this.avPieces[i].colourAndPiece() !== piece.colourAndPiece())){ 
                    
-                    if (this.avPieces[i].pieceType === PieceType.rook) { //has to remove castling rights so another rook cant be placed there and castle
+                    if (this.avPieces[i].type === PieceType.rook) { //has to remove castling rights so another rook cant be placed there and castle
 
                         //scuffed but faster
                         this.avPieces.splice(i,1); 
@@ -541,7 +541,7 @@ class Board {
 
         for (var i = 0; i < oppositeColouredPieces.length; i++){
 
-            switch (oppositeColouredPieces[i].pieceType){
+            switch (oppositeColouredPieces[i].type){
                 case PieceType.knight: case PieceType.king: case PieceType.pawn:
                    
                     for (let options of oppositeColouredPieces[i].intervals){
@@ -589,7 +589,6 @@ class Board {
             for (var j = 0; j < 8; j++){
                 if ((bitmap[i][j] === 1)) this.maskMap[i][j] = 1;
                 else this.maskMap[i][j] = this.occSquares[i][j];
-
             }
         }
     }
@@ -608,21 +607,6 @@ class Board {
         let newPosition = create2dArray(8,8);
 
 
-
-        for (let i = 0; i < piecesToMove.length; i++){
-            if ((piecesToMove[i].row === piece.row) && (piecesToMove[i].col === piece.col)) { //find the piece
-                pieceLoc = i;
-            }
-        }
-
-        if ((destRow == kingRow) && (destCol == kingCol)){ //make sure king isnt captured
-            return false;
-        } 
-
-        piecesToMove[pieceLoc].row = destRow;
-        piecesToMove[pieceLoc].col = destCol;
-
-
         for (let i = 0; i < piecesToMove.length; i++){
             if ((piecesToMove[i].row === piece.row) && (piecesToMove[i].col === piece.col)) { //find the piece
                 pieceLoc = i;
@@ -637,7 +621,12 @@ class Board {
             }
         }
 
-      
+        if ((destRow == kingRow) && (destCol == kingCol)){ //make sure king isnt captured
+            return false;
+        } 
+
+        piecesToMove[pieceLoc].row = destRow;
+        piecesToMove[pieceLoc].col = destCol;
 
 
 
@@ -669,11 +658,7 @@ class Board {
         return outOfCheck;
     }
 
-
-
-
 }
-
 class PieceType{
 
     static type = {
@@ -695,8 +680,8 @@ class PieceType{
 
 class Piece {
 
-    constructor(pieceType, row, col, colour,intervals){
-        this.pieceType = pieceType;
+    constructor(type, row, col, colour,intervals){
+        this.type = type;
         this.row = row;
         this.col = col;
         this.colour = colour;   
@@ -704,7 +689,7 @@ class Piece {
     }
 
     colourAndPiece(){
-        return this.colour ^ this.pieceType;
+        return this.colour ^ this.type;
     }
 
     updateSquare(newRow,newCol){

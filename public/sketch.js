@@ -50,7 +50,7 @@ function mousePressed(){
   
     pieceAtMouse = getPieceAtMousepos(board.avPieces,mouseX,mouseY); //returns type Piece
     MouseDown = true;
-    
+ 
 }
 
 function mouseReleased(){
@@ -60,21 +60,18 @@ function mouseReleased(){
 
     if (pieceAtMouse !== 0){
         let destCoords = getMouseCoord(mouseX,mouseY); // returns coord for array [0,0] [1,1] etc.
-    
 
-        if (pieceAtMouse.pieceType === PieceType.king){
+        if (pieceAtMouse.type === PieceType.king){
             if(board.checkNextMoveBitmap(pieceAtMouse,board.avPieces,destCoords.y,destCoords.x) === true){ //king moves need the bitmap before due to castling through a check
                 if (board.isLegalKingMove(pieceAtMouse,destCoords.y,destCoords.x)) isLegal = true;
             }
         } else {
-            if (board.isLegalMove(pieceAtMouse,destCoords.y,destCoords.x)){
+            if (board.isLegalMove(pieceAtMouse,destCoords.y,destCoords.x)){ //doesn't need the bitmap first as it can find after a move has been made whether or not it is in check
                 if (board.checkNextMoveBitmap(pieceAtMouse,board.avPieces,destCoords.y,destCoords.x) === true) isLegal = true;
             }
-
         }
 
         if (isLegal){
-
             if (pieceAtMouse.colour === PieceType.black) board.moveCounter++;
             board.changeTurn();
             
