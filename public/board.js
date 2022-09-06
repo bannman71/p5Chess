@@ -625,10 +625,17 @@ class Board {
             return false;
         } 
 
+        //if the king is to move -> kingRow and kingCol also need to be updated
+        
+        if (piecesToMove[pieceLoc].type === PieceType.king){
+            kingRow = destRow;
+            kingCol = destCol;
+        }
+        
         piecesToMove[pieceLoc].row = destRow;
         piecesToMove[pieceLoc].col = destCol;
 
-
+        //test this
 
         for (let i = 0; i < piecesToMove.length; i++){ 
             newPosition[piecesToMove[i].row][piecesToMove[i].col] = piecesToMove[i].colour; //create an updated board
@@ -645,7 +652,6 @@ class Board {
         print(newPosition);
 
         print(this.maskMap[kingRow][kingCol]);
-
 
 
         if (this.maskMap[kingRow][kingCol] === 1) outOfCheck = false; //this is the line that makes it all happen -> disallows pinned pieces and stuff from putting the king in check
