@@ -24,7 +24,7 @@ class Board {
         this.occSquares = create2dArray(8,8);
         
         this.moveCounter = 0;
-        this.whiteToMove = true;
+        this.whiteToMove = false;
 
         this.blackShortCastlingRights = true;
         this.blackLongCastlingRights = true;
@@ -33,12 +33,12 @@ class Board {
 
         this.FENToBoard(FEN); // fills up avPieces and occSquares (sus)
 
-        this.inCheck = false;
-
         this.maskMap = create2dArray(8,8);
 
         this.pawnMovedTwoSquares = false;
         this.pawnMovedTwoSquaresCol = 0;
+        this.enPassentTaken = false;
+
         this.castled = false;
     }
 
@@ -212,7 +212,7 @@ class Board {
                         if ((this.occSquares[4][destCol] == PieceType.none) && (this.occSquares[5][destCol] == PieceType.none)){
                             this.pawnMovedTwoSquares = true;
                             this.pawnMovedTwoSquaresCol = destCol;
-                            print('en passent taken');
+                         
                             return true;
                         }
                     }
@@ -231,7 +231,10 @@ class Board {
                 }
             }else if ((piece.row - destRow === 1) && (piece.col - destCol === 1 || piece.col - destCol === -1)){ //diagonal capture
                 if ((this.occSquares[destRow][destCol] !== 0) && (piece.isOppositeColour(this.occSquares,destRow,destCol))) return true;
-                else if ((this.pawnMovedTwoSquares === true) && (piece.row === 3) && (destCol === this.pawnMovedTwoSquaresCol)) return true;
+                else if ((this.pawnMovedTwoSquares === true) && (piece.row === 3) && (destCol === this.pawnMovedTwoSquaresCol)){
+                    this.enPassentTaken = true;
+                    return true;
+                }
             }
         }
         else if(piece.colourAndPiece() == (PieceType.pawn ^ PieceType.black)){
@@ -241,6 +244,8 @@ class Board {
                         if ((this.occSquares[3][destCol] == PieceType.none) && (this.occSquares[2][destCol] == PieceType.none)){
                             this.pawnMovedTwoSquares = true;
                             this.pawnMovedTwoSquaresCol = destCol;
+                            print(this.pawnMovedTwoSquares);
+                            print('twice');
                             return true;
                         }
                     }
@@ -256,18 +261,21 @@ class Board {
             }
             else if ((destRow - piece.row === 1) && (piece.col - destCol === 1 || piece.col - destCol === -1)){ //diagonal capture
                 if ((this.occSquares[destRow][destCol] !== 0 ) && (piece.isOppositeColour(this.occSquares,destRow,destCol)))return true;
-                else if ((this.pawnMovedTwoSquares) && (piece.row === 5) && (destCol === this.pawnMovedTwoSquaresCol)) return true; //en passent
+                else if ((this.pawnMovedTwoSquares) && (piece.row === 5) && (destCol === this.pawnMovedTwoSquaresCol)){
+                    this.enPassentTaken = true;
+                    return true; //en passent
+                }
             }
         }  
     }
 
     isLegalKingMove(piece,destRow,destCol){
         if ((destCol - piece.col) >= 2 && piece.row === destRow){ //if attempts to short castle
-            print('attemtped');
+            //print('attemtped');
             if((this.whiteToMove && this.whiteShortCastlingRights) === true){
-                print('can do it');
+               // print('can do it');
                 if (this.checkKingRank(piece,1)){ // checks if there are pieces in the way (dir 1 = right)
-                    print('can do it');
+                  //  print('can do it');
                     this.shortCastles(piece,destCol); //is a legal castle move
                     this.removeCastlingRights(true,true);
                     this.castled = true;
@@ -343,6 +351,28 @@ class Board {
         this.occSquares[newRow][newCol] = piece.colour;
       
         piece.updateSquare(newRow,newCol);
+    }
+
+    updateEnPassentMove(piece,destRow,destCol){
+
+        for(let i = 0; i < this.avPieces.length; i++){
+            if (
+                (this.avPieces[i].row === destRow + 1 || this.avPieces[i].row === destRow - 1) 
+                && (this.avPieces[i].col === destCol) 
+                && this.avPieces[i].colourAndPiece() !== piece.colourAndPiece()
+                )
+            {
+                this.occSquares[this.avPieces[i].row][this.avPieces[i].col] = 0;
+                this.occSquares[destRow][destCol] = this.avPieces[i].colour;
+
+                this.avPieces.splice(i,1);
+                break;
+            }
+        }
+
+        piece.row = destRow;
+        piece.col = destCol;
+
     }
 
     shortCastles(king){

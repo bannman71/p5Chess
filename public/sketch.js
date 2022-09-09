@@ -28,7 +28,7 @@ function setup() {
     BLOCK_SIZE = (windowHeight * 0.8) / 8; //can be width but it is a square
     SPACING = Math.floor((BLOCK_SIZE * (1 - PIECE_SCALE)) / 2);
     
-    board = new Board('rnbqkbnr/p1pppppp/1p6/8/8/5NP1/PPPPPPBP/RNBQK2R');
+    board = new Board('rnbqkbnr/p1pppppp/1p6/4P3/8/5NP1/PPPP1PBP/RNBQK2R');
     //r3k2r/5N2/8/8/8/8/PPPPPPP1/RNBQKBNR
     //1r1k1r2/6n1/2q5/8/8/5Q2/1N6/R2K3R
     //'rnbqkbnr/1ppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR'
@@ -57,9 +57,12 @@ function mouseReleased(){
     MouseDown = false;
     board.castled = false;
     let isLegal = false;
+    let tempPawnTwoSquares;
 
     if (pieceAtMouse !== 0){
         let destCoords = getMouseCoord(mouseX,mouseY); // returns coord for array [0,0] [1,1] etc.
+
+        tempPawnTwoSquares = board.pawnMovedTwoSquares;
 
         if (pieceAtMouse.type === PieceType.king){
             if(board.checkNextMoveBitmap(pieceAtMouse,board.avPieces,destCoords.y,destCoords.x) === true){ //king moves need the bitmap before due to castling through a check
@@ -70,22 +73,25 @@ function mouseReleased(){
                 if (board.checkNextMoveBitmap(pieceAtMouse,board.avPieces,destCoords.y,destCoords.x) === true) isLegal = true;
             }
         }
-        print('pawn col');
-        print(board.pawnMovedTwoSquaresCol);
-        print('pawn moved');
+
+
         print(board.pawnMovedTwoSquares);
 
         if (isLegal){
             print('is legal!!!!')
             if (pieceAtMouse.colour === PieceType.black) board.moveCounter++;
             board.changeTurn();
-            board.pawnMovedTwoSquares = false;
 
-            //legalmove function needs to be updated in order for the piece  to actually be captured
+            if (board.enPassentTaken){
+                print('yup)');
+                board.updateEnPassentMove(pieceAtMouse,destCoords.y,destCoords.x);
+            }
+            else 
+                if (!board.castles) board.updatePiecePos(pieceAtMouse,destCoords.y,destCoords.x); //castling changes position inside the castles function
 
-            if (!board.castled) board.updatePiecePos(pieceAtMouse,destCoords.y,destCoords.x); //castling changes position inside the castles function
+            if (tempPawnTwoSquares === true) board.pawnMovedTwoSquares = false;
         }
-        
+
         
     }   
 }
