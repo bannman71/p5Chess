@@ -70,13 +70,20 @@ function mouseReleased(){
                 if (board.checkNextMoveBitmap(pieceAtMouse,board.avPieces,destCoords.y,destCoords.x) === true) isLegal = true;
             }
         }
+        print('pawn col');
+        print(board.pawnMovedTwoSquaresCol);
+        print('pawn moved');
+        print(board.pawnMovedTwoSquares);
 
         if (isLegal){
+            print('is legal!!!!')
             if (pieceAtMouse.colour === PieceType.black) board.moveCounter++;
             board.changeTurn();
-            
+            board.pawnMovedTwoSquares = false;
+
+            //legalmove function needs to be updated in order for the piece  to actually be captured
+
             if (!board.castled) board.updatePiecePos(pieceAtMouse,destCoords.y,destCoords.x); //castling changes position inside the castles function
-         
         }
         
         

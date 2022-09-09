@@ -38,6 +38,7 @@ class Board {
         this.maskMap = create2dArray(8,8);
 
         this.pawnMovedTwoSquares = false;
+        this.pawnMovedTwoSquaresCol = 0;
         this.castled = false;
     }
 
@@ -165,7 +166,10 @@ class Board {
         if (piece.row === destRow && piece.col === destCol){
             return false;
         }
-       
+        print('destcol');      
+        print(destCol);        
+
+
         switch (piece.type) {
             case PieceType.rook:
                 if (this.legalSquares(piece).includes(destPos)){
@@ -197,56 +201,9 @@ class Board {
                     }
                 } 
                 break;
-                
-            // case PieceType.king:
-            //     return true;
-            //     if ((destCol - piece.col) >= 2 && piece.row === destRow){ //if attempts to short castle
-            //         if((this.whiteToMove && this.whiteShortCastlingRights) === true){
-            //             if (this.checkKingRank(piece,1)){ // checks if there are pieces in the way (dir 1 = right)
-            //                 this.shortCastles(piece,destCol); //is a legal castle move
-            //                 this.removeCastlingRights(true,true);
-            //                 this.castled = true;
-
-            //                 return true;
-            //             }
-                        
-            //         }else if (this.whiteToMove == false && this.blackShortCastlingRights === true){
-            //             if (this.checkKingRank(piece,1)){ // checks if there are pieces in the way (dir 1 = right)
-            //                 this.shortCastles(piece,destCol); 
-            //                 this.removeCastlingRights(true,true);
-            //                 this.castled = true;
-
-            //                 return true;
-            //             }
-            //         }
-            //     }  
-            //     else if(destCol - piece.col <= -2 && piece.row === destRow){ //if attempts to long castle
-            //         if((this.whiteToMove && this.whiteLongCastlingRights) === true ){
-            //             if (this.checkKingRank(piece,-1)){
-            //                 this.longCastles(piece);
-            //                 this.removeCastlingRights(true,true);
-            //                 this.castled = true;
-
-            //                 return true;
-            //             }
-            //         }else if (this.whiteToMove == false && this.blackLongCastlingRights === true){
-            //             if (this.checkKingRank(piece,1)){ // checks if there are pieces in the way (dir 1 = right)
-            //                 this.longCastles(piece,destCol); 
-            //                 this.removeCastlingRights(true,true);
-            //                 this.castled = true;
-
-            //                 return true;
-            //             }
-            //         }
-            //     }
-            //     else{
-            //         if(!(Math.abs(destRow - piece.row) > 1 || Math.abs(destCol - piece.col) > 1) && (piece.isOppositeColour(this.occSquares,destRow,destCol))){
-            //             this.removeCastlingRights(true,true);
-            //             return true;
-            //         }
-            //     }
-            //     break;
         }
+
+        //pawns have special cases so put them seperately 
 
         if (piece.colourAndPiece() == (PieceType.pawn ^ PieceType.white)){    
             if (piece.col === destCol){
@@ -254,6 +211,8 @@ class Board {
                     if (piece.row - destRow === 2){ // if moves twice
                         if ((this.occSquares[4][destCol] == PieceType.none) && (this.occSquares[5][destCol] == PieceType.none)){
                             this.pawnMovedTwoSquares = true;
+                            this.pawnMovedTwoSquaresCol = destCol;
+                            print('en passent taken');
                             return true;
                         }
                     }
@@ -266,53 +225,40 @@ class Board {
                 else{
                     if (piece.row-destRow == 1){ //if not on starting square
                         if (this.occSquares[destRow][destCol] == PieceType.none){
-
                             return true;
                         }
                     }
                 }
             }else if ((piece.row - destRow === 1) && (piece.col - destCol === 1 || piece.col - destCol === -1)){ //diagonal capture
-                if ((this.occSquares[destRow][destCol] !== 0) && (piece.isOppositeColour(this.occSquares,destRow,destCol))){
-
-                    return true;
-                }
+                if ((this.occSquares[destRow][destCol] !== 0) && (piece.isOppositeColour(this.occSquares,destRow,destCol))) return true;
+                else if ((this.pawnMovedTwoSquares === true) && (piece.row === 3) && (destCol === this.pawnMovedTwoSquaresCol)) return true;
             }
         }
         else if(piece.colourAndPiece() == (PieceType.pawn ^ PieceType.black)){
             if (piece.col === destCol){
                 if (piece.row === 1){  // if black pawn on starting square
-                    if (destRow - piece.row === 2){
+                    if (destRow - piece.row === 2){ //if moves twice
                         if ((this.occSquares[3][destCol] == PieceType.none) && (this.occSquares[2][destCol] == PieceType.none)){
-
                             this.pawnMovedTwoSquares = true;
+                            this.pawnMovedTwoSquaresCol = destCol;
                             return true;
                         }
                     }
                     else if (destRow - piece.row === 1){
-                        if ((this.occSquares[2][destCol] == PieceType.none)){
-
-                            return true;
-                        }
+                        return this.occSquares[2][destCol] == PieceType.none;
                     }
                 }        
                 else{
                     if (destRow - piece.row == 1){
-                        if (this.occSquares[destRow][destCol] == PieceType.none){
-
-                            return true;
-                        }
+                        return this.occSquares[destRow][destCol] == PieceType.none;
                     }
                 }
             }
             else if ((destRow - piece.row === 1) && (piece.col - destCol === 1 || piece.col - destCol === -1)){ //diagonal capture
-                if ((this.occSquares[destRow][destCol] !== 0 ) && (piece.isOppositeColour(this.occSquares,destRow,destCol))){
-
-                    return true;
-                }
-
+                if ((this.occSquares[destRow][destCol] !== 0 ) && (piece.isOppositeColour(this.occSquares,destRow,destCol)))return true;
+                else if ((this.pawnMovedTwoSquares) && (piece.row === 5) && (destCol === this.pawnMovedTwoSquaresCol)) return true; //en passent
             }
         }  
-        
     }
 
     isLegalKingMove(piece,destRow,destCol){
@@ -366,7 +312,6 @@ class Board {
         }
         return false;
     }
-
 
     updatePiecePos(piece, newRow, newCol){
 
@@ -505,8 +450,7 @@ class Board {
         else if(this.occSquares[7][7] !== 8) this.whiteShortCastlingRights = false; //white 'h' rook
     }
 
-    //make a move and check if its legal 
-    //generate an array of where all pieces attack in this new position
+    //generate an array of where all pieces attack in the position
     //if the king is in an attacked square (represented as 1) they are in check -> therefore disallow that move
 
     findMaskSquares(newPosition,piecesToMove){ //gets all available squares that the pieces can move to (excluding captures since they aren't necessary)
