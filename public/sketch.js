@@ -39,6 +39,7 @@ function draw() {
     background(WHITE);
     draw_grid();
     drawAllPieces(board.avPieces);
+    print(board.pawnMovedTwoSquares);
 
     if (MouseDown){
         drawPieceAtMousepos(pieceAtMouse,mouseX,mouseY);
@@ -57,12 +58,12 @@ function mouseReleased(){
     MouseDown = false;
     board.castled = false;
     let isLegal = false;
-    let tempPawnTwoSquares;
+    let tempEnPassentTaken = false;
 
     if (pieceAtMouse !== 0){
-        let destCoords = getMouseCoord(mouseX,mouseY); // returns coord for array [0,0] [1,1] etc.
+        let destCoords = getMouseCoord(mouseX,mouseY); // returns coord for array [0,0] [1,1] etc     
 
-        tempPawnTwoSquares = board.pawnMovedTwoSquares;
+        tempEnPassentTaken = board.enPassentTaken;
 
         if (pieceAtMouse.type === PieceType.king){
             if(board.checkNextMoveBitmap(pieceAtMouse,board.avPieces,destCoords.y,destCoords.x) === true){ //king moves need the bitmap before due to castling through a check
@@ -74,24 +75,26 @@ function mouseReleased(){
             }
         }
 
-
-        print(board.pawnMovedTwoSquares);
-
         if (isLegal){
-            print('is legal!!!!')
+
             if (pieceAtMouse.colour === PieceType.black) board.moveCounter++;
+
+            if (!(pieceAtMouse.type === PieceType.pawn)) board.pawnMovedTwoSquares = false; //variable is set to false inside legal moves function and here
+
             board.changeTurn();
 
             if (board.enPassentTaken){
                 print('yup)');
                 board.updateEnPassentMove(pieceAtMouse,destCoords.y,destCoords.x);
             }
-            else 
+            else{
                 if (!board.castles) board.updatePiecePos(pieceAtMouse,destCoords.y,destCoords.x); //castling changes position inside the castles function
+            }
+            if (tempEnPassentTaken === true) {
+                board.enPassentTaken = false;
+            }
 
-            if (tempPawnTwoSquares === true) board.pawnMovedTwoSquares = false;
         }
-
         
     }   
 }

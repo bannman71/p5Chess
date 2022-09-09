@@ -212,12 +212,12 @@ class Board {
                         if ((this.occSquares[4][destCol] == PieceType.none) && (this.occSquares[5][destCol] == PieceType.none)){
                             this.pawnMovedTwoSquares = true;
                             this.pawnMovedTwoSquaresCol = destCol;
-                         
                             return true;
                         }
                     }
                     else if (piece.row - destRow === 1){ // if moves once
                         if (this.occSquares[5][destCol] == PieceType.none){
+                            this.pawnMovedTwoSquares = false;
                             return true;
                         }
                     }
@@ -225,6 +225,7 @@ class Board {
                 else{
                     if (piece.row-destRow == 1){ //if not on starting square
                         if (this.occSquares[destRow][destCol] == PieceType.none){
+                            this.pawnMovedTwoSquares = false;
                             return true;
                         }
                     }
@@ -233,7 +234,8 @@ class Board {
                 if ((this.occSquares[destRow][destCol] !== 0) && (piece.isOppositeColour(this.occSquares,destRow,destCol))) return true;
                 else if ((this.pawnMovedTwoSquares === true) && (piece.row === 3) && (destCol === this.pawnMovedTwoSquaresCol)){
                     this.enPassentTaken = true;
-                    return true;
+                    this.pawnMovedTwoSquares = false;
+                    return true; //en passent
                 }
             }
         }
@@ -244,25 +246,28 @@ class Board {
                         if ((this.occSquares[3][destCol] == PieceType.none) && (this.occSquares[2][destCol] == PieceType.none)){
                             this.pawnMovedTwoSquares = true;
                             this.pawnMovedTwoSquaresCol = destCol;
-                            print(this.pawnMovedTwoSquares);
-                            print('twice');
                             return true;
                         }
                     }
                     else if (destRow - piece.row === 1){
-                        return this.occSquares[2][destCol] == PieceType.none;
+                        if (this.occSquares[2][destCol] == PieceType.none){
+                            this.pawnMovedTwoSquares = false;
+                            return true;
+                        }
                     }
                 }        
                 else{
-                    if (destRow - piece.row == 1){
-                        return this.occSquares[destRow][destCol] == PieceType.none;
+                    if (this.occSquares[destRow][destCol] == PieceType.none){
+                        this.pawnMovedTwoSquares = false;
+                        return true;
                     }
                 }
             }
             else if ((destRow - piece.row === 1) && (piece.col - destCol === 1 || piece.col - destCol === -1)){ //diagonal capture
                 if ((this.occSquares[destRow][destCol] !== 0 ) && (piece.isOppositeColour(this.occSquares,destRow,destCol)))return true;
-                else if ((this.pawnMovedTwoSquares) && (piece.row === 5) && (destCol === this.pawnMovedTwoSquaresCol)){
+                else if ((this.pawnMovedTwoSquares === true) && (piece.row === 5) && (destCol === this.pawnMovedTwoSquaresCol)){
                     this.enPassentTaken = true;
+                    this.pawnMovedTwoSquares = false;
                     return true; //en passent
                 }
             }
@@ -363,7 +368,6 @@ class Board {
                 )
             {
                 this.occSquares[this.avPieces[i].row][this.avPieces[i].col] = 0;
-                this.occSquares[destRow][destCol] = this.avPieces[i].colour;
 
                 this.avPieces.splice(i,1);
                 break;
@@ -372,6 +376,7 @@ class Board {
 
         piece.row = destRow;
         piece.col = destCol;
+        this.occSquares[destRow][destCol] = piece.colour;
 
     }
 
@@ -379,7 +384,6 @@ class Board {
 
         for (let i = 0; i < this.avPieces.length; i++){
             if (this.avPieces[i].row === king.row && this.avPieces[i].col == 7 && this.avPieces[i].colour === king.colour){ // if its a short rook
--
                 this.avPieces[i].updateSquare(this.avPieces[i].row, 5); //change rooks position
 
                 this.occSquares[this.avPieces[i].row][7] = 0; 
