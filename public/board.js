@@ -265,7 +265,7 @@ class Board {
             }
             else if ((destRow - piece.row === 1) && (piece.col - destCol === 1 || piece.col - destCol === -1)){ //diagonal capture
                 if ((this.occSquares[destRow][destCol] !== 0 ) && (piece.isOppositeColour(this.occSquares,destRow,destCol)))return true;
-                else if ((this.pawnMovedTwoSquares === true) && (piece.row === 5) && (destCol === this.pawnMovedTwoSquaresCol)){
+                else if ((this.pawnMovedTwoSquares === true) && (piece.row === 4) && (destCol === this.pawnMovedTwoSquaresCol)){
                     this.enPassentTaken = true;
                     this.pawnMovedTwoSquares = false;
                     return true; //en passent

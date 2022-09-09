@@ -39,6 +39,7 @@ function draw() {
     background(WHITE);
     draw_grid();
     drawAllPieces(board.avPieces);
+
     print(board.pawnMovedTwoSquares);
 
     if (MouseDown){
@@ -77,6 +78,10 @@ function mouseReleased(){
 
         if (isLegal){
 
+            if (tempEnPassentTaken === true) {
+                board.enPassentTaken = false;
+            }
+
             if (pieceAtMouse.colour === PieceType.black) board.moveCounter++;
 
             if (!(pieceAtMouse.type === PieceType.pawn)) board.pawnMovedTwoSquares = false; //variable is set to false inside legal moves function and here
@@ -90,9 +95,7 @@ function mouseReleased(){
             else{
                 if (!board.castles) board.updatePiecePos(pieceAtMouse,destCoords.y,destCoords.x); //castling changes position inside the castles function
             }
-            if (tempEnPassentTaken === true) {
-                board.enPassentTaken = false;
-            }
+        
 
         }
         
