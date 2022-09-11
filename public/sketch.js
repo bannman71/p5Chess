@@ -13,6 +13,7 @@ let piecestoDefendCheck;
 
 let MouseDown;
 let pieceAtMouse;
+let selectedCoords;
 
 let BIN_PIECES = {
     20: 'b_bishop', 17: 'b_king', 19: 'b_knight', 18: 'b_pawn', 22: 'b_queen', 21: 'b_rook',
@@ -32,17 +33,18 @@ function setup() {
     BLOCK_SIZE = (windowHeight * 0.8) / 8; //can be width but it is a square
     SPACING = Math.floor((BLOCK_SIZE * (1 - PIECE_SCALE)) / 2);
     
-    board = new Board('rnbqkbnr/p1pppppp/1p6/4P3/8/5NP1/PPPP1PBP/RNBQK2R');
+    board = new Board('rnbqk1nr/p4ppp/1p1b4/8/8/5NP1/P2K1PBP/RNBQ3R');
     //r3k2r/5N2/8/8/8/8/PPPPPPP1/RNBQKBNR
     //1r1k1r2/6n1/2q5/8/8/5Q2/1N6/R2K3R
     //'rnbqkbnr/1ppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR'
+    //rnbqkbnr/p1pppppp/1p6/4P3/8/5NP1/PPPP1PBP/RNBQK2R
     centerCanvas();
 } 
 
 function draw() {
     background(WHITE);
     draw_grid();
-    drawAllPieces(board.avPieces);
+    drawAllPieces(board.avPieces,pieceAtMouse);
 
     if (board.isInCheck){
         //drawBlockableSquares(blockableSquares);
@@ -53,7 +55,7 @@ function draw() {
         
         if (board.isInCheck){
             
-            drawInCheckLegalSquares(piecestoDefendCheck,mouseX,mouseY);
+            drawInCheckLegalSquares(piecestoDefendCheck,selectedCoords.x,selectedCoords.y);
         } else drawLegalSquares(legalCircles);
     }
 
@@ -62,6 +64,9 @@ function draw() {
 function mousePressed(){
   
     pieceAtMouse = getPieceAtMousepos(board.avPieces,mouseX,mouseY); //returns type Piece
+    Coords.x = mouseX;
+    Coords.y = mouseY;
+    selectedCoords = Coords;
     if (pieceAtMouse !== 0) legalCircles = board.allPiecesLegalSquares(pieceAtMouse);
 
     //print(legalCircles);
@@ -74,6 +79,7 @@ function mouseReleased(){
     board.castled = false;
     let isLegal = false;
     let tempEnPassentTaken = false;
+
 
     if (pieceAtMouse !== 0){
         let destCoords = getMouseCoord(mouseX,mouseY); // returns coord for array [0,0] [1,1] etc     
@@ -108,7 +114,6 @@ function mouseReleased(){
             
 
             if (board.enPassentTaken){
-                print('yup)');
                 board.updateEnPassentMove(pieceAtMouse,destCoords.y,destCoords.x);
             }
             else{
@@ -130,7 +135,7 @@ function mouseReleased(){
             } else board.isInCheck = false;
             
         }
-        
+        pieceAtMouse = 0;
     }   
 }
 

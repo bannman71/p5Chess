@@ -41,8 +41,9 @@ function drawPieceAtMousepos(piece, x, y){
 function draw_piece(piece,coordX,coordY){
     coordX = SPACING + coordX * BLOCK_SIZE;
     coordY = SPACING + coordY * BLOCK_SIZE;
-
+  
     image(IMAGES[piece],coordX,coordY,BLOCK_SIZE * PIECE_SCALE,BLOCK_SIZE * PIECE_SCALE);
+    
 }
 
 function draw_grid(){
@@ -55,9 +56,9 @@ function draw_grid(){
     }
 }
 
-function drawAllPieces(avPieces){
+function drawAllPieces(avPieces,pieceAtMouse){
     for (let i = 0; i < avPieces.length; i++){
-        draw_piece(avPieces[i].colourAndPiece(), avPieces[i].col , avPieces[i].row);
+        if (pieceAtMouse !== avPieces[i]) draw_piece(avPieces[i].colourAndPiece(), avPieces[i].col , avPieces[i].row);
     }
 }
 
@@ -111,4 +112,8 @@ function drawInCheckLegalSquares(piecesToBlockAttack, x, y){
             ellipse(drawCol, drawRow, 30);
         }
     }
+}
+
+function hideSelectedPiece(){
+
 }

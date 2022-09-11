@@ -24,7 +24,7 @@ class Board {
         this.occSquares = create2dArray(8,8);
         
         this.moveCounter = 0;
-        this.whiteToMove = true;
+        this.whiteToMove = false;
 
         this.blackShortCastlingRights = true;
         this.blackLongCastlingRights = true;
@@ -168,8 +168,7 @@ class Board {
         if (piece.row === destRow && piece.col === destCol){
             return false;
         }
-        print('destcol');      
-        print(destCol);        
+           
 
 
         switch (piece.type) {
@@ -485,7 +484,6 @@ class Board {
                 
                     //diagonal capture
                     for (let i = 1; i >= -1 ; i -= 2){
-                        print(i);
                         if ((this.occSquares[piece.row - 1][piece.col + i] !== 0) && (piece.isOppositeColour(this.occSquares, piece.row - 1, piece.col + i))) arr.push((piece.row - 1) + '' + (piece.col + i));
                     }
                 
@@ -781,8 +779,10 @@ class Board {
         var pieces = oppInfo.oppositeColouredPieces;
         var blockableSquares = [];
         var tempSquares;
+        let numPiecesAttacking = 0;
 
         for (let i = 0; i < pieces.length; i++){
+            
             switch (pieces[i].type){  
                 case PieceType.knight: case PieceType.king: case PieceType.pawn:
                     break; // these can't be blocked and the king can't check another king
@@ -801,6 +801,12 @@ class Board {
                                 if ((row_temp === oppInfo.kingRow) && (col_temp === oppInfo.kingCol)){ // opposite colours
                                     blockableSquares = blockableSquares.concat(tempSquares);
                                     blockableSquares.push(pieces[i].row + '' + pieces[i].col)
+                                    numPiecesAttacking++;
+                                    print('hey');
+                                    print(numPiecesAttacking);
+                                    if (numPiecesAttacking >= 2){
+                                        return [];
+                                    }
                                 }
                                 break;
                             } 
