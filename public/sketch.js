@@ -9,6 +9,7 @@ let bitmap;
 
 let legalCircles;
 let blockableSquares;
+let piecesToBlockAttack;
 
 let MouseDown;
 let pieceAtMouse;
@@ -44,12 +45,16 @@ function draw() {
     drawAllPieces(board.avPieces);
 
     if (board.isInCheck){
-        drawBlockableSquares(blockableSquares);
+        //drawBlockableSquares(blockableSquares);
     }
 
     if (MouseDown){
         drawPieceAtMousepos(pieceAtMouse,mouseX,mouseY);
-        displayLegalSquares(legalCircles);
+        
+        if (board.isInCheck){
+            
+            drawInCheckLegalSquares(piecesToBlockAttack,mouseX,mouseY);
+        } else drawLegalSquares(legalCircles);
     }
 
 }
@@ -58,8 +63,6 @@ function mousePressed(){
   
     pieceAtMouse = getPieceAtMousepos(board.avPieces,mouseX,mouseY); //returns type Piece
     if (pieceAtMouse !== 0) legalCircles = board.allPiecesLegalSquares(pieceAtMouse);
-
-    
 
     //print(legalCircles);
     MouseDown = true;
@@ -114,11 +117,16 @@ function mouseReleased(){
         
             board.changeTurn();
 
+            //creates a bitmap for pieces attacking the player to move's king
+            //if white just moved -> this would check which white pieces are attacking black
+            //this is so that we can see if the board is in check after each move and so that we can find the pieces which can block the attack
             let bmap = board.findMaskSquares(board.occSquares, board.avPieces);
             board.maskBitMap(bmap);
             if (board.kingInCheck()){
                 board.isInCheck = true;
                 blockableSquares = board.findBlockableSquares();
+                piecesToBlockAttack = board.defendCheck(blockableSquares);
+                
             } else board.isInCheck = false;
             
         }

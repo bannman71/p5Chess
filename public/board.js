@@ -441,6 +441,94 @@ class Board {
         return legalCoords;
     }
 
+    allPiecesLegalSquares(piece){
+        let arr = [];
+
+        switch (piece.type){
+            case PieceType.knight: case PieceType.king:
+                for (let options of piece.intervals){
+                    var col_temp =  piece.col + options.dx;
+                    var row_temp = piece.row + options.dy;
+        
+                    if (isOnBoard(row_temp,col_temp)){
+                        if (this.occSquares[row_temp][col_temp] === 0){
+                            arr.push(row_temp + '' + col_temp);
+                        }
+                    }
+                }
+                break;
+            case PieceType.pawn:
+                if (piece.colourAndPiece() == (PieceType.pawn ^ PieceType.white)){    
+                    if (piece.row === 6){  // if white pawn on starting square
+                        if (this.occSquares[5][piece.col] == PieceType.none) {
+                            arr.push(5 + '' + piece.col);
+                            if (this.occSquares[4][piece.col] == PieceType.none) arr.push(4 + '' + piece.col);
+                        }
+                    }        
+                    else{ //if not on starting square
+                        if (this.occSquares[piece.row - 1][piece.col] == PieceType.none){
+                            arr.push((piece.row - 1) + '' + piece.col);
+                        }
+                    }
+                
+                    //diagonal capture
+                    for (let i = 1; i >= -1 ; i -= 2){
+                        print(i);
+                        if ((this.occSquares[piece.row - 1][piece.col + i] !== 0) && (piece.isOppositeColour(this.occSquares, piece.row - 1, piece.col + i))) arr.push((piece.row - 1) + '' + (piece.col + i));
+                    }
+                
+                    if ((this.pawnMovedTwoSquares === true) && (piece.row === 3)){
+                        arr.push((piece.row - 1) + '' + this.pawnMovedTwoSquaresCol);
+                    }
+                    
+                }
+                else if(piece.colourAndPiece() == (PieceType.pawn ^ PieceType.black)){
+                    if (piece.row === 1){  // if white pawn on starting square
+                        if (this.occSquares[2][piece.col] == PieceType.none){
+                            arr.push(2 + '' + piece.col)
+                            if (this.occSquares[3][piece.col] == PieceType.none) arr.push(3 + '' + piece.col);
+                        }
+                    }        
+                    else{ //if not on starting square
+                        if (this.occSquares[piece.row + 1][piece.col] == PieceType.none){
+                            arr.push((piece.row + 1) + '' + piece.col);
+                        }
+                    }
+                
+                    //diagonal capture
+                    for (let i = 1; i >= -1 ; i -= 2){
+                        if ((this.occSquares[piece.row + 1][piece.col + i] !== 0) && (piece.isOppositeColour(this.occSquares, piece.row + 1, piece.col + i))) arr.push((piece.row + 1) + '' + (piece.col + i));
+                    }
+                
+                    if ((this.pawnMovedTwoSquares === true) && (piece.row === 3)){
+                        arr.push((piece.row + 1) + '' + this.pawnMovedTwoSquaresCol);
+                    }
+                }
+                break;
+            default:
+                for (let options of piece.intervals){
+                    var col_temp =  piece.col + options.dx;
+                    var row_temp = piece.row + options.dy;
+    
+                    while(isOnBoard(row_temp,col_temp)){ //while hasn't gone outside of the array
+                        if (this.occSquares[row_temp][col_temp] === 0){
+                            arr.push(row_temp + '' + col_temp);
+                        }
+                        else{ //if a piece has been hit
+                            if ((this.occSquares[row_temp][col_temp] & piece.colour) === 0){ // opposite colours
+                                arr.push(row_temp + '' + col_temp);
+                            }
+                            break;
+                        } 
+                        col_temp += options.dx;
+                        row_temp += options.dy;
+                    }
+                }
+                
+        } 
+        return arr;
+    }
+
     changeTurn(){ // black -> white || white -> black
         if (this.whiteToMove === true){
             this.whiteToMove = false;
@@ -580,7 +668,10 @@ class Board {
                             else{ //if a piece has been hit
                                 if (((row_temp === kingRow) && (col_temp === kingCol))) { //if its the king then continue
                                     bitmap[row_temp][col_temp] = 1;
-                                }else break; 
+                                }else{
+                                    bitmap[row_temp][col_temp] = 1; 
+                                    break; 
+                                } 
                             } 
                             col_temp += options.dx;
                             row_temp += options.dy;
@@ -592,95 +683,6 @@ class Board {
         }
 
         return bitmap;
-    }
-
-    allPiecesLegalSquares(piece){
-        let arr = [];
-
-        switch (piece.type){
-            case PieceType.knight: case PieceType.king:
-                for (let options of piece.intervals){
-                    var col_temp =  piece.col + options.dx;
-                    var row_temp = piece.row + options.dy;
-        
-                    if (isOnBoard(row_temp,col_temp)){
-                        if (this.occSquares[row_temp][col_temp] === 0){
-                            arr.push(row_temp + '' + col_temp);
-                        }
-                    }
-                }
-                break;
-
-            case PieceType.pawn:
-                if (piece.colourAndPiece() == (PieceType.pawn ^ PieceType.white)){    
-                    if (piece.row === 6){  // if white pawn on starting square
-                        if (this.occSquares[5][piece.col] == PieceType.none) {
-                            arr.push(5 + '' + piece.col);
-                            if (this.occSquares[4][piece.col] == PieceType.none) arr.push(4 + '' + piece.col);
-                        }
-                    }        
-                    else{ //if not on starting square
-                        if (this.occSquares[piece.row - 1][piece.col] == PieceType.none){
-                            arr.push((piece.row - 1) + '' + piece.col);
-                        }
-                    }
-                
-                    //diagonal capture
-                    for (let i = 1; i >= -1 ; i -= 2){
-                        print(i);
-                        if ((this.occSquares[piece.row - 1][piece.col + i] !== 0) && (piece.isOppositeColour(this.occSquares, piece.row - 1, piece.col + i))) arr.push((piece.row - 1) + '' + (piece.col + i));
-                    }
-                
-                    if ((this.pawnMovedTwoSquares === true) && (piece.row === 3)){
-                        arr.push((piece.row - 1) + '' + this.pawnMovedTwoSquaresCol);
-                    }
-                    
-                }
-                else if(piece.colourAndPiece() == (PieceType.pawn ^ PieceType.black)){
-                    if (piece.row === 1){  // if white pawn on starting square
-                        if (this.occSquares[2][piece.col] == PieceType.none){
-                            arr.push(2 + '' + piece.col)
-                            if (this.occSquares[3][piece.col] == PieceType.none) arr.push(3 + '' + piece.col);
-                        }
-                    }        
-                    else{ //if not on starting square
-                        if (this.occSquares[piece.row + 1][piece.col] == PieceType.none){
-                            arr.push((piece.row + 1) + '' + piece.col);
-                        }
-                    }
-                
-                    //diagonal capture
-                    for (let i = 1; i >= -1 ; i -= 2){
-                        if ((this.occSquares[piece.row + 1][piece.col + i] !== 0) && (piece.isOppositeColour(this.occSquares, piece.row + 1, piece.col + i))) arr.push((piece.row + 1) + '' + (piece.col + i));
-                    }
-                
-                    if ((this.pawnMovedTwoSquares === true) && (piece.row === 3)){
-                        arr.push((piece.row + 1) + '' + this.pawnMovedTwoSquaresCol);
-                    }
-                }
-                break;
-            default:
-                for (let options of piece.intervals){
-                    var col_temp =  piece.col + options.dx;
-                    var row_temp = piece.row + options.dy;
-    
-                    while(isOnBoard(row_temp,col_temp)){ //while hasn't gone outside of the array
-                        if (this.occSquares[row_temp][col_temp] === 0){
-                            arr.push(row_temp + '' + col_temp);
-                        }
-                        else{ //if a piece has been hit
-                            if ((this.occSquares[row_temp][col_temp] & piece.colour) === 0){ // opposite colours
-                                arr.push(row_temp + '' + col_temp);
-                            }
-                            break;
-                        } 
-                        col_temp += options.dx;
-                        row_temp += options.dy;
-                    }
-                }
-                
-        } 
-        return arr;
     }
 
     maskBitMap(bitmap){
@@ -801,6 +803,45 @@ class Board {
 
     }
 
+    defendCheck(blockableSquares){
+        let pieces = [];
+        let king;
+        var canDefend = [];
+
+        for (let i = 0; i < this.avPieces.length; i++){
+            if (!this.whiteToMove && (this.avPieces[i].colour === PieceType.black)){
+                if(this.avPieces[i].colourAndPiece() === PieceType.king ^ PieceType.black) king = this.avPieces[i];
+                else pieces.push(this.avPieces[i]);
+            }
+            else if (this.whiteToMove && (this.avPieces[i].colour === PieceType.white) ){
+                if (this.avPieces[i].colourAndPiece() === (PieceType.king ^ PieceType.white)) king = this.avPieces[i];
+                else pieces.push(this.avPieces[i]);
+            }
+        }
+
+        for (let j = 0; j < pieces.length; j++){
+            let temparr = this.allPiecesLegalSquares(pieces[j]);
+           
+            for (let k = 0; k < temparr.length; k++){
+                if (blockableSquares.includes(temparr[k])){
+                    canDefend.push({locOnCoords: pieces[j].row + '' + pieces[j].col , move: temparr[k]});
+                }
+            }
+        }
+
+        for (let options of king.intervals){
+            var col_temp =  king.col + options.dx;
+            var row_temp = king.row + options.dy; 
+
+            if (isOnBoard(row_temp,col_temp)){
+                if ((this.maskMap[row_temp][col_temp] !== 1) && (this.occSquares[row_temp][col_temp] & king.colour) === 0) canDefend.push({locOnCoords: king.row + '' + king.col, move: row_temp + '' + col_temp})
+
+            }
+        }
+
+
+        return canDefend;
+    }
 
 }
 class PieceType{

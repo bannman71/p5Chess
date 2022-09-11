@@ -67,10 +67,9 @@ function centerCanvas(){
     canv.position(x,y);
 }
 
-function displayLegalSquares(squares){
+function drawLegalSquares(squares){
     let row;
     let col;
-   
    
     for (let i = 0; i < squares.length; i++){
         row = (BLOCK_SIZE / 2) + squares[i][0] * BLOCK_SIZE;
@@ -78,10 +77,8 @@ function displayLegalSquares(squares){
         fill(100,200,0);
         ellipse(col,row,30);
     }
-   
     
 }
-
 
 function drawBlockableSquares(squares){
     let row;
@@ -96,4 +93,22 @@ function drawBlockableSquares(squares){
         ellipse(col, row, 30);
     } 
 
+}
+
+function drawInCheckLegalSquares(piecesToBlockAttack, x, y){
+    let clickedCol = Math.floor(x / BLOCK_SIZE);
+    let clickedRow = Math.floor(y / BLOCK_SIZE);
+    var drawRow,drawCol;
+
+    for (let i = 0; i < piecesToBlockAttack.length; i++){
+
+        if ((clickedRow + '' + clickedCol) === piecesToBlockAttack[i].locOnCoords){ //if you click a piece which can block check
+            print('inin');
+            drawRow = (BLOCK_SIZE / 2) + piecesToBlockAttack[i].move[0] * BLOCK_SIZE; 
+            drawCol = (BLOCK_SIZE / 2) + piecesToBlockAttack[i].move[1] * BLOCK_SIZE; 
+            fill(255,0,0);
+            noStroke();
+            ellipse(drawCol, drawRow, 30);
+        }
+    }
 }
