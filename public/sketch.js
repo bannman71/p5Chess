@@ -8,6 +8,7 @@ let board;
 let bitmap;
 
 let legalCircles;
+let blockableSquares;
 
 let MouseDown;
 let pieceAtMouse;
@@ -42,6 +43,9 @@ function draw() {
     draw_grid();
     drawAllPieces(board.avPieces);
 
+    if (board.isInCheck){
+        drawBlockableSquares(blockableSquares);
+    }
 
     if (MouseDown){
         drawPieceAtMousepos(pieceAtMouse,mouseX,mouseY);
@@ -53,8 +57,11 @@ function draw() {
 function mousePressed(){
   
     pieceAtMouse = getPieceAtMousepos(board.avPieces,mouseX,mouseY); //returns type Piece
-    legalCircles = board.allPiecesLegalSquares(pieceAtMouse);
-    print(legalCircles);
+    if (pieceAtMouse !== 0) legalCircles = board.allPiecesLegalSquares(pieceAtMouse);
+
+    
+
+    //print(legalCircles);
     MouseDown = true;
  
 }
@@ -70,6 +77,9 @@ function mouseReleased(){
 
         tempEnPassentTaken = board.enPassentTaken;
 
+
+
+
         if (pieceAtMouse.type === PieceType.king){
             if(board.checkNextMoveBitmap(pieceAtMouse,board.avPieces,destCoords.y,destCoords.x) === true){ //king moves need the bitmap before due to castling through a check
                 print('king ok');
@@ -81,6 +91,7 @@ function mouseReleased(){
             }
         }
 
+
         if (isLegal){
 
             if (tempEnPassentTaken === true) {
@@ -91,7 +102,7 @@ function mouseReleased(){
 
             if (!(pieceAtMouse.type === PieceType.pawn)) board.pawnMovedTwoSquares = false; //variable is set to false inside legal moves function and here
 
-            board.changeTurn();
+            
 
             if (board.enPassentTaken){
                 print('yup)');
@@ -101,7 +112,15 @@ function mouseReleased(){
                 if (!board.castles) board.updatePiecePos(pieceAtMouse,destCoords.y,destCoords.x); //castling changes position inside the castles function
             }
         
+            board.changeTurn();
 
+            let bmap = board.findMaskSquares(board.occSquares, board.avPieces);
+            board.maskBitMap(bmap);
+            if (board.kingInCheck()){
+                board.isInCheck = true;
+                blockableSquares = board.findBlockableSquares();
+            } else board.isInCheck = false;
+            
         }
         
     }   

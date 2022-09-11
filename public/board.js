@@ -24,7 +24,7 @@ class Board {
         this.occSquares = create2dArray(8,8);
         
         this.moveCounter = 0;
-        this.whiteToMove = false;
+        this.whiteToMove = true;
 
         this.blackShortCastlingRights = true;
         this.blackLongCastlingRights = true;
@@ -38,6 +38,8 @@ class Board {
         this.pawnMovedTwoSquares = false;
         this.pawnMovedTwoSquaresCol = 0;
         this.enPassentTaken = false;
+
+        this.isInCheck = false;
 
         this.castled = false;
     }
@@ -190,15 +192,9 @@ class Board {
                 break;
             case PieceType.knight:
                 if ((Math.abs(destCol - piece.col)) == 2 && (Math.abs(destRow-piece.row) == 1)){
-                    if(piece.isOppositeColour(this.occSquares,destRow, destCol)){
-                        this.updatePiecePos(piece,destRow,destCol);
-                        return true;
-                    }
+                    return (piece.isOppositeColour(this.occSquares,destRow, destCol))
                 }else if ((Math.abs(destRow - piece.row) === 2) && (Math.abs(destCol-piece.col) === 1)) {
-                    if(piece.isOppositeColour(this.occSquares,destRow, destCol)){
-                        this.updatePiecePos(piece,destRow,destCol);
-                        return true;
-                    }
+                    return (piece.isOppositeColour(this.occSquares,destRow, destCol))
                 } 
                 break;
         }
@@ -493,8 +489,9 @@ class Board {
         let oppInfo = {oppositeColouredPieces: [], kingRow: 0, kingCol : 0};
 
         if (this.whiteToMove === true){
+            //returns black pieces and white king
             for(let i = 0; i < piecesToMove.length; i++){
-                if (piecesToMove[i].colour === PieceType.black && (position[piecesToMove[i].row][piecesToMove[i].col] === PieceType.black)){
+                if (piecesToMove[i].colour === PieceType.black && (position[piecesToMove[i].row][piecesToMove[i].col] === PieceType.black)){ 
                     oppInfo.oppositeColouredPieces.push(piecesToMove[i])
                 }
                 if (piecesToMove[i].colourAndPiece() === (PieceType.king ^ PieceType.white)){
@@ -504,6 +501,7 @@ class Board {
             }
         }
         else{
+            //returns white pieces and black king
             for(let i = 0; i < piecesToMove.length; i++){
                 if ((piecesToMove[i].colour === PieceType.white) && (position[piecesToMove[i].row][piecesToMove[i].col] === PieceType.white)){
                     oppInfo.oppositeColouredPieces.push(piecesToMove[i])
@@ -518,6 +516,23 @@ class Board {
         return oppInfo;
     }
 
+    kingInCheck(){
+        let king;
+        for (let i = 0; i < this.avPieces.length; i++){
+            if(this.whiteToMove && this.avPieces[i].colourAndPiece() === (PieceType.king ^ PieceType.white)){
+                king = this.avPieces[i];
+                break;
+            }
+            else if (!this.whiteToMove && this.avPieces[i].colourAndPiece() === (PieceType.king ^ PieceType.black)){
+                king = this.avPieces[i];
+                break;
+            }
+        }
+
+        
+        return (this.maskMap[king.row][king.col] === 1);
+        
+    }
 
     //generate an array of where all pieces attack in the position
     //if the king is in an attacked square (represented as 1) they are in check -> therefore disallow that move
@@ -718,6 +733,7 @@ class Board {
             kingCol = destCol;
         }
         
+        //move the piece
         piecesToMove[pieceLoc].row = destRow;
         piecesToMove[pieceLoc].col = destCol;
 
@@ -726,6 +742,7 @@ class Board {
         }
         newPosition[destRow][destCol] = piecesToMove[pieceLoc].colour; 
 
+        //create and mask the bitmap for the new position
         bitmap = this.findMaskSquares(newPosition,piecesToMove);
         this.maskBitMap(bitmap);
 
@@ -745,11 +762,42 @@ class Board {
         return outOfCheck;
     }
 
-    findPiecesAttackingKing(){
-        let oppositeColouredPieces = this.findOppositeColouredPieces(this.occSquares,this.avPieces);
+    findBlockableSquares(){
+        let oppInfo = this.findOppositeColouredPieces(this.occSquares,this.avPieces); //oppinfo stores opposite coloured pieces but same coloured king
+        var pieces = oppInfo.oppositeColouredPieces;
+        var blockableSquares = [];
+        var tempSquares;
 
+        for (let i = 0; i < pieces.length; i++){
+            switch (pieces[i].type){  
+                case PieceType.knight: case PieceType.king: case PieceType.pawn:
+                    break; // these can't be blocked and the king can't check another king
+                default:    
+                    for (let options of pieces[i].intervals){
+                        var col_temp =  pieces[i].col + options.dx;
+                        var row_temp = pieces[i].row + options.dy;
+                        
+                        tempSquares = [];
 
-
+                        while(isOnBoard(row_temp,col_temp)){ //while hasn't gone outside of the array
+                            if (this.occSquares[row_temp][col_temp] === 0){
+                                tempSquares.push(row_temp + '' + col_temp);
+                            }
+                            else{
+                                if ((row_temp === oppInfo.kingRow) && (col_temp === oppInfo.kingCol)){ // opposite colours
+                                    blockableSquares = blockableSquares.concat(tempSquares);
+                                    
+                                }
+                                break;
+                            } 
+                            col_temp += options.dx;
+                            row_temp += options.dy;
+                        }
+                    } 
+            }
+        }
+    
+        return blockableSquares;
 
     }
 

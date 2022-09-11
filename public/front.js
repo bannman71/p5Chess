@@ -81,3 +81,19 @@ function displayLegalSquares(squares){
    
     
 }
+
+
+function drawBlockableSquares(squares){
+    let row;
+    let col;
+
+
+    for (let i = 0; i < squares.length; i++){
+        row = (BLOCK_SIZE / 2) + squares[i][0] * BLOCK_SIZE;
+        col =  (BLOCK_SIZE/2) + squares[i][1] * BLOCK_SIZE;
+        fill(255,0,0);
+        noStroke();
+        ellipse(col, row, 30);
+    } 
+
+}
