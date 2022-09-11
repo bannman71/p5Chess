@@ -274,6 +274,7 @@ class Board {
         }  
     }
 
+
     isLegalKingMove(piece,destRow,destCol){
         if ((destCol - piece.col) >= 2 && piece.row === destRow){ //if attempts to short castle
             //print('attemtped');
@@ -452,7 +453,7 @@ class Board {
             if (this.maskMap[king.row][king.col + i] !== 0){ //if piece has been hit
 
 
-                print(this.maskMap[king.row][king.col + i]);
+               // print(this.maskMap[king.row][king.col + i]);
                 if (this.maskMap[king.row][king.col + i] === 1) return false;
 
 
@@ -521,7 +522,6 @@ class Board {
 
             switch (oppositeColouredPieces[i].type){
                 case PieceType.knight: case PieceType.king: case PieceType.pawn:
-                   
                     for (let options of oppositeColouredPieces[i].intervals){
                         var col_temp =  oppositeColouredPieces[i].col + options.dx;
                         var row_temp = oppositeColouredPieces[i].row + options.dy;
@@ -530,10 +530,14 @@ class Board {
                             if (newPosition[row_temp][col_temp] === 0){
                                 bitmap[row_temp][col_temp] = 1;
                             }
+                            else{
+                                if (((row_temp === kingRow) && (col_temp === kingCol))) { //if its the king then still choose that square
+                                    bitmap[row_temp][col_temp] = 1;
+                                }
+                            }
                         }
                     }
                     break;
-
                 default:
                     for (let options of oppositeColouredPieces[i].intervals){
                         var col_temp =  oppositeColouredPieces[i].col + options.dx;
@@ -558,6 +562,96 @@ class Board {
         }
 
         return bitmap;
+    }
+
+    allPiecesLegalSquares(piece){
+        let arr = [];
+
+
+        switch (piece.type){
+            case PieceType.knight: case PieceType.king:
+                for (let options of piece.intervals){
+                    var col_temp =  piece.col + options.dx;
+                    var row_temp = piece.row + options.dy;
+        
+                    if (isOnBoard(row_temp,col_temp)){
+                        if (this.occSquares[row_temp][col_temp] === 0){
+                            arr.push(row_temp + '' + col_temp);
+                        }
+                    }
+                }
+                break;
+
+            case PieceType.pawn:
+                if (piece.colourAndPiece() == (PieceType.pawn ^ PieceType.white)){    
+                    if (piece.row === 6){  // if white pawn on starting square
+                        if (this.occSquares[5][piece.col] == PieceType.none) {
+                            arr.push(5 + '' + piece.col);
+                            if (this.occSquares[4][piece.col] == PieceType.none) arr.push(4 + '' + piece.col);
+                        }
+                    }        
+                    else{ //if not on starting square
+                        if (this.occSquares[piece.row - 1][piece.col] == PieceType.none){
+                            arr.push((piece.row - 1) + '' + piece.col);
+                        }
+                    }
+                
+                    //diagonal capture
+                    for (let i = 1; i >= -1 ; i -= 2){
+                        print(i);
+                        if ((this.occSquares[piece.row - 1][piece.col + i] !== 0) && (piece.isOppositeColour(this.occSquares, piece.row - 1, piece.col + i))) arr.push((piece.row - 1) + '' + (piece.col + i));
+                    }
+                
+                    if ((this.pawnMovedTwoSquares === true) && (piece.row === 3)){
+                        arr.push((piece.row - 1) + '' + this.pawnMovedTwoSquaresCol);
+                    }
+                    
+                }
+                else if(piece.colourAndPiece() == (PieceType.pawn ^ PieceType.black)){
+                    if (piece.row === 1){  // if white pawn on starting square
+                        if (this.occSquares[2][piece.col] == PieceType.none){
+                            arr.push(2 + '' + piece.col)
+                            if (this.occSquares[3][piece.col] == PieceType.none) arr.push(3 + '' + piece.col);
+                        }
+                    }        
+                    else{ //if not on starting square
+                        if (this.occSquares[piece.row + 1][piece.col] == PieceType.none){
+                            arr.push((piece.row + 1) + '' + piece.col);
+                        }
+                    }
+                
+                    //diagonal capture
+                    for (let i = 1; i >= -1 ; i -= 2){
+                        if ((this.occSquares[piece.row + 1][piece.col + i] !== 0) && (piece.isOppositeColour(this.occSquares, piece.row + 1, piece.col + i))) arr.push((piece.row + 1) + '' + (piece.col + i));
+                    }
+                
+                    if ((this.pawnMovedTwoSquares === true) && (piece.row === 3)){
+                        arr.push((piece.row + 1) + '' + this.pawnMovedTwoSquaresCol);
+                    }
+                }
+                break;
+            default:
+                for (let options of piece.intervals){
+                    var col_temp =  piece.col + options.dx;
+                    var row_temp = piece.row + options.dy;
+    
+                    while(isOnBoard(row_temp,col_temp)){ //while hasn't gone outside of the array
+                        if (this.occSquares[row_temp][col_temp] === 0){
+                            arr.push(row_temp + '' + col_temp);
+                        }
+                        else{ //if a piece has been hit
+                            if ((this.occSquares[row_temp][col_temp] & piece.colour) === 0){ // opposite colours
+                                arr.push(row_temp + '' + col_temp);
+                            }
+                            break;
+                        } 
+                        col_temp += options.dx;
+                        row_temp += options.dy;
+                    }
+                }
+                
+        } 
+        return arr;
     }
 
     maskBitMap(bitmap){
@@ -617,9 +711,8 @@ class Board {
 
         for (let i = 0; i < piecesToMove.length; i++){ 
             newPosition[piecesToMove[i].row][piecesToMove[i].col] = piecesToMove[i].colour; //create an updated board
-            newPosition[destRow][destCol] = piecesToMove[pieceLoc].colour; 
         }
-
+        newPosition[destRow][destCol] = piecesToMove[pieceLoc].colour; 
 
         bitmap = this.findMaskSquares(newPosition,piecesToMove);
         this.maskBitMap(bitmap);
@@ -628,8 +721,6 @@ class Board {
         print(bitmap);
         print(this.maskMap);
         print(newPosition);
-
-        print(this.maskMap[kingRow][kingCol]);
 
 
         if (this.maskMap[kingRow][kingCol] === 1) outOfCheck = false; //this is the line that makes it all happen -> disallows pinned pieces and stuff from putting the king in check

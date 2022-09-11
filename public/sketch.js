@@ -7,6 +7,8 @@ let IMAGES = {};
 let board;
 let bitmap;
 
+let legalCircles;
+
 let MouseDown;
 let pieceAtMouse;
 
@@ -40,10 +42,10 @@ function draw() {
     draw_grid();
     drawAllPieces(board.avPieces);
 
-    print(board.pawnMovedTwoSquares);
 
     if (MouseDown){
         drawPieceAtMousepos(pieceAtMouse,mouseX,mouseY);
+        displayLegalSquares(legalCircles);
     }
 
 }
@@ -51,6 +53,8 @@ function draw() {
 function mousePressed(){
   
     pieceAtMouse = getPieceAtMousepos(board.avPieces,mouseX,mouseY); //returns type Piece
+    legalCircles = board.allPiecesLegalSquares(pieceAtMouse);
+    print(legalCircles);
     MouseDown = true;
  
 }
