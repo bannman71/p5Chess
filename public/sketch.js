@@ -9,7 +9,7 @@ let bitmap;
 
 let legalCircles;
 let blockableSquares;
-let piecesToBlockAttack;
+let piecestoDefendCheck;
 
 let MouseDown;
 let pieceAtMouse;
@@ -53,7 +53,7 @@ function draw() {
         
         if (board.isInCheck){
             
-            drawInCheckLegalSquares(piecesToBlockAttack,mouseX,mouseY);
+            drawInCheckLegalSquares(piecestoDefendCheck,mouseX,mouseY);
         } else drawLegalSquares(legalCircles);
     }
 
@@ -125,7 +125,7 @@ function mouseReleased(){
             if (board.kingInCheck()){
                 board.isInCheck = true;
                 blockableSquares = board.findBlockableSquares();
-                piecesToBlockAttack = board.defendCheck(blockableSquares);
+                piecestoDefendCheck = board.defendCheck(blockableSquares);
                 
             } else board.isInCheck = false;
             

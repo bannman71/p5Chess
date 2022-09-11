@@ -445,18 +445,30 @@ class Board {
         let arr = [];
 
         switch (piece.type){
-            case PieceType.knight: case PieceType.king:
+            case PieceType.knight: 
                 for (let options of piece.intervals){
                     var col_temp =  piece.col + options.dx;
                     var row_temp = piece.row + options.dy;
         
                     if (isOnBoard(row_temp,col_temp)){
-                        if (this.occSquares[row_temp][col_temp] === 0){
+                        if ((this.occSquares[row_temp][col_temp] & piece.colour) === 0){
                             arr.push(row_temp + '' + col_temp);
                         }
                     }
                 }
                 break;
+            case PieceType.king:
+                for (let options of piece.intervals){
+                    var col_temp =  piece.col + options.dx;
+                    var row_temp = piece.row + options.dy;
+        
+                    if (isOnBoard(row_temp,col_temp)){
+                        if (this.maskMap[row_temp][col_temp] === 0){
+                            arr.push(row_temp + '' + col_temp);
+                        }
+                    }
+                }
+                break; 
             case PieceType.pawn:
                 if (piece.colourAndPiece() == (PieceType.pawn ^ PieceType.white)){    
                     if (piece.row === 6){  // if white pawn on starting square
@@ -788,7 +800,7 @@ class Board {
                             else{
                                 if ((row_temp === oppInfo.kingRow) && (col_temp === oppInfo.kingCol)){ // opposite colours
                                     blockableSquares = blockableSquares.concat(tempSquares);
-                                    
+                                    blockableSquares.push(pieces[i].row + '' + pieces[i].col)
                                 }
                                 break;
                             } 
@@ -810,8 +822,8 @@ class Board {
 
         for (let i = 0; i < this.avPieces.length; i++){
             if (!this.whiteToMove && (this.avPieces[i].colour === PieceType.black)){
-                if(this.avPieces[i].colourAndPiece() === PieceType.king ^ PieceType.black) king = this.avPieces[i];
-                else pieces.push(this.avPieces[i]);
+                if(this.avPieces[i].colourAndPiece() === PieceType.king ^ PieceType.black) king = this.avPieces[i]; //store coords of king
+                else pieces.push(this.avPieces[i]);//store coords of all same coloured pieces
             }
             else if (this.whiteToMove && (this.avPieces[i].colour === PieceType.white) ){
                 if (this.avPieces[i].colourAndPiece() === (PieceType.king ^ PieceType.white)) king = this.avPieces[i];
@@ -820,11 +832,11 @@ class Board {
         }
 
         for (let j = 0; j < pieces.length; j++){
-            let temparr = this.allPiecesLegalSquares(pieces[j]);
+            let legalSquare = this.allPiecesLegalSquares(pieces[j]); //go through all pieces and see if they can get in the way of a check
            
-            for (let k = 0; k < temparr.length; k++){
-                if (blockableSquares.includes(temparr[k])){
-                    canDefend.push({locOnCoords: pieces[j].row + '' + pieces[j].col , move: temparr[k]});
+            for (let k = 0; k < legalSquare.length; k++){
+                if (blockableSquares.includes(legalSquare[k])){ //if the defending piece attacks a square which blocks a check, store the coords
+                    canDefend.push({locOnCoords: pieces[j].row + '' + pieces[j].col , move: legalSquare[k]});
                 }
             }
         }
@@ -832,7 +844,7 @@ class Board {
         for (let options of king.intervals){
             var col_temp =  king.col + options.dx;
             var row_temp = king.row + options.dy; 
-
+            //allow the king to move out of a check
             if (isOnBoard(row_temp,col_temp)){
                 if ((this.maskMap[row_temp][col_temp] !== 1) && (this.occSquares[row_temp][col_temp] & king.colour) === 0) canDefend.push({locOnCoords: king.row + '' + king.col, move: row_temp + '' + col_temp})
 
