@@ -42,19 +42,19 @@ function setup() {
 } 
 
 function draw() {
+    clear();
     background(WHITE);
     draw_grid();
     drawAllPieces(board.avPieces,pieceAtMouse);
 
-    if (board.isInCheck){
-        //drawBlockableSquares(blockableSquares);
+    /*if (board.isInCheck){
+        drawBlockableSquares(blockableSquares);
     }
-
+    */
     if (MouseDown){
         drawPieceAtMousepos(pieceAtMouse,mouseX,mouseY);
         
         if (board.isInCheck){
-            
             drawInCheckLegalSquares(piecestoDefendCheck,selectedCoords.x,selectedCoords.y);
         } else drawLegalSquares(legalCircles);
     }
@@ -62,13 +62,16 @@ function draw() {
 }
 
 function mousePressed(){
-  
     pieceAtMouse = getPieceAtMousepos(board.avPieces,mouseX,mouseY); //returns type Piece
     Coords.x = mouseX;
     Coords.y = mouseY;
     selectedCoords = Coords;
-    if (pieceAtMouse !== 0) legalCircles = board.allPiecesLegalSquares(pieceAtMouse);
-
+    if (pieceAtMouse !== 0){
+        if ((board.whiteToMove && (pieceAtMouse.colour === PieceType.white)) || !board.whiteToMove && (pieceAtMouse.colour === PieceType.black)){
+            legalCircles = board.allPiecesLegalSquares(pieceAtMouse);
+        } else legalCircles = [];
+        
+    }else legalCircles = [];
     //print(legalCircles);
     MouseDown = true;
  
@@ -85,9 +88,6 @@ function mouseReleased(){
         let destCoords = getMouseCoord(mouseX,mouseY); // returns coord for array [0,0] [1,1] etc     
 
         tempEnPassentTaken = board.enPassentTaken;
-
-
-
 
         if (pieceAtMouse.type === PieceType.king){
             if(board.checkNextMoveBitmap(pieceAtMouse,board.avPieces,destCoords.y,destCoords.x) === true){ //king moves need the bitmap before due to castling through a check
@@ -111,7 +111,6 @@ function mouseReleased(){
 
             if (!(pieceAtMouse.type === PieceType.pawn)) board.pawnMovedTwoSquares = false; //variable is set to false inside legal moves function and here
 
-            
 
             if (board.enPassentTaken){
                 board.updateEnPassentMove(pieceAtMouse,destCoords.y,destCoords.x);
@@ -120,20 +119,35 @@ function mouseReleased(){
                 if (!board.castles) board.updatePiecePos(pieceAtMouse,destCoords.y,destCoords.x); //castling changes position inside the castles function
             }
         
+            //white to move -> find black pieces
+            let bmap = board.findMaskSquares(!board.whiteToMove, board.occSquares, board.avPieces);
+            board.maskBitMap(bmap);
+            print('down');
+            print(bmap);
+            if (board.kingInCheck()){
+                board.isInCheck = true;
+                blockableSquares = board.findBlockableSquares();
+                print('hello');
+                print(blockableSquares);
+
+                piecestoDefendCheck = board.defendCheck(blockableSquares);
+                
+            } else board.isInCheck = false;
+
+
             board.changeTurn();
 
             //creates a bitmap for pieces attacking the player to move's king
             //if white just moved -> this would check which white pieces are attacking black
             //this is so that we can see if the board is in check after each move and so that we can find the pieces which can block the attack
-            let bmap = board.findMaskSquares(board.occSquares, board.avPieces);
-            board.maskBitMap(bmap);
-            if (board.kingInCheck()){
-                board.isInCheck = true;
-                blockableSquares = board.findBlockableSquares();
-                piecestoDefendCheck = board.defendCheck(blockableSquares);
-                
-            } else board.isInCheck = false;
             
+            
+        }
+        print(board.isInCheck);
+        if (board.isInCheck && piecestoDefendCheck === 0){
+            if (board.whiteToMove){
+                print('black wins');
+            } else print('white wins');
         }
         pieceAtMouse = 0;
     }   
