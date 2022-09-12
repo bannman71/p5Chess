@@ -584,50 +584,61 @@ class Board {
 
     findColouredPieces(findWhite, position, piecesToMove){
 
-        let oppInfo = {oppositeColouredPieces: [], kingRow: 0, kingCol : 0};
+        let pieceInfo = {oppositeColouredPieces: [], oppKingRow: 0, oppKingCol : 0, kingRow: 0, kingCol: 0};
 
         if (findWhite == false){
             //returns black pieces and white king
             for(let i = 0; i < piecesToMove.length; i++){
                 if (piecesToMove[i].colour === PieceType.black && (position[piecesToMove[i].row][piecesToMove[i].col] === PieceType.black)){ 
-                    oppInfo.oppositeColouredPieces.push(piecesToMove[i])
+                    pieceInfo.oppositeColouredPieces.push(piecesToMove[i])
                 }
                 if (piecesToMove[i].colourAndPiece() === (PieceType.king ^ PieceType.white)){
-                    oppInfo.kingRow = piecesToMove[i].row;
-                    oppInfo.kingCol = piecesToMove[i].col;
+                    pieceInfo.oppKingRow = piecesToMove[i].row;
+                    pieceInfo.oppKingCol = piecesToMove[i].col;
+                }
+                else if(piecesToMove[i].colourAndPiece() === (PieceType.king ^ PieceType.black)){
+                    pieceInfo.kingRow = piecesToMove[i].row;
+                    pieceInfo.kingCol = piecesToMove[i].col;
                 }
             }
         }
         else{
-            //returns white pieces and black king
+            //returns white pieces and both king
             for(let i = 0; i < piecesToMove.length; i++){
                 if ((piecesToMove[i].colour === PieceType.white) && (position[piecesToMove[i].row][piecesToMove[i].col] === PieceType.white)){
-                    oppInfo.oppositeColouredPieces.push(piecesToMove[i])
+                    pieceInfo.oppositeColouredPieces.push(piecesToMove[i])
                 }
                 if (piecesToMove[i].colourAndPiece() === (PieceType.king ^ PieceType.black)){
-                    oppInfo.kingRow = piecesToMove[i].row;
-                    oppInfo.kingCol = piecesToMove[i].col;
+                    pieceInfo.oppKingRow = piecesToMove[i].row;
+                    pieceInfo.oppKingCol = piecesToMove[i].col;
+                }else if(piecesToMove[i].colourAndPiece() === (PieceType.king ^ PieceType.white)){
+                    pieceInfo.kingRow = piecesToMove[i].row;
+                    pieceInfo.kingCol = piecesToMove[i].col;
                 }
             }
             
         }
-        return oppInfo;
+        return pieceInfo;
     }
 
     kingInCheck(){
         let king;
         for (let i = 0; i < this.avPieces.length; i++){
-            if(this.whiteToMove && this.avPieces[i].colourAndPiece() === (PieceType.king ^ PieceType.white)){
+            if(this.whiteToMove && this.avPieces[i].colourAndPiece() === (PieceType.king ^ PieceType.black)){ //when white moves, check if they put the black king in check
                 king = this.avPieces[i];
+                print(king);
                 break;
             }
-            else if (!this.whiteToMove && this.avPieces[i].colourAndPiece() === (PieceType.king ^ PieceType.black)){
+            else if (!this.whiteToMove && this.avPieces[i].colourAndPiece() === (PieceType.king ^ PieceType.white)){
                 king = this.avPieces[i];
                 break;
             }
         }
 
-        
+        print('mas');
+        print(this.maskMap);
+        print(king.row);
+        print(king.col);
         return (this.maskMap[king.row][king.col] === 1);
         
     }
@@ -638,11 +649,14 @@ class Board {
     findMaskSquares(sideToFind, position,piecesToMove){ //gets all available squares that the pieces can move to (excluding captures since they aren't necessary)
 
         let bitmap = create2dArray(8,8);
-        var kingRow,kingCol;
+        var oppKingRow,oppKingCol;
+        var kingRow, kingCol;
         let oppositeColouredPieces = [];
 
         var pieceInfo = this.findColouredPieces(sideToFind, position, piecesToMove);
         oppositeColouredPieces = pieceInfo.oppositeColouredPieces;
+        oppKingRow = pieceInfo.oppKingRow;
+        oppKingCol = pieceInfo.oppKingCol;
         kingRow = pieceInfo.kingRow;
         kingCol = pieceInfo.kingCol;
 
@@ -659,7 +673,7 @@ class Board {
                                 bitmap[row_temp][col_temp] = 1;
                             }
                             else{
-                                if (((row_temp === kingRow) && (col_temp === kingCol))) { //if its the king then still choose that square
+                                if (((row_temp === oppKingRow) && (col_temp === oppKingCol))) { //if its the king then still choose that square
                                     bitmap[row_temp][col_temp] = 1;
                                 }
                             }
@@ -676,10 +690,10 @@ class Board {
                                 bitmap[row_temp][col_temp] = 1;
                             }
                             else{ //if a piece has been hit
-                                if (((row_temp === kingRow) && (col_temp === kingCol))) { //if its the king then continue
+                                if (((row_temp === oppKingRow) && (col_temp === oppKingCol))) { //if its the king then continue
                                     bitmap[row_temp][col_temp] = 1;
                                 }else{
-                                    bitmap[row_temp][col_temp] = 1; 
+                                    if (!((row_temp === kingRow) && (col_temp === kingCol))) bitmap[row_temp][col_temp] = 1; 
                                     break; 
                                 } 
                             } 
@@ -784,6 +798,7 @@ class Board {
         var tempSquares;
         let numPiecesAttacking = 0;
 
+        print(oppInfo);
         for (let i = 0; i < pieces.length; i++){
             
             switch (pieces[i].type){  

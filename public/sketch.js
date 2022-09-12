@@ -68,12 +68,13 @@ function mousePressed(){
     selectedCoords = Coords;
     if (pieceAtMouse !== 0){
         if ((board.whiteToMove && (pieceAtMouse.colour === PieceType.white)) || !board.whiteToMove && (pieceAtMouse.colour === PieceType.black)){
+            print('in');
             legalCircles = board.allPiecesLegalSquares(pieceAtMouse);
-        } else legalCircles = [];
+        }
+        MouseDown = true;
         
     }else legalCircles = [];
     //print(legalCircles);
-    MouseDown = true;
  
 }
 
@@ -110,8 +111,6 @@ function mouseReleased(){
             if (pieceAtMouse.colour === PieceType.black) board.moveCounter++;
 
             if (!(pieceAtMouse.type === PieceType.pawn)) board.pawnMovedTwoSquares = false; //variable is set to false inside legal moves function and here
-
-
             if (board.enPassentTaken){
                 board.updateEnPassentMove(pieceAtMouse,destCoords.y,destCoords.x);
             }
@@ -125,6 +124,7 @@ function mouseReleased(){
             print('down');
             print(bmap);
             if (board.kingInCheck()){
+                print('check');
                 board.isInCheck = true;
                 blockableSquares = board.findBlockableSquares();
                 print('hello');
