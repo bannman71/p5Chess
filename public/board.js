@@ -799,18 +799,14 @@ class Board {
 
         return outOfCheck;
     }
-   
 
-    findBlockableSquares(oppositePieces){
-        var pieces = oppositePieces.pieces;
-        let kingToAttackRow = oppositePieces.oppKingRow;
-        let kingToAttackCol = oppositePieces.oppKingCol;
+    findBlockableSquares(piecesToBlock){
+        var pieces = piecesToBlock.pieces;
+        let kingToAttackRow = piecesToBlock.oppKingRow;
+        let kingToAttackCol = piecesToBlock.oppKingCol;
         var blockableSquares = [];
         var tempSquares;
         let numPiecesAttacking = 0;
-
-        print(kingToAttackRow);
-        print(kingToAttackCol);
 
         for (let i = 0; i < pieces.length; i++){
             
@@ -829,19 +825,13 @@ class Board {
                                 tempSquares.push(row_temp + '' + col_temp);
                             }
                             else{
-                                print('type');
-                                print(pieces[i].type);
-                                print('coords');
-                                print(row_temp);
-                                print(col_temp);
                                 if ((row_temp === kingToAttackRow) && (col_temp === kingToAttackCol)) {
-                                    print('in er');
                                     blockableSquares = blockableSquares.concat(tempSquares);
                                     blockableSquares.push(pieces[i].row + '' + pieces[i].col) //also store the coords of the piece attacking so you can capture it
                                     numPiecesAttacking++;
                                     
                                     if (numPiecesAttacking >= 2){ //when in double check, you can't block it 
-                                        return [];
+                                        return []; //therefore no squares can be blocked
                                     }
                                 }
                                 break;
@@ -866,10 +856,12 @@ class Board {
 
         for (let i = 0; i < this.avPieces.length; i++){
             if (this.whiteToMove && (this.avPieces[i].colour === PieceType.black)){
-                if(this.avPieces[i].colourAndPiece() === PieceType.king ^ PieceType.black) king = this.avPieces[i]; //store coords of king
+                print('found black')
+                if(this.avPieces[i].colourAndPiece() === (PieceType.king ^ PieceType.black)) king = this.avPieces[i]; //store coords of king
                 else pieces.push(this.avPieces[i]);//store coords of all same coloured pieces
             }
-            else if (!this.whiteToMove && (this.avPieces[i].colour === PieceType.white) ){
+            else if (!this.whiteToMove && (this.avPieces[i].colour === PieceType.white)){
+                print('found white')
                 if (this.avPieces[i].colourAndPiece() === (PieceType.king ^ PieceType.white)) king = this.avPieces[i];
                 else pieces.push(this.avPieces[i]);
             }
@@ -877,9 +869,11 @@ class Board {
 
         for (let j = 0; j < pieces.length; j++){
             let legalSquare = this.allPiecesLegalSquares(pieces[j]); //go through all pieces and see if they can get in the way of a check
-           
+            print('squares');
+            print(legalSquare);
             for (let k = 0; k < legalSquare.length; k++){
                 if (blockableSquares.includes(legalSquare[k])){ //if the defending piece attacks a square which blocks a check, store the coords
+                    print(pieces[j]);
                     canDefend.push({locOnCoords: pieces[j].row + '' + pieces[j].col , move: legalSquare[k]});
                     defenseAvailable = true;
                 }

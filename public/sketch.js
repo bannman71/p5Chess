@@ -47,10 +47,10 @@ function draw() {
     draw_grid();
     drawAllPieces(board.avPieces,pieceAtMouse);
 
-    /*if (board.isInCheck){
-        drawBlockableSquares(blockableSquares);
-    }
-    */
+    // if (board.isInCheck){
+    //     drawBlockableSquares(blockableSquares);
+    // }
+
     if (MouseDown){
         drawPieceAtMousepos(pieceAtMouse,mouseX,mouseY);
         
@@ -128,14 +128,15 @@ function mouseReleased(){
             if (board.kingInCheck()){
                 print('check');
                 board.isInCheck = true;
-                let oppositePieces = board.findColouredPieces(board.whiteToMove,board.avPieces)
-                print(oppositePieces);
-                blockableSquares = board.findBlockableSquares(oppositePieces);
-                print('hello');
+                let piecesToBlock = board.findColouredPieces(board.whiteToMove,board.avPieces)
+                print(piecesToBlock);
+                blockableSquares = board.findBlockableSquares(piecesToBlock);
+               
                 print(blockableSquares);
 
                 piecestoDefendCheck = board.defendCheck(blockableSquares);
-                
+                print(piecestoDefendCheck);
+
             } else board.isInCheck = false;
 
 
