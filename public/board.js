@@ -800,14 +800,18 @@ class Board {
         return outOfCheck;
     }
    
-    
-    findBlockableSquares(piecesToBlock){
-        var pieces = piecesToBlock.pieces;
+
+    findBlockableSquares(oppositePieces){
+        var pieces = oppositePieces.pieces;
+        let kingToAttackRow = oppositePieces.oppKingRow;
+        let kingToAttackCol = oppositePieces.oppKingCol;
         var blockableSquares = [];
         var tempSquares;
         let numPiecesAttacking = 0;
 
-        
+        print(kingToAttackRow);
+        print(kingToAttackCol);
+
         for (let i = 0; i < pieces.length; i++){
             
             switch (pieces[i].type){  
@@ -825,9 +829,15 @@ class Board {
                                 tempSquares.push(row_temp + '' + col_temp);
                             }
                             else{
-                                if ((row_temp === piecesToBlock.oppKingRow) && (col_temp === piecesToBlock.oppKingCol)){ // opposite colours
+                                print('type');
+                                print(pieces[i].type);
+                                print('coords');
+                                print(row_temp);
+                                print(col_temp);
+                                if ((row_temp === kingToAttackRow) && (col_temp === kingToAttackCol)) {
+                                    print('in er');
                                     blockableSquares = blockableSquares.concat(tempSquares);
-                                    blockableSquares.push(pieces[i].row + '' + pieces[i].col)
+                                    blockableSquares.push(pieces[i].row + '' + pieces[i].col) //also store the coords of the piece attacking so you can capture it
                                     numPiecesAttacking++;
                                     
                                     if (numPiecesAttacking >= 2){ //when in double check, you can't block it 
@@ -843,6 +853,7 @@ class Board {
             }
         }
     
+
         return blockableSquares;
 
     }
@@ -854,11 +865,11 @@ class Board {
         let defenseAvailable = false;
 
         for (let i = 0; i < this.avPieces.length; i++){
-            if (!this.whiteToMove && (this.avPieces[i].colour === PieceType.black)){
+            if (this.whiteToMove && (this.avPieces[i].colour === PieceType.black)){
                 if(this.avPieces[i].colourAndPiece() === PieceType.king ^ PieceType.black) king = this.avPieces[i]; //store coords of king
                 else pieces.push(this.avPieces[i]);//store coords of all same coloured pieces
             }
-            else if (this.whiteToMove && (this.avPieces[i].colour === PieceType.white) ){
+            else if (!this.whiteToMove && (this.avPieces[i].colour === PieceType.white) ){
                 if (this.avPieces[i].colourAndPiece() === (PieceType.king ^ PieceType.white)) king = this.avPieces[i];
                 else pieces.push(this.avPieces[i]);
             }

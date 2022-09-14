@@ -128,8 +128,9 @@ function mouseReleased(){
             if (board.kingInCheck()){
                 print('check');
                 board.isInCheck = true;
-                let piecesToBlock = board.findColouredPieces(!board.whiteToMove,board.avPieces)
-                blockableSquares = board.findBlockableSquares(piecesToBlock);
+                let oppositePieces = board.findColouredPieces(board.whiteToMove,board.avPieces)
+                print(oppositePieces);
+                blockableSquares = board.findBlockableSquares(oppositePieces);
                 print('hello');
                 print(blockableSquares);
 
