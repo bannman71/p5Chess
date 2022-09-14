@@ -550,7 +550,6 @@ class Board {
             if (this.maskMap[king.row][king.col + i] !== 0){ //if piece has been hit
 
 
-               // print(this.maskMap[king.row][king.col + i]);
                 if (this.maskMap[king.row][king.col + i] === 1) return false;
 
 
@@ -637,9 +636,6 @@ class Board {
         }
 
 
-        print('mas');
-        print(this.whiteToMove);
-        print(this.maskMap);
         if ((!this.whiteToMove && this.maskMap[wKing.row][wKing.col] === 1) || (this.whiteToMove && this.maskMap[bKing.row][bKing.col] === 1)) return true
         
     }
@@ -659,10 +655,6 @@ class Board {
         kingRow = pieceInfo.kingRow;
         kingCol = pieceInfo.kingCol;
 
-        print('opp');
-        print(oppKingRow);
-        print(oppKingCol);
-        print(pieceInfo.pieces);
         for (var i = 0; i < pieces.length; i++){
 
             switch (pieces[i].type){
@@ -738,22 +730,12 @@ class Board {
 
         let pieceInfo = this.findColouredPieces(!this.whiteToMove, piecesToMove);
 
-        print('info')
-        print(pieceInfo);
 
         for (let i = 0; i < piecesToMove.length; i++){
             if ((piecesToMove[i].row === piece.row) && (piecesToMove[i].col === piece.col)) { //find the piece
                 pieceLoc = i;
                 break;
             }
-            // if ((this.whiteToMove) && piecesToMove[i].colourAndPiece() === (PieceType.king ^ PieceType.white)){ //find the king
-            //     kingRow = piecesToMove[i].row;
-            //     kingCol = piecesToMove[i].col;
-            // }
-            // else if (!(this.whiteToMove) && piecesToMove[i].colourAndPiece() === (PieceType.king ^ PieceType.black)){
-            //     kingRow = piecesToMove[i].row;
-            //     kingCol = piecesToMove[i].col;
-            // }
         }
 
         kingRow = pieceInfo.oppKingRow;
@@ -774,8 +756,9 @@ class Board {
         piecesToMove[pieceLoc].row = destRow;
         piecesToMove[pieceLoc].col = destCol;
 
+        //create an updated board
         for (let i = 0; i < piecesToMove.length; i++){ 
-            newPosition[piecesToMove[i].row][piecesToMove[i].col] = piecesToMove[i].colour; //create an updated board
+            newPosition[piecesToMove[i].row][piecesToMove[i].col] = piecesToMove[i].colour; 
         }
         newPosition[destRow][destCol] = piecesToMove[pieceLoc].colour; 
 
@@ -787,8 +770,6 @@ class Board {
         print(this.maskMap);
         print(newPosition);
 
-        print('maskkk');
-        print(this.maskMap[kingRow][kingCol]);
 
         if (this.maskMap[kingRow][kingCol] === 1) outOfCheck = false; //this is the line that makes it all happen -> disallows pinned pieces and stuff from putting the king in check
         
@@ -856,12 +837,10 @@ class Board {
 
         for (let i = 0; i < this.avPieces.length; i++){
             if (this.whiteToMove && (this.avPieces[i].colour === PieceType.black)){
-                print('found black')
                 if(this.avPieces[i].colourAndPiece() === (PieceType.king ^ PieceType.black)) king = this.avPieces[i]; //store coords of king
                 else pieces.push(this.avPieces[i]);//store coords of all same coloured pieces
             }
             else if (!this.whiteToMove && (this.avPieces[i].colour === PieceType.white)){
-                print('found white')
                 if (this.avPieces[i].colourAndPiece() === (PieceType.king ^ PieceType.white)) king = this.avPieces[i];
                 else pieces.push(this.avPieces[i]);
             }
@@ -869,11 +848,8 @@ class Board {
 
         for (let j = 0; j < pieces.length; j++){
             let legalSquare = this.allPiecesLegalSquares(pieces[j]); //go through all pieces and see if they can get in the way of a check
-            print('squares');
-            print(legalSquare);
             for (let k = 0; k < legalSquare.length; k++){
                 if (blockableSquares.includes(legalSquare[k])){ //if the defending piece attacks a square which blocks a check, store the coords
-                    print(pieces[j]);
                     canDefend.push({locOnCoords: pieces[j].row + '' + pieces[j].col , move: legalSquare[k]});
                     defenseAvailable = true;
                 }

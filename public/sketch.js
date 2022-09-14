@@ -68,7 +68,6 @@ function mousePressed(){
     selectedCoords = Coords;
     if (pieceAtMouse !== 0){
         if ((board.whiteToMove && (pieceAtMouse.colour === PieceType.white)) || !board.whiteToMove && (pieceAtMouse.colour === PieceType.black)){
-            print('in');
             legalCircles = board.allPiecesLegalSquares(pieceAtMouse);
         }
         MouseDown = true;
@@ -92,7 +91,6 @@ function mouseReleased(){
 
         if (pieceAtMouse.type === PieceType.king){
             if(board.checkNextMoveBitmap(pieceAtMouse,board.avPieces,destCoords.y,destCoords.x) === true){ //king moves need the bitmap before due to castling through a check
-                print('king ok');
                 if (board.isLegalKingMove(pieceAtMouse,destCoords.y,destCoords.x)) isLegal = true;
             }
         } else {
@@ -122,20 +120,17 @@ function mouseReleased(){
             
             let piecesToFind = board.findColouredPieces(board.whiteToMove, board.avPieces);
             let bmap = board.findMaskSquares(piecesToFind, board.occSquares);
-            board.maskBitMap(bmap);
-            print('down');
-            print(bmap);
+            board.maskBitMap(bmap); //create a new bitmap for the current legal position 
+
             if (board.kingInCheck()){
                 print('check');
                 board.isInCheck = true;
                 let piecesToBlock = board.findColouredPieces(board.whiteToMove,board.avPieces)
-                print(piecesToBlock);
+                
                 blockableSquares = board.findBlockableSquares(piecesToBlock);
                
-                print(blockableSquares);
-
                 piecestoDefendCheck = board.defendCheck(blockableSquares);
-                print(piecestoDefendCheck);
+                
 
             } else board.isInCheck = false;
 
