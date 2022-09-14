@@ -668,7 +668,7 @@ class Board {
                                 bitmap[row_temp][col_temp] = 1;
                             }
                             else{
-                                if (((row_temp === oppKingRow) && (col_temp === oppKingCol))) { //if its the king then still choose that square
+                                if ((row_temp === oppKingRow) && (col_temp === oppKingCol)) { //if its the king then still choose that square
                                     bitmap[row_temp][col_temp] = 1;
                                 }
                             }
@@ -687,9 +687,20 @@ class Board {
                             else{ //if a piece has been hit
                                 if (((row_temp === oppKingRow) && (col_temp === oppKingCol))) { //if its the king then continue
                                     bitmap[row_temp][col_temp] = 1;
+                                    print('hit king on');
+                                    print(row_temp);
+                                    print(col_temp);
                                 }else{
-                                    if (!((row_temp === kingRow) && (col_temp === kingCol))) bitmap[row_temp][col_temp] = 1; 
-                                    break; 
+                                        print('row col outside');
+                                        print(row_temp);
+                                        print(col_temp);
+                                    if (((row_temp === kingRow) && (col_temp === kingCol))) {
+                                        //bitmap[row_temp][col_temp] = 1; 
+                                        print('rc inside');
+                                        print(row_temp);
+                                        print(col_temp);
+                                    break;
+                                    } 
                                 } 
                             } 
                             col_temp += options.dx;
@@ -716,6 +727,7 @@ class Board {
     }
 
     checkNextMoveBitmap(piece,piecesToMove, destRow, destCol){
+        //finds your king and makes sure you don't make a move that puts yourself into check
         let tempRow = piece.row;
         let tempCol = piece.col
         let pieceLoc;
@@ -766,15 +778,16 @@ class Board {
         bitmap = this.findMaskSquares(pieceInfo, newPosition);
         this.maskBitMap(bitmap);
 
+        print(kingRow)
+        print(kingCol);
+
         print(bitmap);
         print(this.maskMap);
         print(newPosition);
 
 
         if (this.maskMap[kingRow][kingCol] === 1) outOfCheck = false; //this is the line that makes it all happen -> disallows pinned pieces and stuff from putting the king in check
-        
-        //print(outOfCheck);
-
+    
         piecesToMove[pieceLoc].row = tempRow; //move piece back to original square
         piecesToMove[pieceLoc].col = tempCol;
 

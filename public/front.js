@@ -107,7 +107,7 @@ function drawInCheckLegalSquares(piecesToBlockAttack, x, y){
             print('inin');
             drawRow = (BLOCK_SIZE / 2) + piecesToBlockAttack[i].move[0] * BLOCK_SIZE; 
             drawCol = (BLOCK_SIZE / 2) + piecesToBlockAttack[i].move[1] * BLOCK_SIZE; 
-            fill(255,0,0);
+            fill(255,51,153);
             noStroke();
             ellipse(drawCol, drawRow, 30);
         }

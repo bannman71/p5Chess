@@ -33,11 +33,12 @@ function setup() {
     BLOCK_SIZE = (windowHeight * 0.8) / 8; //can be width but it is a square
     SPACING = Math.floor((BLOCK_SIZE * (1 - PIECE_SCALE)) / 2);
     
-    board = new Board('rnbqk1nr/p4ppp/1p1b4/8/8/5NP1/P2K1PBP/RNBQ3R');
+    board = new Board('r1b2b2/8/2kq4/8/2B5/5K2/8/2BQ4');
     //r3k2r/5N2/8/8/8/8/PPPPPPP1/RNBQKBNR
     //1r1k1r2/6n1/2q5/8/8/5Q2/1N6/R2K3R
     //'rnbqkbnr/1ppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR'
     //rnbqkbnr/p1pppppp/1p6/4P3/8/5NP1/PPPP1PBP/RNBQK2R
+    //'rnbqk1nr/p4ppp/1p1b4/8/8/5NP1/P2K1PBP/RNBQ3R'
     centerCanvas();
 } 
 
@@ -47,9 +48,9 @@ function draw() {
     draw_grid();
     drawAllPieces(board.avPieces,pieceAtMouse);
 
-    // if (board.isInCheck){
-    //     drawBlockableSquares(blockableSquares);
-    // }
+    if (board.isInCheck){
+        drawBlockableSquares(blockableSquares);
+    }
 
     if (MouseDown){
         drawPieceAtMousepos(pieceAtMouse,mouseX,mouseY);
@@ -95,6 +96,7 @@ function mouseReleased(){
             }
         } else {
             if (board.isLegalMove(pieceAtMouse,destCoords.y,destCoords.x)){ //doesn't need the bitmap first as it can find after a move has been made whether or not it is in check
+                print('thats legal');
                 if (board.checkNextMoveBitmap(pieceAtMouse,board.avPieces,destCoords.y,destCoords.x) === true) isLegal = true;
             }
         }
