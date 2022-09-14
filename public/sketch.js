@@ -108,6 +108,7 @@ function mouseReleased(){
                 board.enPassentTaken = false;
             }
 
+
             if (pieceAtMouse.colour === PieceType.black) board.moveCounter++;
 
             if (!(pieceAtMouse.type === PieceType.pawn)) board.pawnMovedTwoSquares = false; //variable is set to false inside legal moves function and here
@@ -118,15 +119,17 @@ function mouseReleased(){
                 if (!board.castles) board.updatePiecePos(pieceAtMouse,destCoords.y,destCoords.x); //castling changes position inside the castles function
             }
         
-            //white to move -> find black pieces
-            let bmap = board.findMaskSquares(!board.whiteToMove, board.occSquares, board.avPieces);
+            
+            let piecesToFind = board.findColouredPieces(board.whiteToMove, board.avPieces);
+            let bmap = board.findMaskSquares(piecesToFind, board.occSquares);
             board.maskBitMap(bmap);
             print('down');
             print(bmap);
             if (board.kingInCheck()){
                 print('check');
                 board.isInCheck = true;
-                blockableSquares = board.findBlockableSquares();
+                let piecesToBlock = board.findColouredPieces(!board.whiteToMove,board.avPieces)
+                blockableSquares = board.findBlockableSquares(piecesToBlock);
                 print('hello');
                 print(blockableSquares);
 
