@@ -581,14 +581,17 @@ class Board {
         else if(this.occSquares[7][7] !== 8) this.whiteShortCastlingRights = false; //white 'h' rook
     }
 
-    findColouredPieces(findWhite, piecesToMove){
+    //piecesToMove is passed in as a piece may be moved in nextMoveBitmap
+
+    findColouredPieces(findWhite, piecesToMove, position){
 
         let pieceInfo = {pieces: [], oppKingRow: 0, oppKingCol : 0, kingRow: 0, kingCol: 0};
 
         if (findWhite == false){ //find black
             //returns black pieces and kings
             for(let i = 0; i < piecesToMove.length; i++){
-                if (piecesToMove[i].colour === PieceType.black){ 
+                //when finding pieces, make sure there aren't any 'captured' pieces (in nextMoveBitmap) being found
+                if ((piecesToMove[i].colour === PieceType.black) && (position[piecesToMove[i].row][piecesToMove[i].col] == piecesToMove[i].colour)){ 
                     pieceInfo.pieces.push(piecesToMove[i])
                 }
                 if (piecesToMove[i].colourAndPiece() === (PieceType.king ^ PieceType.white)){
@@ -604,7 +607,7 @@ class Board {
         else{
             //returns white pieces and both king
             for(let i = 0; i < piecesToMove.length; i++){
-                if ((piecesToMove[i].colour === PieceType.white)){
+                if ((piecesToMove[i].colour === PieceType.white) && (position[piecesToMove[i].row][piecesToMove[i].col] === piecesToMove[i].colour)){
                     pieceInfo.pieces.push(piecesToMove[i])
                 }
                 if (piecesToMove[i].colourAndPiece() === (PieceType.king ^ PieceType.black)){
@@ -643,17 +646,21 @@ class Board {
     //generate an array of where all pieces attack in the position
     //if the king is in an attacked square (represented as 1) they are in check -> therefore disallow that move
 
-    findMaskSquares(pieceInfo, position){ //gets all available squares that the pieces can move to (excluding captures since they aren't necessary)
+    findMaskSquares(pieceInfo, position, kingRow, kingCol){ //gets all available squares that the pieces can move to (excluding captures since they aren't necessary)
         let bitmap = create2dArray(8,8);
         var oppKingRow,oppKingCol;
         var kingRow, kingCol;
         let pieces = [];
 
         pieces = pieceInfo.pieces;
-        oppKingRow = pieceInfo.oppKingRow;
-        oppKingCol = pieceInfo.oppKingCol;
+        oppKingRow = kingRow
+        oppKingCol = kingCol
         kingRow = pieceInfo.kingRow;
         kingCol = pieceInfo.kingCol;
+
+        print('opp');
+        print(oppKingRow);
+        print(oppKingCol);
 
         for (var i = 0; i < pieces.length; i++){
 
@@ -740,7 +747,6 @@ class Board {
         
         let newPosition = create2dArray(8,8);
 
-        let pieceInfo = this.findColouredPieces(!this.whiteToMove, piecesToMove);
 
 
         for (let i = 0; i < piecesToMove.length; i++){
@@ -750,36 +756,38 @@ class Board {
             }
         }
 
-        kingRow = pieceInfo.oppKingRow;
-        kingCol = pieceInfo.oppKingCol;
-
-        if ((destRow == kingRow) && (destCol == kingCol)){ //make sure king isnt captured
-            return false;
-        } 
-
-        //if the king is to move -> kingRow and kingCol also need to be updated
-        
-        if (piecesToMove[pieceLoc].type === PieceType.king){
-            kingRow = destRow;
-            kingCol = destCol;
-        }
-
         //move the piece
         piecesToMove[pieceLoc].row = destRow;
         piecesToMove[pieceLoc].col = destCol;
 
         //create an updated board
         for (let i = 0; i < piecesToMove.length; i++){ 
-            newPosition[piecesToMove[i].row][piecesToMove[i].col] = piecesToMove[i].colour; 
+            if (i !== pieceLoc) newPosition[piecesToMove[i].row][piecesToMove[i].col] = piecesToMove[i].colour; 
         }
         newPosition[destRow][destCol] = piecesToMove[pieceLoc].colour; 
 
-        //create and mask the bitmap for the new position
-        bitmap = this.findMaskSquares(pieceInfo, newPosition);
-        this.maskBitMap(bitmap);
+        //find opposite coloured pieces
+        let pieceInfo = this.findColouredPieces(!this.whiteToMove, piecesToMove, newPosition);
 
-        print(kingRow)
-        print(kingCol);
+        //find same coloured king
+        kingRow = pieceInfo.oppKingRow;
+        kingCol = pieceInfo.oppKingCol;
+
+        if (((destRow == kingRow) && (destCol == kingCol)) && piecesToMove[pieceLoc].type !== PieceType.king){ //make sure king isnt captured
+            piecesToMove[pieceLoc].row = tempRow; //move piece back to original square
+            piecesToMove[pieceLoc].col = tempCol;
+            return false;
+        } 
+
+        //if the king is to move -> kingRow and kingCol also need to be updated
+        if (piecesToMove[pieceLoc].type === PieceType.king){
+            kingRow = destRow;
+            kingCol = destCol;
+        }
+
+        //create and mask the bitmap for the new position
+        bitmap = this.findMaskSquares(pieceInfo, newPosition,kingRow,kingCol);
+        this.maskBitMap(bitmap);
 
         print(bitmap);
         print(this.maskMap);

@@ -120,14 +120,14 @@ function mouseReleased(){
             }
         
             
-            let piecesToFind = board.findColouredPieces(board.whiteToMove, board.avPieces);
+            let piecesToFind = board.findColouredPieces(board.whiteToMove, board.avPieces, board.occSquares);
             let bmap = board.findMaskSquares(piecesToFind, board.occSquares);
             board.maskBitMap(bmap); //create a new bitmap for the current legal position 
 
             if (board.kingInCheck()){
                 print('check');
                 board.isInCheck = true;
-                let piecesToBlock = board.findColouredPieces(board.whiteToMove,board.avPieces)
+                let piecesToBlock = board.findColouredPieces(board.whiteToMove,board.avPieces, board.occSquares);
                 
                 blockableSquares = board.findBlockableSquares(piecesToBlock);
                
