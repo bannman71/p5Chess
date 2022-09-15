@@ -883,7 +883,71 @@ class Board {
         return canDefend;
     }
 
-    findPinnedPieces(piece){
+    findPinnedPieceSquares(){
+        //if its white's move, go out  from the white king and give legal squares
+        let piecesToMove = this.findColouredPieces(this.whiteToMove,this.avPieces,this.occSquares);
+        let oppositePieces = this.findColouredPieces(!this.whiteToMove,this.avPieces,this.occSquares);
+        let king;
+
+        for (let i = 0; i < this.avPieces.length; i++){
+            if ((this.avPieces[i].row === piecesToMove.kingRow) && this.avPieces[i].col === piecesToMove.kingCol){
+                king = this.avPieces[i];
+                break;
+            }
+        }
+
+        for (let options of king.intervals){
+            var col_temp = king.col + options.dx;
+            var row_temp = king.row + options.dy;
+
+            let pieceHit = false;
+        
+            while (isOnBoard(row_temp, col_temp)){
+                let tempPinnedLegalSquares = [];
+                if ((this.occSquares[row_temp][col_temp] !== 0) && (king.colour & this.occSquares[row_temp][col_temp] !== 0)){ //if piece has been hit and same colour
+                    while (isOnBoard(row_temp, col_temp)){
+                        row_temp += options.dy;
+                        col_temp += options.dx;
+
+                        tempPinnedLegalSquares.push((row_temp + '' + col_temp));
+
+                        if (this.occSquares[row_temp][col_temp] !== 0){
+                            if (king.colour & this.occSquares[row_temp][col_temp] === 0){ //if piece has been hit and opposite colour
+                                for (let i = 0; i < oppositePieces.length; i++){
+                                    if ((oppositePieces.pieces[i].row === row_temp) && oppositePieces.pieces[i].col === col_temp){ //find the piece that has been hit
+
+                                        //if the intervals are diagonal and you hit a queen or bishop -> piece is pinned to king
+                                        if (Math.abs(options.dx) === 1 && Math.abs(options.dy === 1) && ((oppositePieces.pieces[i].type === PieceType.bishop) || (oppositePieces.pieces[i].type === PieceType.queen)) ){
+                                           //figure out how to return the pinned piece as well 
+                                            return tempPinnedLegalSquares;
+                                        }
+                                    }
+                                }
+                            } else break;
+                          
+                        }
+                            
+                    }
+                
+                }
+                if (!pieceHit){
+                    row_temp += options.dy;
+                    col_temp += options.dx;
+                }else{ 
+                    pieceHit = false;
+                    break;
+                }
+            }
+
+
+        }
+
+        //file check
+
+
+
+
+        //rank check
 
     }
 
