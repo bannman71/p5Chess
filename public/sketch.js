@@ -121,7 +121,7 @@ function mouseReleased(){
         
             
             let piecesToFind = board.findColouredPieces(board.whiteToMove, board.avPieces, board.occSquares);
-            let bmap = board.findMaskSquares(piecesToFind, board.occSquares);
+            let bmap = board.findMaskSquares(piecesToFind, board.occSquares, piecesToFind.oppKingRow, piecesToFind.oppKingCol);
             board.maskBitMap(bmap); //create a new bitmap for the current legal position 
 
             if (board.kingInCheck()){

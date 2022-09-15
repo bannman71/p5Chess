@@ -275,11 +275,8 @@ class Board {
         if (this.whiteToMove === false && piece.colour === PieceType.white) return false;
 
         if ((destCol - piece.col) >= 2 && piece.row === destRow){ //if attempts to short castle
-            //print('attemtped');
             if((this.whiteToMove && this.whiteShortCastlingRights) === true){
-               // print('can do it');
                 if (this.checkKingRank(piece,1)){ // checks if there are pieces in the way (dir 1 = right)
-                  //  print('can do it');
                     this.shortCastles(piece,destCol); //is a legal castle move
                     this.removeCastlingRights(true,true);
                     this.castled = true;
@@ -658,7 +655,6 @@ class Board {
         kingRow = pieceInfo.kingRow;
         kingCol = pieceInfo.kingCol;
 
-        print('opp');
         print(oppKingRow);
         print(oppKingCol);
 
@@ -694,18 +690,10 @@ class Board {
                             else{ //if a piece has been hit
                                 if (((row_temp === oppKingRow) && (col_temp === oppKingCol))) { //if its the king then continue
                                     bitmap[row_temp][col_temp] = 1;
-                                    print('hit king on');
-                                    print(row_temp);
-                                    print(col_temp);
                                 }else{
-                                        print('row col outside');
-                                        print(row_temp);
-                                        print(col_temp);
-                                    if (((row_temp === kingRow) && (col_temp === kingCol))) {
-                                        //bitmap[row_temp][col_temp] = 1; 
-                                        print('rc inside');
-                                        print(row_temp);
-                                        print(col_temp);
+                                    if (!((row_temp === kingRow) && (col_temp === kingCol))) {
+                                        bitmap[row_temp][col_temp] = 1; 
+                                       
                                     break;
                                     } 
                                 } 
