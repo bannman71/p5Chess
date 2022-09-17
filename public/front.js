@@ -97,8 +97,8 @@ function drawBlockableSquares(squares){
 }
 
 function drawInCheckLegalSquares(piecesToBlockAttack, x, y){
-    let clickedCol = Math.floor(x / BLOCK_SIZE);
-    let clickedRow = Math.floor(y / BLOCK_SIZE);
+    let clickedCol = x
+    let clickedRow = y
     var drawRow,drawCol;
 
     for (let i = 0; i < piecesToBlockAttack.length; i++){

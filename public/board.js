@@ -859,7 +859,7 @@ class Board {
             let legalSquare = this.allPiecesLegalSquares(pieces[j]); //go through all pieces and see if they can get in the way of a check
             for (let k = 0; k < legalSquare.length; k++){
                 if (blockableSquares.includes(legalSquare[k])){ //if the defending piece attacks a square which blocks a check, store the coords
-                    canDefend.push({locOnCoords: pieces[j].row + '' + pieces[j].col , move: legalSquare[k]});
+                    canDefend.push({locOnCoords: pieces[j].row + '' + pieces[j].col, move: legalSquare[k]});
                     defenseAvailable = true;
                 }
             }
@@ -884,13 +884,13 @@ class Board {
     }
 
     findPinnedPieceSquares(){
-        //if its white's move, go out  from the white king and give legal squares
         let piecesToMove = this.findColouredPieces(this.whiteToMove,this.avPieces,this.occSquares);
         let oppositePieces = this.findColouredPieces(!this.whiteToMove,this.avPieces,this.occSquares);
         let king;
-
+        let firstPieceLoc;
+        let pinnedPiece = [];
         for (let i = 0; i < this.avPieces.length; i++){
-            if ((this.avPieces[i].row === piecesToMove.kingRow) && this.avPieces[i].col === piecesToMove.kingCol){
+            if ((this.avPieces[i].row === piecesToMove.oppKingRow) && this.avPieces[i].col === piecesToMove.oppKingCol){
                 king = this.avPieces[i];
                 break;
             }
@@ -901,54 +901,70 @@ class Board {
             var row_temp = king.row + options.dy;
 
             let pieceHit = false;
-        
+            let tempPinnedLegalSquares = [];
+
             while (isOnBoard(row_temp, col_temp)){
-                let tempPinnedLegalSquares = [];
-                if ((this.occSquares[row_temp][col_temp] !== 0) && (king.colour & this.occSquares[row_temp][col_temp] !== 0)){ //if piece has been hit and same colour
+                print('first');
+                
+                tempPinnedLegalSquares.push(row_temp + '' + col_temp);
+                if ((king.colour & this.occSquares[row_temp][col_temp]) !== 0){ //if piece has been hit and same colour
+                    firstPieceLoc = row_temp + '' + col_temp; //store the location of that piece
+                    
+
                     while (isOnBoard(row_temp, col_temp)){
+                        print('second');
                         row_temp += options.dy;
                         col_temp += options.dx;
 
                         tempPinnedLegalSquares.push((row_temp + '' + col_temp));
-
-                        if (this.occSquares[row_temp][col_temp] !== 0){
-                            if (king.colour & this.occSquares[row_temp][col_temp] === 0){ //if piece has been hit and opposite colour
-                                for (let i = 0; i < oppositePieces.length; i++){
-                                    if ((oppositePieces.pieces[i].row === row_temp) && oppositePieces.pieces[i].col === col_temp){ //find the piece that has been hit
-
-                                        //if the intervals are diagonal and you hit a queen or bishop -> piece is pinned to king
-                                        if (Math.abs(options.dx) === 1 && Math.abs(options.dy === 1) && ((oppositePieces.pieces[i].type === PieceType.bishop) || (oppositePieces.pieces[i].type === PieceType.queen)) ){
-                                           //figure out how to return the pinned piece as well 
-                                            return tempPinnedLegalSquares;
+                        print(tempPinnedLegalSquares);
+                        if (isOnBoard(row_temp,col_temp)){
+                            if (this.occSquares[row_temp][col_temp] !== 0){
+                                if ((king.colour & this.occSquares[row_temp][col_temp]) === 0){ //if piece has been hit and opposite colour
+                                    print('opposite hit');
+                                    
+                                    for (let i = 0; i < piecesToMove.pieces.length; i++){
+                                        //find the piece that has been hit
+                                        if ((piecesToMove.pieces[i].row === row_temp) && piecesToMove.pieces[i].col === col_temp){
+                                            print('in der');
+                                            //if its any of these three, it can pin the king. The others can't pin the king so don't bother checking them
+                                            switch (piecesToMove.pieces[i].type){
+                                                case PieceType.queen:
+                                                    print(tempPinnedLegalSquares);
+                                                    pinnedPiece.push({pieceLoc: firstPieceLoc, pinnedLegalSquares: tempPinnedLegalSquares}); 
+                                                    break;
+                                                case PieceType.bishop: 
+                                                    if (Math.abs(options.dx) === 1 && Math.abs(options.dy) === 1) pinnedPiece.push({pieceLoc: firstPieceLoc, pinnedLegalSquares: tempPinnedLegalSquares});
+                                                    break;
+                                                case PieceType.rook: 
+                                                    if ((Math.abs(options.dx) === 1 && options.dy === 0) || (options.dx === 0 && Math.abs(options.dy) === 1)) pinnedPiece.push({pieceLoc: firstPieceLoc, pinnedLegalSquares: tempPinnedLegalSquares});
+                                                    break;
+                                                default:
+                                                    break;
+                                            }
                                         }
                                     }
-                                }
-                            } else break;
-                          
+                                    
+                                } else break;
+                                
+                                pieceHit = true;
+                            }
                         }
-                            
+                        if(pieceHit) break;
                     }
                 
                 }
-                if (!pieceHit){
-                    row_temp += options.dy;
-                    col_temp += options.dx;
-                }else{ 
-                    pieceHit = false;
-                    break;
-                }
+                if (pieceHit) break;
+                row_temp += options.dy;
+                col_temp += options.dx;
             }
-
 
         }
 
-        //file check
+        print(pinnedPiece.piece);
 
-
-
-
-        //rank check
-
+        return pinnedPiece;
+        
     }
 
 }
