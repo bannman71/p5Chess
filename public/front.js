@@ -11,16 +11,13 @@ function getMouseCoord(x,y){
     return Coords;
 }
 
-function getPieceAtMousepos(piece,x,y){
+function getPieceAtMousepos(occSquares,x,y){
     x = Math.floor(x / BLOCK_SIZE);
     y = Math.floor(y / BLOCK_SIZE);
 
-    for (let i = 0; i < piece.length; i++){
-        if(piece[i].row === y && piece[i].col === x){
-            return piece[i];
-        }
-    }
-    return 0;
+    return occSquares[y][x];
+    
+
 }
 
 function drawPieceAtMousepos(piece, x, y){
@@ -56,9 +53,13 @@ function draw_grid(){
     }
 }
 
-function drawAllPieces(avPieces,pieceAtMouse){
-    for (let i = 0; i < avPieces.length; i++){
-        if (pieceAtMouse !== avPieces[i]) draw_piece(avPieces[i].colourAndPiece(), avPieces[i].col , avPieces[i].row);
+function drawAllPieces(occSquares,pieceAtMouse){
+    for (let i = 0; i < 8; i++){
+        for (let j = 0; j < 8; j++){
+            if (occSquares[i][j] !== 0){
+                if (pieceAtMouse !== occSquares[i][j]) draw_piece(occSquares[i][j].colourAndPiece(), j, i);
+            }
+        }
     }
 }
 

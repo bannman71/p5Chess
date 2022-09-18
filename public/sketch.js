@@ -47,17 +47,18 @@ function draw() {
     clear();
     background(WHITE);
     draw_grid();
-    drawAllPieces(board.avPieces,pieceAtMouse);
+    drawAllPieces(board.occSquares,pieceAtMouse);
 
     if (board.isInCheck){
         drawBlockableSquares(blockableSquares);
     }
 
     if (MouseDown){
+        print('dwn');
         drawPieceAtMousepos(pieceAtMouse,mouseX,mouseY);
         
         if (board.isInCheck){
-            drawInCheckLegalSquares(piecestoDefendCheck,clickedCoords.x,clickedCoords.y);
+            drawInCheckLegalSquares(piecestoDefendCheck,selectedCoords.x,selectedCoords.y);
         } else{
             drawLegalSquares(legalCircles);
         }
@@ -67,13 +68,15 @@ function draw() {
 
 function mousePressed(){
     let tempPieceAtMouse;
-    pieceAtMouse = getPieceAtMousepos(board.avPieces,mouseX,mouseY); //returns type Piece
+    pieceAtMouse = getPieceAtMousepos(board.occSquares,mouseX,mouseY); //returns type Piece
     if (pieceAtMouse !== tempPieceAtMouse) legalCircles = []; //empties legalcircles so that it doesn't show the squares when you click on another piece
     tempPieceAtMouse = pieceAtMouse;
     
-    let clickedCoords = getMouseCoord(mouseX, mouseY);
+    
  
     if (pieceAtMouse !== 0){
+        selectedCoords = getMouseCoord(mouseX, mouseY);
+
 
         print(pinnedPiece.length);
 
@@ -83,7 +86,7 @@ function mousePressed(){
             if (pinnedPiece.length === 0) legalCircles = board.allPiecesLegalSquares(pieceAtMouse);
             else {
                 for (let i = 0; i < pinnedPiece.length; i++){
-                    if ((pinnedPiece[i].pieceLoc === (clickedCoords.y + '' + clickedCoords.x))) {
+                    if ((pinnedPiece[i].pieceLoc === (selectedCoords.y + '' + selectedCoords.x))) {
                         legalCircles = pinnedPiece[i].pinnedLegalSquares;
                     }
                 }
@@ -109,13 +112,15 @@ function mouseReleased(){
         tempEnPassentTaken = board.enPassentTaken;
 
         if (pieceAtMouse.type === PieceType.king){
-            if(board.checkNextMoveBitmap(pieceAtMouse,board.avPieces,destCoords.y,destCoords.x) === true){ //king moves need the bitmap before due to castling through a check
+            print('king shit');
+            if(board.checkNextMoveBitmap(pieceAtMouse,destCoords.y,destCoords.x) === true){ //king moves need the bitmap before due to castling through a check
+                print('not allowed');
                 if (board.isLegalKingMove(pieceAtMouse,destCoords.y,destCoords.x)) isLegal = true;
             }
         } else {
             if (board.isLegalMove(pieceAtMouse,destCoords.y,destCoords.x)){ //doesn't need the bitmap first as it can find after a move has been made whether or not it is in check
                 print('thats legal');
-                if (board.checkNextMoveBitmap(pieceAtMouse,board.avPieces,destCoords.y,destCoords.x) === true) isLegal = true;
+                if (board.checkNextMoveBitmap(pieceAtMouse,destCoords.y,destCoords.x) === true) isLegal = true;
             }
         }
 
@@ -138,25 +143,25 @@ function mouseReleased(){
             }
         
             
-            let piecesToFind = board.findColouredPieces(board.whiteToMove, board.avPieces, board.occSquares);
-            let bmap = board.findMaskSquares(piecesToFind, board.occSquares, piecesToFind.oppKingRow, piecesToFind.oppKingCol);
+            //let piecesToFind = board.findColouredPieces(board.whiteToMove, board.avPieces, board.occSquares);
+            let bmap = board.findMaskSquares(board.whiteToMove, board.occSquares);
             board.maskBitMap(bmap); //create a new bitmap for the current legal position 
 
-            pinnedPiece = board.findPinnedPieceSquares();
+            //pinnedPiece = board.findPinnedPieceSquares();
             print('pinned');
             print(pinnedPiece);
 
-            if (board.kingInCheck()){
-                print('check');
-                board.isInCheck = true;
-                let piecesToBlock = board.findColouredPieces(board.whiteToMove,board.avPieces, board.occSquares);
+            // if (board.kingInCheck()){
+            //     print('check');
+            //     board.isInCheck = true;
+            //     let piecesToBlock = board.findColouredPieces(board.whiteToMove,board.avPieces, board.occSquares);
                 
-                blockableSquares = board.findBlockableSquares(piecesToBlock);
+            //     blockableSquares = board.findBlockableSquares(piecesToBlock);
                
-                piecestoDefendCheck = board.defendCheck(blockableSquares);
+            //     piecestoDefendCheck = board.defendCheck(blockableSquares);
                 
 
-            } else board.isInCheck = false;
+            // } else board.isInCheck = false;
 
 
             board.changeTurn();
