@@ -766,9 +766,13 @@ class Board {
   
         for(var i = 0; i < 8; i++){
             for (var j = 0; j < 8; j++){
-                if ((bitmap[i][j] === 1)) this.maskMap[i][j] = 1;
-                else if (bitmap[i][j] === 0) this.maskMap[i][j] = 0;
-                else this.maskMap[i][j] = this.occSquares[i][j].colour;
+                if (bitmap[i][j] === 1) {
+                    this.maskMap[i][j] = 1;
+                }
+                else{
+                    if (this.occSquares[i][j] === 0 ) this.maskMap[i][j] = 0;
+                    else this.maskMap[i][j] = this.occSquares[i][j].colour;
+                }
             }
         }
     }
@@ -783,20 +787,9 @@ class Board {
 
         let kingRow,kingCol;
 
-        let bitmap = create2dArray(8,8);
+        let bitmap;
         
-        let newPosition = this.occSquares;
-
-        // for (let i = 0; i < piecesToMove.length; i++){
-        //     if ((piecesToMove[i].row === piece.row) && (piecesToMove[i].col === piece.col)) { //find the piece
-        //         pieceLoc = i;
-        //         break;
-        //     }
-        // }
-
-        //move the piece
-        // piecesToMove[pieceLoc].row = destRow;
-        // piecesToMove[pieceLoc].col = destCol;
+        let newPosition = this.occSquares; //doesn't make a copy but it makes it more clearer what it is used for
 
         if (piece.row === destRow && piece.col === destCol) return false; //a move hasnt actually been made 
 
@@ -811,7 +804,6 @@ class Board {
         for (let i = 0; i < 8; i++){
             for (let j = 0; j < 8; j++){
                 if (newPosition[i][j] !== 0){
-                  
                     print(PieceType.white ^ PieceType.king)
                     if (this.whiteToMove && (newPosition[i][j].colourAndPiece() === (PieceType.white ^ PieceType.king))){
                         kingRow = i;
@@ -856,9 +848,10 @@ class Board {
 
         //create and mask the bitmap for the new position
         bitmap = this.findMaskSquares(!this.whiteToMove, newPosition);
+        print(bitmap);
         this.maskBitMap(bitmap);
 
-        print(bitmap);
+        
         print(this.maskMap);
         print(newPosition);
 
@@ -869,6 +862,10 @@ class Board {
     
         print('out of');
         print(outOfCheck);
+
+        newPosition[piece.row][piece.col] = piece;
+        newPosition[destRow][destCol] = 0;
+
 
         // piecesToMove[pieceLoc].row = tempRow; //move piece back to original square
         // piecesToMove[pieceLoc].col = tempCol;
