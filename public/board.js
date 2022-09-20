@@ -618,14 +618,6 @@ class Board {
                 }
                 if (numKingsFound === 2) break;
             }
-            // if(this.avPieces[i].colourAndPiece() === (PieceType.king ^ PieceType.white)){ //when white moves, check if they put the black king in check
-            //     wKing = this.avPieces[i];
-            //     numKingsFound++;
-            // }
-            // else if (this.avPieces[i].colourAndPiece() === (PieceType.king ^ PieceType.black)){
-            //     bKing = this.avPieces[i];
-            //     numKingsFound++;
-            // }
             if (numKingsFound === 2) break;
         }
 
@@ -639,21 +631,7 @@ class Board {
 
     findMaskSquares(findAttacksFromWhite, position){ //gets all available squares that the pieces can move to (excluding captures since they aren't necessary)
         let bitmap = create2dArray(8,8);
-        var oppKingRow,oppKingCol;
-        var kingRow, kingCol;
-        let pieces = [];
 
-        
-        // pieces = pieceInfo.pieces;
-        // oppKingRow = kingRow
-        // oppKingCol = kingCol
-        // kingRow = pieceInfo.kingRow;
-        // kingCol = pieceInfo.kingCol;
-
-        // print(oppKingRow);
-        // print(oppKingCol);
-
-        //if white to move -> when finding the squares ignore the white king
 
         let colourCalc = 16; //if black
         if (findAttacksFromWhite) colourCalc = 8 //if white
@@ -710,51 +688,6 @@ class Board {
                 }
         
             }
-
-            // switch (pieces[i].type){
-            //     case PieceType.knight: case PieceType.king: case PieceType.pawn:
-            //         for (let options of pieces[i].intervals){
-            //             var col_temp =  pieces[i].col + options.dx;
-            //             var row_temp = pieces[i].row + options.dy;
-            
-            //             if (isOnBoard(row_temp,col_temp)){
-            //                 if (position[row_temp][col_temp] === 0){
-            //                     bitmap[row_temp][col_temp] = 1;
-            //                 }
-            //                 else{
-            //                     if ((row_temp === oppKingRow) && (col_temp === oppKingCol)) { //if its the king then still choose that square
-            //                         bitmap[row_temp][col_temp] = 1;
-            //                     }
-            //                 }
-            //             }
-            //         }
-            //         break;
-            //     default:
-            //         for (let options of pieces[i].intervals){
-            //             var col_temp =  pieces[i].col + options.dx;
-            //             var row_temp = pieces[i].row + options.dy;
-        
-            //             while(isOnBoard(row_temp,col_temp)){ //while hasn't gone outside of the array
-            //                 if (position[row_temp][col_temp] === 0){
-            //                     bitmap[row_temp][col_temp] = 1;
-            //                 }
-            //                 else{ //if a piece has been hit
-            //                     if (((row_temp === oppKingRow) && (col_temp === oppKingCol))) { //if its the king then continue
-            //                         bitmap[row_temp][col_temp] = 1;
-            //                     }else{
-            //                         if (!((row_temp === kingRow) && (col_temp === kingCol))) {
-            //                             bitmap[row_temp][col_temp] = 1; 
-                                       
-            //                         break;
-            //                         } 
-            //                     } 
-            //                 } 
-            //                 col_temp += options.dx;
-            //                 row_temp += options.dy;
-            //             }
-            //         }
-            //         break;
-            // }
             
         }
 
@@ -822,30 +755,6 @@ class Board {
         print(kingRow);
         print(kingCol);
 
-        //create an updated board
-        // for (let i = 0; i < piecesToMove.length; i++){ 
-        //     if (i !== pieceLoc) newPosition[piecesToMove[i].row][piecesToMove[i].col] = piecesToMove[i].colour; 
-        // }
-        // newPosition[destRow][destCol] = piecesToMove[pieceLoc].colour; 
-
-        //find opposite coloured pieces
-        //let pieceInfo = this.findColouredPieces(!this.whiteToMove, piecesToMove, newPosition);
-
-        //find same coloured king
-        // kingRow = pieceInfo.oppKingRow;
-        // kingCol = pieceInfo.oppKingCol;
-
-        // if (((destRow == kingRow) && (destCol == kingCol)) && piece.type !== PieceType.king){ //make sure king isnt captured
-            
-        //     return false;
-        // } 
-
-        //if the king is to move -> kingRow and kingCol also need to be updated
-        // if (piecesToMove[pieceLoc].type === PieceType.king){
-        //     kingRow = destRow;
-        //     kingCol = destCol;
-        // }
-
         //create and mask the bitmap for the new position
         bitmap = this.findMaskSquares(!this.whiteToMove, newPosition);
         print(bitmap);
@@ -863,56 +772,56 @@ class Board {
         print('out of');
         print(outOfCheck);
 
-        newPosition[piece.row][piece.col] = piece;
+        newPosition[piece.row][piece.col] = piece; //move pieces back to original squares
         newPosition[destRow][destCol] = 0;
-
-
-        // piecesToMove[pieceLoc].row = tempRow; //move piece back to original square
-        // piecesToMove[pieceLoc].col = tempCol;
 
         return outOfCheck;
     }
 
-    findBlockableSquares(piecesToBlock){
-        var pieces = piecesToBlock.pieces;
-        let kingToAttackRow = piecesToBlock.oppKingRow;
-        let kingToAttackCol = piecesToBlock.oppKingCol;
+    findBlockableSquares(whiteAttackingBlack){
         var blockableSquares = [];
         var tempSquares;
         let numPiecesAttacking = 0;
 
-        for (let i = 0; i < pieces.length; i++){
-            
-            switch (pieces[i].type){  
-                case PieceType.knight: case PieceType.king: case PieceType.pawn:
-                    break; // these can't be blocked and the king can't check another king
-                default:    
-                    for (let options of pieces[i].intervals){
-                        var col_temp =  pieces[i].col + options.dx;
-                        var row_temp = pieces[i].row + options.dy;
-                        
-                        tempSquares = [];
+        let colourCalc = 16;
+        if (whiteAttackingBlack) colourCalc = 8;
 
-                        while(isOnBoard(row_temp,col_temp)){ //while hasn't gone outside of the array
-                            if (this.occSquares[row_temp][col_temp] === 0){
-                                tempSquares.push(row_temp + '' + col_temp);
-                            }
-                            else{
-                                if ((row_temp === kingToAttackRow) && (col_temp === kingToAttackCol)) {
-                                    blockableSquares = blockableSquares.concat(tempSquares);
-                                    blockableSquares.push(pieces[i].row + '' + pieces[i].col) //also store the coords of the piece attacking so you can capture it
-                                    numPiecesAttacking++;
-                                    
-                                    if (numPiecesAttacking >= 2){ //when in double check, you can't block it 
-                                        return []; //therefore no squares can be blocked
+
+        for (let i = 0; i < 8; i++){
+            for (let j = 0; j < 8; j++){
+                if ((this.occSquares[i][j].colour & colourCalc) === colourCalc){
+                    switch (this.occSquares[i][j].type){  
+                        case PieceType.knight: case PieceType.king: case PieceType.pawn:
+                            break; // these can't be blocked and the king can't check another king
+                        default:    
+                            for (let options of this.occSquares[i][j].intervals){
+                                var col_temp = i + options.dx;
+                                var row_temp = j + options.dy;
+                                
+                                tempSquares = [];
+
+                                while(isOnBoard(row_temp,col_temp)){ //while hasn't gone outside of the array
+                                    if (this.occSquares[row_temp][col_temp] === 0){
+                                        tempSquares.push(row_temp + '' + col_temp);
                                     }
+                                    else{
+                                        if (this.occSquares[row_temp][col_temp].type === PieceType.king && (colourCalc & this.occSquares[row_temp][col_temp].colour) === 0) {
+                                            blockableSquares = blockableSquares.concat(tempSquares);
+                                            blockableSquares.push(i + '' + j) //also store the coords of the piece attacking so you can capture it
+                                            numPiecesAttacking++;
+                                            
+                                            if (numPiecesAttacking >= 2){ //when in double check, you can't block it 
+                                                return []; //therefore no squares can be blocked
+                                            }
+                                        }
+                                        break;
+                                    } 
+                                    col_temp += options.dx;
+                                    row_temp += options.dy;
                                 }
-                                break;
                             } 
-                            col_temp += options.dx;
-                            row_temp += options.dy;
-                        }
-                    } 
+                    }
+                }
             }
         }
     
@@ -927,14 +836,16 @@ class Board {
         var canDefend = [];
         let defenseAvailable = false;
 
-        for (let i = 0; i < this.avPieces.length; i++){
-            if (this.whiteToMove && (this.avPieces[i].colour === PieceType.black)){
-                if(this.avPieces[i].colourAndPiece() === (PieceType.king ^ PieceType.black)) king = this.avPieces[i]; //store coords of king
-                else pieces.push(this.avPieces[i]);//store coords of all same coloured pieces
-            }
-            else if (!this.whiteToMove && (this.avPieces[i].colour === PieceType.white)){
-                if (this.avPieces[i].colourAndPiece() === (PieceType.king ^ PieceType.white)) king = this.avPieces[i];
-                else pieces.push(this.avPieces[i]);
+        for (let i = 0; i < 8; i++){
+            for (let j = 0; j < 8; j++){
+                if (this.occSquares[i][j] !== 0){
+                    if (this.whiteToMove && this.occSquares[i][j].colourAndPiece() === (PieceType.black ^ PieceType.king)){
+                        king = this.occSquares[i][j];
+                    }
+                    else if (!this.whiteToMove && this.occSquares[i][j].colourAndPiece () === (PieceType.white ^ PieceType.king)){
+                        king = this.occSquares[i][j];
+                    }
+                }
             }
         }
 
@@ -967,15 +878,19 @@ class Board {
     }
 
     findPinnedPieceSquares(){
-        let piecesToMove = this.findColouredPieces(this.whiteToMove,this.avPieces,this.occSquares);
-        let oppositePieces = this.findColouredPieces(!this.whiteToMove,this.avPieces,this.occSquares);
         let king;
-        let firstPieceLoc;
+        let firstPiece;
         let pinnedPiece = [];
-        for (let i = 0; i < this.avPieces.length; i++){
-            if ((this.avPieces[i].row === piecesToMove.oppKingRow) && this.avPieces[i].col === piecesToMove.oppKingCol){
-                king = this.avPieces[i];
-                break;
+        for (let i = 0; i < 8; i++){
+            for (let j = 0; j < 8; j++){
+                if (this.occSquares[i][j] !== 0){
+                    if (this.whiteToMove && this.occSquares[i][j].colourAndPiece() === (PieceType.black ^ PieceType.king)){
+                        king = this.occSquares[i][j];
+                    }
+                    else if (!this.whiteToMove && this.occSquares[i][j].colourAndPiece () === (PieceType.white ^ PieceType.king)){
+                        king = this.occSquares[i][j];
+                    }
+                }
             }
         }
 
@@ -990,43 +905,32 @@ class Board {
                 print('first');
                 
                 
-                if ((king.colour & this.occSquares[row_temp][col_temp]) !== 0){ //if piece has been hit and same colour
-                    firstPieceLoc = row_temp + '' + col_temp; //store the location of that piece
+                if ((king.colour & this.occSquares[row_temp][col_temp].colour) !== 0){ //if piece has been hit and same colour
+                    firstPiece = this.occSquares[row_temp][col_temp]; //store the piece
 
                     while (isOnBoard(row_temp, col_temp)){
-                        print('second');
                         row_temp += options.dy;
                         col_temp += options.dx;
 
                         tempPinnedLegalSquares.push((row_temp + '' + col_temp));
                         print(tempPinnedLegalSquares);
                         if (isOnBoard(row_temp,col_temp)){
-                            if (this.occSquares[row_temp][col_temp] !== 0){
-                                if ((king.colour & this.occSquares[row_temp][col_temp]) === 0){ //if piece has been hit and opposite colour
+                            if (this.occSquares[row_temp][col_temp].colour !== 0){
+                                if ((king.colour & this.occSquares[row_temp][col_temp].colour) === 0){ //if piece has been hit and opposite colour
                                     print('opposite hit');
-                                    
-                                    for (let i = 0; i < oppositePieces.pieces.length; i++){
-                                        //find the piece that has been hit
-                                        if ((oppositePieces.pieces[i].row === row_temp) && oppositePieces.pieces[i].col === col_temp){
-                                            print('in der');
-                                            print(options.dx);
-                                            print(options.dy);
-                                            //if its any of these three, it can pin the king. The others can't pin the king so don't bother checking them
-                                            switch (oppositePieces.pieces[i].type){
-                                                case PieceType.queen:
-                                                    print(tempPinnedLegalSquares);
-                                                    pinnedPiece.push({pieceLoc: firstPieceLoc, pinnedLegalSquares: tempPinnedLegalSquares}); 
-                                                    break;
-                                                case PieceType.bishop: 
-                                                    if (Math.abs(options.dx) === 1 && Math.abs(options.dy) === 1) pinnedPiece.push({pieceLoc: firstPieceLoc, pinnedLegalSquares: tempPinnedLegalSquares});
-                                                    break;
-                                                case PieceType.rook: 
-                                                    if ((Math.abs(options.dx) === 1 && options.dy === 0) || (options.dx === 0 && Math.abs(options.dy) === 1)) pinnedPiece.push({pieceLoc: firstPieceLoc, pinnedLegalSquares: tempPinnedLegalSquares});
-                                                    break;
-                                                default:
-                                                    break;
-                                            }
-                                        }
+                                    switch (this.occSquares[row_temp][col_temp].type){
+                                        case PieceType.queen:
+                                            print(tempPinnedLegalSquares);
+                                            pinnedPiece.push({piece: firstPiece, pinnedLegalSquares: tempPinnedLegalSquares}); 
+                                            break;
+                                        case PieceType.bishop: 
+                                            if (Math.abs(options.dx) === 1 && Math.abs(options.dy) === 1) pinnedPiece.push({piece: firstPiece, pinnedLegalSquares: tempPinnedLegalSquares});
+                                            break;
+                                        case PieceType.rook: 
+                                            if ((Math.abs(options.dx) === 1 && options.dy === 0) || (options.dx === 0 && Math.abs(options.dy) === 1)) pinnedPiece.push({piece: firstPiece, pinnedLegalSquares: tempPinnedLegalSquares});
+                                            break;
+                                        default:
+                                            break;
                                     }
                                     
                                 } else break;
