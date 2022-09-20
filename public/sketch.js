@@ -73,27 +73,25 @@ function mousePressed(){
     tempPieceAtMouse = pieceAtMouse;
     let clickedPinnedPiece;
     
-    
- 
+
     if (pieceAtMouse !== 0){
         selectedCoords = getMouseCoord(mouseX, mouseY);
 
         print(pinnedPiece.length);
 
         if ((board.whiteToMove && (pieceAtMouse.colour === PieceType.white)) || (!board.whiteToMove && (pieceAtMouse.colour === PieceType.black))){
-
-            
-            for (let i = 0; i < pinnedPiece.length; i++) {
-                if (pinnedPiece[i].piece === pieceAtMouse) {
-                    clickedPinnedPiece = pinnedPiece[i]; 
-                    print('clikec a pinned');
-                }
-            }
             
             if (pinnedPiece.length === 0){ //if no pinned pieces
                 legalCircles = board.allPiecesLegalSquares(pieceAtMouse);
             }
-            else {
+            else 
+            {
+                for (let i = 0; i < pinnedPiece.length; i++) {
+                    if (pinnedPiece[i].piece === pieceAtMouse) {
+                        clickedPinnedPiece = pinnedPiece[i]; 
+                    }
+                }
+            
                 if (!clickedPinnedPiece) legalCircles = board.allPiecesLegalSquares(pieceAtMouse);
                 else legalCircles = clickedPinnedPiece.pinnedLegalSquares;
             }

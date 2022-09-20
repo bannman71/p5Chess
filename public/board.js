@@ -445,7 +445,7 @@ class Board {
                     var row_temp = piece.row + options.dy;
         
                     if (isOnBoard(row_temp,col_temp)){
-                        if (this.maskMap[row_temp][col_temp].colour === 0){
+                        if (this.maskMap[row_temp][col_temp] === 0 || (this.maskMap[row_temp][col_temp] & piece.colour === 0)){
                             arr.push(row_temp + '' + col_temp);
                         }
                     }
@@ -763,7 +763,7 @@ class Board {
         
         print(this.maskMap);
         print(newPosition);
-
+        //this doesn't work
 
         print(this.maskMap[kingRow][kingCol] === 1);
 
@@ -771,6 +771,7 @@ class Board {
     
         print('out of');
         print(outOfCheck);
+        // hello this captures your own
 
         newPosition[piece.row][piece.col] = piece; //move pieces back to original squares
         newPosition[destRow][destCol] = 0;
@@ -786,7 +787,6 @@ class Board {
         let colourCalc = 16;
         if (whiteAttackingBlack) colourCalc = 8;
 
-
         for (let i = 0; i < 8; i++){
             for (let j = 0; j < 8; j++){
                 if ((this.occSquares[i][j].colour & colourCalc) === colourCalc){
@@ -795,8 +795,8 @@ class Board {
                             break; // these can't be blocked and the king can't check another king
                         default:    
                             for (let options of this.occSquares[i][j].intervals){
-                                var col_temp = i + options.dx;
-                                var row_temp = j + options.dy;
+                                var col_temp = j + options.dx;
+                                var row_temp = i + options.dy;
                                 
                                 tempSquares = [];
 
@@ -805,8 +805,10 @@ class Board {
                                         tempSquares.push(row_temp + '' + col_temp);
                                     }
                                     else{
-                                        if (this.occSquares[row_temp][col_temp].type === PieceType.king && (colourCalc & this.occSquares[row_temp][col_temp].colour) === 0) {
-                                            blockableSquares = blockableSquares.concat(tempSquares);
+                                        if ((this.occSquares[row_temp][col_temp].type === PieceType.king) && (colourCalc & this.occSquares[row_temp][col_temp].colour) === 0) {
+                                            print('hello');
+                                            print(tempSquares);
+                                            blockableSquares.push(tempSquares);
                                             blockableSquares.push(i + '' + j) //also store the coords of the piece attacking so you can capture it
                                             numPiecesAttacking++;
                                             
@@ -831,7 +833,6 @@ class Board {
     }
 
     defendCheck(blockableSquares){
-        let pieces = [];
         let king;
         var canDefend = [];
         let defenseAvailable = false;
@@ -849,12 +850,18 @@ class Board {
             }
         }
 
-        for (let j = 0; j < pieces.length; j++){
-            let legalSquare = this.allPiecesLegalSquares(pieces[j]); //go through all pieces and see if they can get in the way of a check
-            for (let k = 0; k < legalSquare.length; k++){
-                if (blockableSquares.includes(legalSquare[k])){ //if the defending piece attacks a square which blocks a check, store the coords
-                    canDefend.push({locOnCoords: pieces[j].row + '' + pieces[j].col, move: legalSquare[k]});
-                    defenseAvailable = true;
+
+
+        for (let i = 0; i < 8; i++){
+            for (let j = 0; j < 8; j++){
+                if (this.occSquares[i][j] !== 0){
+                    let legalSquare = this.allPiecesLegalSquares(this.occSquares[i][j]); //go through all pieces and see if they can get in the way of a check
+                    for (let k = 0; k < legalSquare.length; k++){
+                        if (blockableSquares.includes(legalSquare[k])){ //if the defending piece attacks a square which blocks a check, store the coords
+                            canDefend.push({locOnCoords: this.occSquares[i][j].row + '' + this.occSquares[i][j].col, move: legalSquare[k]});
+                            defenseAvailable = true;
+                        }
+                    }
                 }
             }
         }
