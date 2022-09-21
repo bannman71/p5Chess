@@ -710,22 +710,17 @@ class Board {
         }
     }
 
-    checkNextMoveBitmap(piece, destRow, destCol){
-        //finds your king and makes sure you don't make a move that puts yourself into check
-        let tempRow = piece.row;
-        let tempCol = piece.col
-        let pieceLoc;
-
+    checkNextMoveBitmap(piece, destRow, destCol){ //finds your king and makes sure you don't make a move that puts yourself into check
         let outOfCheck = true;
-
         let kingRow,kingCol;
-
         let bitmap;
-        
-        let newPosition = this.occSquares; //doesn't make a copy but it makes it more clearer what it is used for
+        let newPosition = this.occSquares.map(arr =>arr.slice()); //create copy of occSquares
 
-        if (piece.row === destRow && piece.col === destCol) return false; //a move hasnt actually been made 
+        if (piece.row === destRow && piece.col === destCol) return false; //a move has actually been made 
 
+        // if (newPosition[destRow][destCol] !== 0 ){
+        //     tempPiece.push(newPosition[destRow][destCol]);
+        // }
 
         newPosition[piece.row][piece.col] = 0;
         newPosition[destRow][destCol] = piece;
@@ -751,30 +746,13 @@ class Board {
                 }
             }
         }
-        print('kong pos');
-        print(kingRow);
-        print(kingCol);
-
+        
         //create and mask the bitmap for the new position
         bitmap = this.findMaskSquares(!this.whiteToMove, newPosition);
         print(bitmap);
         this.maskBitMap(bitmap);
 
-        
-        print(this.maskMap);
-        print(newPosition);
-        //this doesn't work
-
-        print(this.maskMap[kingRow][kingCol] === 1);
-
         if (this.maskMap[kingRow][kingCol] === 1) outOfCheck = false; //this is the line that makes it all happen -> disallows pinned pieces and stuff from putting the king in check
-    
-        print('out of');
-        print(outOfCheck);
-        // hello this captures your own
-
-        newPosition[piece.row][piece.col] = piece; //move pieces back to original squares
-        newPosition[destRow][destCol] = 0;
 
         return outOfCheck;
     }
