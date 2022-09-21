@@ -20,7 +20,7 @@ function isOnBoard(Row,Col){ //is used in legal squares so that it doent iterate
 class Board {
 
     constructor(FEN){
-        this.avPieces = [];
+        
         this.occSquares = create2dArray(8,8);
         
         this.moveCounter = 0;
@@ -561,48 +561,6 @@ class Board {
         else if(this.occSquares[7][7].colour !== 8) this.whiteShortCastlingRights = false; //white 'h' rook
     }
 
-    //piecesToMove is passed in as a piece may be moved in nextMoveBitmap
-
-    findColouredPieces(findWhite, piecesToMove, position){
-
-        let pieceInfo = {pieces: [], oppKingRow: 0, oppKingCol : 0, kingRow: 0, kingCol: 0};
-
-        if (findWhite == false){ //find black
-            //returns black pieces and kings
-            for(let i = 0; i < piecesToMove.length; i++){
-                //when finding pieces, make sure there aren't any 'captured' pieces (in nextMoveBitmap) being found
-                if ((piecesToMove[i].colour === PieceType.black) && (position[piecesToMove[i].row][piecesToMove[i].col] == piecesToMove[i].colour)){ 
-                    pieceInfo.pieces.push(piecesToMove[i])
-                }
-                if (piecesToMove[i].colourAndPiece() === (PieceType.king ^ PieceType.white)){
-                    pieceInfo.oppKingRow = piecesToMove[i].row;
-                    pieceInfo.oppKingCol = piecesToMove[i].col;
-                }
-                else if(piecesToMove[i].colourAndPiece() === (PieceType.king ^ PieceType.black)){
-                    pieceInfo.kingRow = piecesToMove[i].row;
-                    pieceInfo.kingCol = piecesToMove[i].col;
-                }
-            }
-        }
-        else{
-            //returns white pieces and both king
-            for(let i = 0; i < piecesToMove.length; i++){
-                if ((piecesToMove[i].colour === PieceType.white) && (position[piecesToMove[i].row][piecesToMove[i].col] === piecesToMove[i].colour)){
-                    pieceInfo.pieces.push(piecesToMove[i])
-                }
-                if (piecesToMove[i].colourAndPiece() === (PieceType.king ^ PieceType.black)){
-                    pieceInfo.oppKingRow = piecesToMove[i].row;
-                    pieceInfo.oppKingCol = piecesToMove[i].col;
-                }else if(piecesToMove[i].colourAndPiece() === (PieceType.king ^ PieceType.white)){
-                    pieceInfo.kingRow = piecesToMove[i].row;
-                    pieceInfo.kingCol = piecesToMove[i].col;
-                }
-            }
-            
-        }
-        return pieceInfo;
-    }
-
     kingInCheck(){
         let wKing, bKing;
         let numKingsFound;
@@ -640,7 +598,6 @@ class Board {
             for (var j = 0; j < 8; j++){
                 if (position[i][j] !== 0){ //if isn't empty
                     if ((position[i][j].colour & colourCalc) === colourCalc){ //if the piece is from the side you want to find attacks from 
-
                         switch (position[i][j].type){
                             case PieceType.knight: case PieceType.king: case PieceType.pawn:
                                 for (let options of position[i][j].intervals){
@@ -696,43 +653,42 @@ class Board {
 
     maskBitMap(bitmap){
         this.maskMap = create2dArray(8,8);
-  
+
+        let pos = this.occSquares.map(arr => arr.slice()); //create copy of occSquares
+
         for(var i = 0; i < 8; i++){
             for (var j = 0; j < 8; j++){
                 if (bitmap[i][j] === 1) {
                     this.maskMap[i][j] = 1;
                 }
                 else{
-                    if (this.occSquares[i][j] === 0 ) this.maskMap[i][j] = 0;
-                    else this.maskMap[i][j] = this.occSquares[i][j].colour;
+                    if (pos[i][j] === 0) this.maskMap[i][j] = 0;
+                    else this.maskMap[i][j] = pos[i][j].colour;
                 }
             }
         }
     }
 
-    checkNextMoveBitmap(piece, destRow, destCol){
-        //finds your king and makes sure you don't make a move that puts yourself into check
-        let tempRow = piece.row;
-        let tempCol = piece.col
-        let pieceLoc;
-
+    checkNextMoveBitmap(piece, destRow, destCol){ //finds your king and makes sure you don't make a move that puts yourself into check
         let outOfCheck = true;
-
         let kingRow,kingCol;
-
         let bitmap;
-        
-        let newPosition = this.occSquares; //doesn't make a copy but it makes it more clearer what it is used for
+        let newPosition = this.occSquares.map(arr => arr.slice()); //create copy of occSquares
 
-        if (piece.row === destRow && piece.col === destCol) return false; //a move hasnt actually been made 
+        if (piece.row === destRow && piece.col === destCol) return false; //a move has actually been made 
 
+        // if (newPosition[destRow][destCol] !== 0 ){
+        //     tempPiece.push(newPosition[destRow][destCol]);
+        // }
 
         newPosition[piece.row][piece.col] = 0;
         newPosition[destRow][destCol] = piece;
-       
+    
 
         print('new');
+        newPosition[0][0] = 0;
         print(newPosition);
+        print(this.occSquares);
 
         for (let i = 0; i < 8; i++){
             for (let j = 0; j < 8; j++){
@@ -751,30 +707,13 @@ class Board {
                 }
             }
         }
-        print('kong pos');
-        print(kingRow);
-        print(kingCol);
-
+        
         //create and mask the bitmap for the new position
         bitmap = this.findMaskSquares(!this.whiteToMove, newPosition);
         print(bitmap);
         this.maskBitMap(bitmap);
 
-        
-        print(this.maskMap);
-        print(newPosition);
-        //this doesn't work
-
-        print(this.maskMap[kingRow][kingCol] === 1);
-
         if (this.maskMap[kingRow][kingCol] === 1) outOfCheck = false; //this is the line that makes it all happen -> disallows pinned pieces and stuff from putting the king in check
-    
-        print('out of');
-        print(outOfCheck);
-        // hello this captures your own
-
-        newPosition[piece.row][piece.col] = piece; //move pieces back to original squares
-        newPosition[destRow][destCol] = 0;
 
         return outOfCheck;
     }
@@ -797,14 +736,22 @@ class Board {
                             for (let options of this.occSquares[i][j].intervals){
                                 var col_temp = j + options.dx;
                                 var row_temp = i + options.dy;
-                                
+                                print('new intervals');
                                 tempSquares = [];
 
                                 while(isOnBoard(row_temp,col_temp)){ //while hasn't gone outside of the array
+
+                                    tempSquares.push(row_temp + '' + col_temp);
                                     if (this.occSquares[row_temp][col_temp] === 0){
-                                        tempSquares.push(row_temp + '' + col_temp);
+                                        print(row_temp);
+                                        print(col_temp);
                                     }
                                     else{
+
+                                        tempSquares.push(row_temp + '' + col_temp);
+                                        print('rororororooror');
+                                        print(row_temp);
+                                        print(col_temp);
                                         if ((this.occSquares[row_temp][col_temp].type === PieceType.king) && (colourCalc & this.occSquares[row_temp][col_temp].colour) === 0) {
                                             print('hello');
                                             print(tempSquares);
@@ -818,6 +765,8 @@ class Board {
                                         }
                                         break;
                                     } 
+                                    
+                                    //tempSquares.push(row_temp + '' + col_temp);
                                     col_temp += options.dx;
                                     row_temp += options.dy;
                                 }
@@ -826,7 +775,6 @@ class Board {
                 }
             }
         }
-    
 
         return blockableSquares;
 

@@ -119,8 +119,12 @@ function mouseReleased(){
 
         if (pieceAtMouse.type === PieceType.king){
             if(board.checkNextMoveBitmap(pieceAtMouse,destCoords.y,destCoords.x) === true){ //king moves need the bitmap before due to castling through a check
-                if (board.isLegalKingMove(pieceAtMouse,destCoords.y,destCoords.x)) isLegal = true;
-            }
+                print('bitmap fine');
+                if (board.isLegalKingMove(pieceAtMouse,destCoords.y,destCoords.x)){
+                    isLegal = true;
+                        print('legla king move');
+                    }
+                }
         } else {
             if (board.isLegalMove(pieceAtMouse,destCoords.y,destCoords.x)){ //doesn't need the bitmap first as it can find after a move has been made whether or not it is in check
                 print('thats legal');
@@ -158,9 +162,8 @@ function mouseReleased(){
             if (board.kingInCheck()){
                 print('check');
                 board.isInCheck = true;
-                let piecesToBlock = board.findColouredPieces(board.whiteToMove,board.avPieces, board.occSquares);
                 
-                blockableSquares = board.findBlockableSquares(piecesToBlock);
+                blockableSquares = board.findBlockableSquares(board.whiteToMove);
                
                 piecestoDefendCheck = board.defendCheck(blockableSquares);
                 
