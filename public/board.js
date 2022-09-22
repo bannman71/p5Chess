@@ -677,7 +677,7 @@ class Board {
         let outOfCheck = true;
         let kingRow,kingCol;
         let bitmap;
-        let newPosition = this.occSquares.map(arr => arr.slice()); //create copy of occSquares
+        let newPosition = this.occSquares.map(arr =>arr.slice()); //create copy of occSquares
 
         if (piece.row === destRow && piece.col === destCol) return false; //a move has actually been made 
 
@@ -709,15 +709,10 @@ class Board {
             }
         }
         
-        print(this.occSquares);
-
         //create and mask the bitmap for the new position
         bitmap = this.findMaskSquares(!this.whitetomove, newPosition);
         print(bitmap);
         this.maskBitMap(bitmap);
-
-        print(this.occSquares);
-        print(newPosition);
 
         if (this.maskMap[kingRow][kingCol] === 1) outOfCheck = false; //this is the line that makes it all happen -> disallows pinned pieces and stuff from putting the king in check
 
