@@ -50,6 +50,7 @@ function draw() {
     drawAllPieces(board.occSquares,pieceAtMouse);
 
     if (board.isInCheck){
+        
         drawBlockableSquares(blockableSquares);
     }
 
@@ -151,13 +152,10 @@ function mouseReleased(){
             }
         
             
-            //let piecesToFind = board.findColouredPieces(board.whiteToMove, board.avPieces, board.occSquares);
             let bmap = board.findMaskSquares(board.whiteToMove, board.occSquares);
             board.maskBitMap(bmap); //create a new bitmap for the current legal position 
 
             pinnedPiece = board.findPinnedPieceSquares();
-            print('pinned');
-            print(pinnedPiece);
 
             if (board.kingInCheck()){
                 print('check');
@@ -165,6 +163,8 @@ function mouseReleased(){
                 
                 blockableSquares = board.findBlockableSquares(board.whiteToMove);
                
+                print(blockableSquares);
+
                 piecestoDefendCheck = board.defendCheck(blockableSquares);
                 
 
