@@ -324,9 +324,13 @@ class Board {
             }
         }
         else{
-            if(!(Math.abs(destRow - piece.row) > 1 || Math.abs(destCol - piece.col) > 1) && (piece.isOppositeColour(this.occSquares,destRow,destCol))){
-                this.removeCastlingRights(true,true);
-                return true;
+            if(!(Math.abs(destRow - piece.row) > 1) || Math.abs(destCol - piece.col) > 1) {
+                if((this.occSquares[destRow][destCol] === 0) || (piece.colour & this.occSquares[destRow][destCol].colour) === 0){
+                    print(this.occSquares);
+                    this.removeCastlingRights(true,true);
+                    print('this one');
+                    return true;
+                }
             }
         }
         return false;
@@ -683,11 +687,8 @@ class Board {
 
         newPosition[piece.row][piece.col] = 0;
         newPosition[destRow][destCol] = piece;
-    
 
-        print('new');
-        newPosition[0][0] = 0;
-        print(newPosition);
+        print('hello');
         print(this.occSquares);
 
         for (let i = 0; i < 8; i++){
@@ -708,10 +709,15 @@ class Board {
             }
         }
         
+        print(this.occSquares);
+
         //create and mask the bitmap for the new position
-        bitmap = this.findMaskSquares(!this.whiteToMove, newPosition);
+        bitmap = this.findMaskSquares(!this.whitetomove, newPosition);
         print(bitmap);
         this.maskBitMap(bitmap);
+
+        print(this.occSquares);
+        print(newPosition);
 
         if (this.maskMap[kingRow][kingCol] === 1) outOfCheck = false; //this is the line that makes it all happen -> disallows pinned pieces and stuff from putting the king in check
 

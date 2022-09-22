@@ -118,13 +118,13 @@ function mouseReleased(){
         tempEnPassentTaken = board.enPassentTaken;
 
         if (pieceAtMouse.type === PieceType.king){
-            if(board.checkNextMoveBitmap(pieceAtMouse,destCoords.y,destCoords.x) === true){ //king moves need the bitmap before due to castling through a check
-                print('bitmap fine');
+            //if(board.checkNextMoveBitmap(pieceAtMouse,destCoords.y,destCoords.x) === true){ //king moves need the bitmap before due to castling through a check
                 if (board.isLegalKingMove(pieceAtMouse,destCoords.y,destCoords.x)){
                     isLegal = true;
-                        print('legla king move');
-                    }
+                    print('legla king move');
                 }
+            //}
+        
         } else {
             if (board.isLegalMove(pieceAtMouse,destCoords.y,destCoords.x)){ //doesn't need the bitmap first as it can find after a move has been made whether or not it is in check
                 print('thats legal');
