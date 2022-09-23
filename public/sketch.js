@@ -68,6 +68,7 @@ function draw() {
 
 function mousePressed(){
     let tempPieceAtMouse;
+    let clickedPinnedPiece = false;
     pieceAtMouse = getPieceAtMousepos(board.occSquares,mouseX,mouseY); //returns type Piece
     if (pieceAtMouse !== tempPieceAtMouse) legalCircles = []; //empties legalcircles so that it doesn't show the squares when you click on another piece
     tempPieceAtMouse = pieceAtMouse;
@@ -86,10 +87,12 @@ function mousePressed(){
             if (pinnedPiece.length === 0) legalCircles = board.allPiecesLegalSquares(pieceAtMouse);
             else {
                 for (let i = 0; i < pinnedPiece.length; i++){
-                    if ((pinnedPiece[i].pieceLoc === (selectedCoords.y + '' + selectedCoords.x))) {
+                    if (pinnedPiece[i].piece === pieceAtMouse) {
                         legalCircles = pinnedPiece[i].pinnedLegalSquares;
+                        clickedPinnedPiece = true;
                     }
                 }
+                if (!clickedPinnedPiece) legalCircles = board.allPiecesLegalSquares(pieceAtMouse);
             }
         }
         MouseDown = true;
@@ -146,7 +149,7 @@ function mouseReleased(){
             let bmap = board.findMaskSquares(board.whiteToMove, board.occSquares);
             board.maskBitMap(bmap); //create a new bitmap for the current legal position 
 
-            //pinnedPiece = board.findPinnedPieceSquares();
+            pinnedPiece = board.findPinnedPieceSquares();
             print('pinned');
             print(pinnedPiece);
 
@@ -154,7 +157,7 @@ function mouseReleased(){
                 print('check');
                 board.isInCheck = true;
                 
-                blockableSquares = board.findBlockableSquares(board.whiteToMove);
+                blockableSquares = board.findBlockableSquares();
                
                 piecestoDefendCheck = board.defendCheck(blockableSquares);
                 
@@ -164,10 +167,7 @@ function mouseReleased(){
 
             board.changeTurn();
 
-            //creates a bitmap for pieces attacking the player to move's king
-            //if white just moved -> this would check which white pieces are attacking black
-            //this is so that we can see if the board is in check after each move and so that we can find the pieces which can block the attack
-            
+           
             
         }
         print(board.isInCheck);

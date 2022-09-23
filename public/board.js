@@ -726,7 +726,7 @@ class Board {
         return outOfCheck;
     }
 
-    findBlockableSquares(whiteAttackingBlack){
+    findBlockableSquares(){
         var blockableSquares = [];
         var tempSquares;
         let numPiecesAttacking = 0;
@@ -830,76 +830,93 @@ class Board {
     }
 
     findPinnedPieceSquares(){
-        let king;
+        let kings = [];
+        let numKingsFound;
         let firstPiece;
         let pinnedPiece = [];
+
         for (let i = 0; i < 8; i++){
             for (let j = 0; j < 8; j++){
                 if (this.occSquares[i][j] !== 0){
-                    if (this.whiteToMove && this.occSquares[i][j].colourAndPiece() === (PieceType.black ^ PieceType.king)){
-                        king = this.occSquares[i][j];
-                    }
-                    else if (!this.whiteToMove && this.occSquares[i][j].colourAndPiece () === (PieceType.white ^ PieceType.king)){
-                        king = this.occSquares[i][j];
+                    if (this.occSquares[i][j].type === PieceType.king) {
+                        kings.push(this.occSquares[i][j]);
+                        numKingsFound++;
+                        break;
                     }
                 }
             }
+            if (numKingsFound === 2) break;
         }
 
-        for (let options of king.intervals){
-            var col_temp = king.col + options.dx;
-            var row_temp = king.row + options.dy;
+        for (let king of kings){
+            for (let options of king.intervals){
+                var col_temp = king.col + options.dx;
+                var row_temp = king.row + options.dy;
 
-            let pieceHit = false;
-            let tempPinnedLegalSquares = [];
+                let pieceHit = false;
+                let tempPinnedLegalSquares = [];
 
-            while (isOnBoard(row_temp, col_temp)){
-                print('first');
-                
-                
-                if ((king.colour & this.occSquares[row_temp][col_temp].colour) !== 0){ //if piece has been hit and same colour
-                    firstPiece = this.occSquares[row_temp][col_temp]; //store the piece
+                while (isOnBoard(row_temp, col_temp)){
+                    print('first');
 
-                    while (isOnBoard(row_temp, col_temp)){
+                    
+                    if ((king.colour & this.occSquares[row_temp][col_temp].colour) !== 0){ //if piece has been hit and same colour
+                        firstPiece = this.occSquares[row_temp][col_temp]; //store the piece
                         row_temp += options.dy;
                         col_temp += options.dx;
 
-                        tempPinnedLegalSquares.push((row_temp + '' + col_temp));
 
-                        if (isOnBoard(row_temp,col_temp)){
-                            //if (this.occSquares[row_temp][col_temp] !== 0){
-                            if ((king.colour & this.occSquares[row_temp][col_temp].colour) === 0){ //if piece has been hit and opposite colour 
-                                switch (this.occSquares[row_temp][col_temp].type){
-                                    // checks which piece is potentially pinning it
-                                    case PieceType.queen:
-                                        pinnedPiece.push({piece: firstPiece, pinnedLegalSquares: tempPinnedLegalSquares});
-                                        break;
-                                    case PieceType.bishop: 
-                                        if (Math.abs(options.dx) === 1 && Math.abs(options.dy) === 1) pinnedPiece.push({piece: firstPiece, pinnedLegalSquares: tempPinnedLegalSquares});
-                                        break;
-                                    case PieceType.rook: 
-                                        if ((Math.abs(options.dx) === 1 && options.dy === 0) || (options.dx === 0 && Math.abs(options.dy) === 1)) pinnedPiece.push({piece: firstPiece, pinnedLegalSquares: tempPinnedLegalSquares});
-                                        break;
-                                    default:
-                                        //if its none of the above the piece can't be pinned to the king
-                                        break;
-                                }
-                                
-                            } else break;
+                        // checks if there is a piece after it, and if that piece can pin it
+                        while (isOnBoard(row_temp, col_temp)){
                             
-                            pieceHit = true;
-                            //}
-                        }
-                        if(pieceHit) break;
-                    }
-                
-                }
-                if (pieceHit) break;
-                tempPinnedLegalSquares.push(row_temp + '' + col_temp);
-                row_temp += options.dy;
-                col_temp += options.dx;
-            }
+                            tempPinnedLegalSquares.push((row_temp + '' + col_temp));
 
+                            if (isOnBoard(row_temp,col_temp)){
+                                if (this.occSquares[row_temp][col_temp] !== 0){
+                                    if ((king.colour & this.occSquares[row_temp][col_temp].colour) === 0){ //if piece has been hit and opposite colour 
+                                        print(options);
+                                        print(this.occSquares);
+                                        print(this.occSquares[row_temp][col_temp]);
+                                        print(king);
+                                        switch (this.occSquares[row_temp][col_temp].type){
+                                            // checks which piece is potentially pinning it
+                                            case PieceType.queen:
+                                                print('queen pinning you');
+                                                if (Math.abs(options.dx) === 1 && Math.abs(options.dy) === 1 && firstPiece.type === PieceType.bishop) pinnedPiece.push({piece: firstPiece, pinnedLegalSquares: tempPinnedLegalSquares});
+                                                else if ((Math.abs(options.dx) === 1 && options.dy === 0) || (options.dx === 0 && Math.abs(options.dy) === 1) && firstPiece.type === PieceType.rook) pinnedPiece.push({piece: firstPiece, pinnedLegalSquares: tempPinnedLegalSquares}); 
+                                                else if (firstPiece.type === PieceType.queen) pinnedPiece.push({piece: firstPiece, pinnedLegalSquares: tempPinnedLegalSquares});
+                                                break; 
+                                            case PieceType.bishop: 
+                                                if (firstPiece.type === PieceType.queen || firstPiece.type === PieceType.bishop) pinnedPiece.push({piece: firstPiece, pinnedLegalSquares: tempPinnedLegalSquares});
+                                                else pinnedPiece.push({piece: firstPiece, pinnedLegalSquares: []});
+                                                break;
+                                            case PieceType.rook: 
+                                                if (firstPiece.type === PieceType.rook || firstPiece.type === PieceType.queen) pinnedPiece.push({piece: firstPiece, pinnedLegalSquares: tempPinnedLegalSquares}) 
+                                                else pinnedPiece.push({piece: firstPiece, pinnedLegalSquares: []});
+                                                break;
+                                            default:
+                                                //if its none of the above the piece can't be pinned to the king
+                                                break;
+                                        }
+                                   
+                                    } else break;
+                                    
+                                    pieceHit = true;
+                                }
+                            }
+                            if(pieceHit) break;
+                            row_temp += options.dy;
+                            col_temp += options.dx;
+                        }
+                    
+                    }
+                    if (pieceHit) break;
+                    tempPinnedLegalSquares.push(row_temp + '' + col_temp);
+                    row_temp += options.dy;
+                    col_temp += options.dx;
+                }
+
+            }
         }
 
         return pinnedPiece;
