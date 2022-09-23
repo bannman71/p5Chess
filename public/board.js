@@ -598,6 +598,9 @@ class Board {
         let colourCalc = 16; //if black
         if (findAttacksFromWhite) colourCalc = 8 //if white
 
+        print('colour');
+        print(colourCalc);
+
         for (var i = 0; i < 8; i++){
             for (var j = 0; j < 8; j++){
                 if (position[i][j] !== 0){ //if isn't empty
@@ -633,7 +636,7 @@ class Board {
                                             if (position[row_temp][col_temp].type === PieceType.king && (position[row_temp][col_temp].colour & colourCalc) === 0) { //if its the king then continue
                                                 bitmap[row_temp][col_temp] = 1;
                                             }else{
-                                                if (position[row_temp][col_temp].type !== PieceType.king) {
+                                                if (position[row_temp][col_temp].type !== PieceType.king) { //doesn't highlight the same coloured king as a valid piece to take
                                                     bitmap[row_temp][col_temp] = 1; 
                                                 break;
                                                 } 
@@ -677,9 +680,9 @@ class Board {
         let outOfCheck = true;
         let kingRow,kingCol;
         let bitmap;
-        let newPosition = this.occSquares.map(arr =>arr.slice()); //create copy of occSquares
+        let newPosition = this.occSquares.map(arr => arr.slice()); //create copy of occSquares
 
-        if (piece.row === destRow && piece.col === destCol) return false; //a move has actually been made 
+        if (piece.row === destRow && piece.col === destCol) return false; //a move hasn't actually been made 
 
         // if (newPosition[destRow][destCol] !== 0 ){
         //     tempPiece.push(newPosition[destRow][destCol]);
@@ -694,13 +697,17 @@ class Board {
         for (let i = 0; i < 8; i++){
             for (let j = 0; j < 8; j++){
                 if (newPosition[i][j] !== 0){
-                    print(PieceType.white ^ PieceType.king)
+                    
                     if (this.whiteToMove && (newPosition[i][j].colourAndPiece() === (PieceType.white ^ PieceType.king))){
                         kingRow = i;
                         kingCol = j;
+                        print('found');
+                        print(newPosition[i][j]);
                         break;
                     }
                     else if(!this.whiteToMove && (newPosition[i][j].colourAndPiece() === (PieceType.black ^ PieceType.king))){
+                        print('found');
+                        print(newPosition[i][j]);
                         kingRow = i;
                         kingCol = j;
                         break;
@@ -710,7 +717,7 @@ class Board {
         }
         
         //create and mask the bitmap for the new position
-        bitmap = this.findMaskSquares(!this.whitetomove, newPosition);
+        bitmap = this.findMaskSquares(!this.whiteToMove, newPosition);
         print(bitmap);
         this.maskBitMap(bitmap);
 
@@ -725,7 +732,7 @@ class Board {
         let numPiecesAttacking = 0;
 
         let colourCalc = 16;
-        if (whiteAttackingBlack) colourCalc = 8;
+        if (this.whiteToMove) colourCalc = 8;
 
         for (let i = 0; i < 8; i++){
             for (let j = 0; j < 8; j++){
@@ -741,9 +748,6 @@ class Board {
 
                                 while(isOnBoard(row_temp,col_temp)){ //while hasn't gone outside of the array
                                     if (this.occSquares[row_temp][col_temp] === 0){
-                                        print(row_temp);
-                                        print(col_temp);
-
                                         tempSquares.push(row_temp + '' + col_temp);
                                     }
                                     else{

@@ -50,7 +50,6 @@ function draw() {
     drawAllPieces(board.occSquares,pieceAtMouse);
 
     if (board.isInCheck){
-        
         drawBlockableSquares(blockableSquares);
     }
 
@@ -72,31 +71,26 @@ function mousePressed(){
     pieceAtMouse = getPieceAtMousepos(board.occSquares,mouseX,mouseY); //returns type Piece
     if (pieceAtMouse !== tempPieceAtMouse) legalCircles = []; //empties legalcircles so that it doesn't show the squares when you click on another piece
     tempPieceAtMouse = pieceAtMouse;
-    let clickedPinnedPiece;
     
-
+    
+ 
     if (pieceAtMouse !== 0){
         selectedCoords = getMouseCoord(mouseX, mouseY);
+
 
         print(pinnedPiece.length);
 
         if ((board.whiteToMove && (pieceAtMouse.colour === PieceType.white)) || (!board.whiteToMove && (pieceAtMouse.colour === PieceType.black))){
-            
-            if (pinnedPiece.length === 0){ //if no pinned pieces
-                legalCircles = board.allPiecesLegalSquares(pieceAtMouse);
-            }
-            else 
-            {
-                for (let i = 0; i < pinnedPiece.length; i++) {
-                    if (pinnedPiece[i].piece === pieceAtMouse) {
-                        clickedPinnedPiece = pinnedPiece[i]; 
+
+
+            if (pinnedPiece.length === 0) legalCircles = board.allPiecesLegalSquares(pieceAtMouse);
+            else {
+                for (let i = 0; i < pinnedPiece.length; i++){
+                    if ((pinnedPiece[i].pieceLoc === (selectedCoords.y + '' + selectedCoords.x))) {
+                        legalCircles = pinnedPiece[i].pinnedLegalSquares;
                     }
                 }
-            
-                if (!clickedPinnedPiece) legalCircles = board.allPiecesLegalSquares(pieceAtMouse);
-                else legalCircles = clickedPinnedPiece.pinnedLegalSquares;
             }
-            
         }
         MouseDown = true;
         
@@ -107,7 +101,6 @@ function mousePressed(){
 
 function mouseReleased(){
     MouseDown = false;
-
     board.castled = false;
     let isLegal = false;
     let tempEnPassentTaken = false;
@@ -120,11 +113,8 @@ function mouseReleased(){
 
         if (pieceAtMouse.type === PieceType.king){
             if(board.checkNextMoveBitmap(pieceAtMouse,destCoords.y,destCoords.x) === true){ //king moves need the bitmap before due to castling through a check
-                print('bitmap cool');
-                if (board.isLegalKingMove(pieceAtMouse,destCoords.y,destCoords.x)){
-                     isLegal = true;
-                     print('egal fine');
-                }
+                print('king can go there');
+                if (board.isLegalKingMove(pieceAtMouse,destCoords.y,destCoords.x)) isLegal = true;
             }
         } else {
             if (board.isLegalMove(pieceAtMouse,destCoords.y,destCoords.x)){ //doesn't need the bitmap first as it can find after a move has been made whether or not it is in check
@@ -152,10 +142,13 @@ function mouseReleased(){
             }
         
             
+            //let piecesToFind = board.findColouredPieces(board.whiteToMove, board.avPieces, board.occSquares);
             let bmap = board.findMaskSquares(board.whiteToMove, board.occSquares);
             board.maskBitMap(bmap); //create a new bitmap for the current legal position 
 
-            pinnedPiece = board.findPinnedPieceSquares();
+            //pinnedPiece = board.findPinnedPieceSquares();
+            print('pinned');
+            print(pinnedPiece);
 
             if (board.kingInCheck()){
                 print('check');
@@ -163,8 +156,6 @@ function mouseReleased(){
                 
                 blockableSquares = board.findBlockableSquares(board.whiteToMove);
                
-                print(blockableSquares);
-
                 piecestoDefendCheck = board.defendCheck(blockableSquares);
                 
 
