@@ -34,7 +34,7 @@ function setup() {
     BLOCK_SIZE = (windowHeight * 0.8) / 8; //can be width but it is a square
     SPACING = Math.floor((BLOCK_SIZE * (1 - PIECE_SCALE)) / 2);
     
-    board = new Board('r3k2r/5N2/8/8/8/8/PPPPPPP1/RNBQKBNR');
+    board = new Board('r3k3/1pp2ppp/8/8/1q6/3PKPP1/8/8');
     //r3k3/1pp2ppp/8/8/1q6/3PKPP1/8/8
     //r3k2r/5N2/8/8/8/8/PPPPPPP1/RNBQKBNR
     //1r1k1r2/6n1/2q5/8/8/5Q2/1N6/R2K3R

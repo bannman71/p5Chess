@@ -268,8 +268,9 @@ class Board {
                     }
                 }
             }
-            else if ((destRow - piece.row === 1) && (piece.col - destCol === 1 || piece.col - destCol === -1)){ //diagonal capture
-                if ((this.occSquares[destRow][destCol] !== 0 ) && (piece.isOppositeColour(this.occSquares,destRow,destCol)))return true;
+            //diagonal capture
+            else if ((destRow - piece.row === 1) && (piece.col - destCol === 1 || piece.col - destCol === -1)){ 
+                if ((this.occSquares[destRow][destCol] !== 0) && ((this.occSquares[destRow][destCol].colour & piece.colour) === 0) ) return true;
                 else if ((this.pawnMovedTwoSquares === true) && (piece.row === 4) && (destCol === this.pawnMovedTwoSquaresCol)){
                     this.enPassentTaken = true;
                     this.pawnMovedTwoSquares = false;
@@ -471,10 +472,13 @@ class Board {
                             arr.push((piece.row - 1) + '' + piece.col);
                         }
                     }
-                
                     //diagonal capture
-                    for (let i = 1; i >= -1 ; i -= 2){
-                        if ((this.occSquares[piece.row - 1][piece.col + i] !== 0) && (piece.isOppositeColour(this.occSquares, piece.row - 1, piece.col + i))) arr.push((piece.row - 1) + '' + (piece.col + i));
+                    for (let i = 1; i >= -1 ; i -= 2){ //checks both directions
+                        if (isOnBoard(piece.row - 1, piece.col + i)){
+                            if (this.occSquares[piece.row - 1][piece.col + i] !== 0){
+                                if ((this.occSquares[piece.row - 1][piece.col + i].colour & piece.colour) === 0) arr.push((piece.row - 1) + '' + (piece.col + i));
+                            }
+                        }
                     }
                 
                     if ((this.pawnMovedTwoSquares === true) && (piece.row === 3)){
@@ -482,6 +486,9 @@ class Board {
                     }
                     
                 }
+                //
+                //black pawns
+                //
                 else if(piece.colourAndPiece() == (PieceType.pawn ^ PieceType.black)){
                     if (piece.row === 1){  // if white pawn on starting square
                         if (this.occSquares[2][piece.col] == PieceType.none){
@@ -497,7 +504,11 @@ class Board {
                 
                     //diagonal capture
                     for (let i = 1; i >= -1 ; i -= 2){
-                        if ((this.occSquares[piece.row + 1][piece.col + i] !== 0) && (piece.isOppositeColour(this.occSquares, piece.row + 1, piece.col + i))) arr.push((piece.row + 1) + '' + (piece.col + i));
+                        if (isOnBoard(piece.row + 1, piece.col + i)){
+                            if (this.occSquares[piece.row + 1][piece.col + i] !== 0){ 
+                                if ((this.occSquares[piece.row + 1][piece.col + i].colour & piece.colour) === 0) arr.push((piece.row + 1) + '' + (piece.col + i));
+                            }
+                        }
                     }
                 
                     if ((this.pawnMovedTwoSquares === true) && (piece.row === 3)){
@@ -688,6 +699,8 @@ class Board {
 
         if (piece.row === destRow && piece.col === destCol) return false; //a move hasn't actually been made 
 
+
+        if (this.occSquares[destRow][destCol].type === PieceType.king) return false;
         // if (newPosition[destRow][destCol] !== 0 ){
         //     tempPiece.push(newPosition[destRow][destCol]);
         // }
@@ -720,6 +733,7 @@ class Board {
             }
         }
         
+
         //create and mask the bitmap for the new position
         bitmap = this.findMaskSquares(!this.whiteToMove, newPosition);
         print(bitmap);
@@ -837,6 +851,8 @@ class Board {
         let kings = [];
         let numKingsFound;
         let firstPiece;
+        let hitSecondPiece;
+        let hitFirstPiece;
         let pinnedPiece = [];
 
         for (let i = 0; i < 8; i++){
@@ -856,61 +872,65 @@ class Board {
             for (let options of king.intervals){
                 var col_temp = king.col + options.dx;
                 var row_temp = king.row + options.dy;
-
-                let pieceHit = false;
+                hitFirstPiece = false;
+                hitSecondPiece = false;
+                
                 let tempPinnedLegalSquares = [];
 
                 while (isOnBoard(row_temp, col_temp)){
-                    print('first');
 
-                    
-                    if ((king.colour & this.occSquares[row_temp][col_temp].colour) !== 0){ //if piece has been hit and same colour
-                        firstPiece = this.occSquares[row_temp][col_temp]; //store the piece
-                        row_temp += options.dy;
-                        col_temp += options.dx;
-
-
-                        // checks if there is a piece after it, and if that piece can pin it
-                        while (isOnBoard(row_temp, col_temp)){
-                            
-                            tempPinnedLegalSquares.push((row_temp + '' + col_temp));
-                            
-                            if (this.occSquares[row_temp][col_temp] !== 0){
-                                if ((king.colour & this.occSquares[row_temp][col_temp].colour) === 0){ //if piece has been hit and opposite colour 
-                                    
-                                    switch (this.occSquares[row_temp][col_temp].type){
-                                        // checks which piece is potentially pinning it to the king
-                                        case PieceType.queen:
-                                            if ((Math.abs(options.dx) === 1 && Math.abs(options.dy) === 1) && firstPiece.type === PieceType.bishop) pinnedPiece.push({piece: firstPiece, pinnedLegalSquares: tempPinnedLegalSquares}); //if diagonal intervals and the bishop is pinned
-                                            else if ((Math.abs(options.dx) === 1 && options.dy === 0) || (options.dx === 0 && Math.abs(options.dy) === 1) && firstPiece.type === PieceType.rook) pinnedPiece.push({piece: firstPiece, pinnedLegalSquares: tempPinnedLegalSquares}); //if rank file intervals a rook is pinned 
-                                            else if (firstPiece.type === PieceType.queen) pinnedPiece.push({piece: firstPiece, pinnedLegalSquares: tempPinnedLegalSquares}); //queen can always defend if pinned
-                                            else pinnedPiece.push({piece: firstPiece, pinnedLegalSquares: []}); 
-                                            break; 
-                                        case PieceType.bishop: 
-                                            if (firstPiece.type === PieceType.queen || firstPiece.type === PieceType.bishop) pinnedPiece.push({piece: firstPiece, pinnedLegalSquares: tempPinnedLegalSquares});
-                                            else pinnedPiece.push({piece: firstPiece, pinnedLegalSquares: []});
-                                            break;
-                                        case PieceType.rook: 
-                                            if (firstPiece.type === PieceType.rook || firstPiece.type === PieceType.queen) pinnedPiece.push({piece: firstPiece, pinnedLegalSquares: tempPinnedLegalSquares}) 
-                                            else pinnedPiece.push({piece: firstPiece, pinnedLegalSquares: []});
-                                            break;
-                                        default:
-                                            //if its none of the above the piece can't be pinned to the king
-                                            break;
-                                    }
-                                
-                                } else break;
-                                
-                                pieceHit = true;
-                            }
+                    // checks if there is a piece after it, and if that piece can pin it
+                    if (hitFirstPiece){
                         
-                            if(pieceHit) break;
-                            row_temp += options.dy;
-                            col_temp += options.dx;
+                        tempPinnedLegalSquares.push((row_temp + '' + col_temp));
+                            
+                        if (this.occSquares[row_temp][col_temp] !== 0){
+                            if ((king.colour & this.occSquares[row_temp][col_temp].colour) === 0){ //if piece has been hit and opposite colour
+                                hitSecondPiece = true;
+                                switch (this.occSquares[row_temp][col_temp].type){
+                                    // checks which piece is potentially pinning it to the king
+                                    case PieceType.queen:
+                                        if ((Math.abs(options.dx) === 1 && Math.abs(options.dy) === 1) && firstPiece.type === PieceType.bishop) {
+                                            pinnedPiece.push({piece: firstPiece, pinnedLegalSquares: tempPinnedLegalSquares}); //if diagonal intervals and the bishop is pinned
+                                        }
+                                        else if (((Math.abs(options.dx) === 1 && options.dy === 0) || (options.dx === 0 && Math.abs(options.dy) === 1)) && firstPiece.type === PieceType.rook) {
+                                            pinnedPiece.push({piece: firstPiece, pinnedLegalSquares: tempPinnedLegalSquares}); //if rank file intervals a rook is pinned 
+                                        }
+                                        else if (firstPiece.type === PieceType.queen) {
+                                            pinnedPiece.push({piece: firstPiece, pinnedLegalSquares: tempPinnedLegalSquares}); //queen can always defend if pinned
+                                        }
+                                        else {
+                                            pinnedPiece.push({piece: firstPiece, pinnedLegalSquares: []}); 
+                                        }
+                                        break; 
+                                    case PieceType.bishop: 
+                                        if (firstPiece.type === PieceType.queen || firstPiece.type === PieceType.bishop) pinnedPiece.push({piece: firstPiece, pinnedLegalSquares: tempPinnedLegalSquares});
+                                        else pinnedPiece.push({piece: firstPiece, pinnedLegalSquares: []});
+                                        break;
+                                    case PieceType.rook: 
+                                        if (firstPiece.type === PieceType.rook || firstPiece.type === PieceType.queen) pinnedPiece.push({piece: firstPiece, pinnedLegalSquares: tempPinnedLegalSquares}) 
+                                        else pinnedPiece.push({piece: firstPiece, pinnedLegalSquares: []});
+                                        break;
+                                    default:
+                                        //if its none of the above the piece can't be pinned to the king
+                                        break;
+                                }
+                            
+                            } else break;
+                            
                         }
-                    
+                
                     }
-                    if (pieceHit) break;
+                    
+                    if(hitSecondPiece) break;
+
+                    if (this.occSquares[row_temp][col_temp] !== 0){
+                        if (((king.colour & this.occSquares[row_temp][col_temp].colour) !== 0) && hitFirstPiece === false){ //if piece has been hit and same colour
+                            firstPiece = this.occSquares[row_temp][col_temp]; //store the piece
+                            hitFirstPiece = true;
+                        }
+                    }
+
                     tempPinnedLegalSquares.push(row_temp + '' + col_temp);
                     row_temp += options.dy;
                     col_temp += options.dx;
@@ -963,7 +983,8 @@ class Piece {
     }
 
     isOppositeColour(occSquares,destRow,destCol){
-        return (this.colour & occSquares[destRow][destCol]) === 0;
+        if (occSquares[destRow][destCol] === 0) return true
+        return (this.colour & occSquares[destRow][destCol].colour) === 0;
     }
 
 }
