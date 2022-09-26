@@ -34,7 +34,8 @@ function setup() {
     BLOCK_SIZE = (windowHeight * 0.8) / 8; //can be width but it is a square
     SPACING = Math.floor((BLOCK_SIZE * (1 - PIECE_SCALE)) / 2);
     
-    board = new Board('r1b2b2/8/2kq4/8/2B5/5K2/8/2BQ4');
+    board = new Board('r3k2r/5N2/8/8/8/8/PPPPPPP1/RNBQKBNR');
+    //r3k3/1pp2ppp/8/8/1q6/3PKPP1/8/8
     //r3k2r/5N2/8/8/8/8/PPPPPPP1/RNBQKBNR
     //1r1k1r2/6n1/2q5/8/8/5Q2/1N6/R2K3R
     //'rnbqkbnr/1ppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR'
@@ -117,7 +118,10 @@ function mouseReleased(){
         if (pieceAtMouse.type === PieceType.king){
             if(board.checkNextMoveBitmap(pieceAtMouse,destCoords.y,destCoords.x) === true){ //king moves need the bitmap before due to castling through a check
                 print('king can go there');
-                if (board.isLegalKingMove(pieceAtMouse,destCoords.y,destCoords.x)) isLegal = true;
+                if (board.isLegalKingMove(pieceAtMouse,destCoords.y,destCoords.x)) {
+                    isLegal = true;
+                    print('yyuptpfpfapasdfpfas');
+                }
             }
         } else {
             if (board.isLegalMove(pieceAtMouse,destCoords.y,destCoords.x)){ //doesn't need the bitmap first as it can find after a move has been made whether or not it is in check
