@@ -31,7 +31,7 @@ function setup() {
     BLOCK_SIZE = (windowHeight * 0.8) / 8; //can be width but it is a square
     SPACING = Math.floor((BLOCK_SIZE * (1 - PIECE_SCALE)) / 2);
     
-    board = new Board('1r1k1r2/6n1/2q5/8/8/5Q2/1N6/R2K3R');
+    board = new Board('rnbqkbnr/p1pppppp/1p6/4P3/8/5NP1/PPPP1PBP/RNBQK2R');
     //r3k3/1pp2ppp/8/8/1q6/3PKPP1/8/8
     //r3k2r/5N2/8/8/8/8/PPPPPPP1/RNBQKBNR
     //1r1k1r2/6n1/2q5/8/8/5Q2/1N6/R2K3R
@@ -70,8 +70,6 @@ function mousePressed(){
     if (pieceAtMouse !== tempPieceAtMouse) legalCircles = []; //empties legalcircles so that it doesn't show the squares when you click on another piece
     tempPieceAtMouse = pieceAtMouse;
     
-    
- 
     if (pieceAtMouse !== 0){
         selectedCoords = getMouseCoord(mouseX, mouseY);
 
@@ -100,6 +98,7 @@ function mouseReleased(){
     board.castled = false;
     let isLegal = false;
     let tempEnPassentTaken = false;
+    let tempPawnMovedTwoSquares = false;
 
 
     if (pieceAtMouse !== 0){
@@ -109,15 +108,12 @@ function mouseReleased(){
 
         if (pieceAtMouse.type === PieceType.king){
             if(board.checkNextMoveBitmap(pieceAtMouse,destCoords.y,destCoords.x) === true){ //king moves need the bitmap before due to castling through a check
-                print('king can go there');
                 if (board.isLegalKingMove(pieceAtMouse,destCoords.y,destCoords.x)) {
                     isLegal = true;
-                    print('yyuptpfpfapasdfpfas');
                 }
             }
         } else {
             if (board.isLegalMove(pieceAtMouse,destCoords.y,destCoords.x)){ //doesn't need the bitmap first as it can find after a move has been made whether or not it is in check
-                print('thats legal');
                 if (board.checkNextMoveBitmap(pieceAtMouse,destCoords.y,destCoords.x) === true) isLegal = true;
             }
         }
@@ -129,10 +125,12 @@ function mouseReleased(){
                 board.enPassentTaken = false;
             }
 
+            if (pieceAtMouse.type !== PieceType.pawn) board.pawnMovedTwoSquares = false;
+            //is set to false here and in board.isLegalMove
+
 
             if (pieceAtMouse.colour === PieceType.black) board.moveCounter++; //after blacks move -> the move counter always increases
 
-            if (!(pieceAtMouse.type === PieceType.pawn)) board.pawnMovedTwoSquares = false; //variable is set to false inside legal moves function and here
             
             if (board.enPassentTaken){
                 board.updateEnPassentMove(pieceAtMouse,destCoords.y,destCoords.x);
@@ -141,7 +139,6 @@ function mouseReleased(){
                 if (!board.castled) board.updatePiecePos(pieceAtMouse,destCoords.y,destCoords.x); //castling changes position inside the castles function
             }
         
-            
             //let piecesToFind = board.findColouredPieces(board.whiteToMove, board.avPieces, board.occSquares);
             let bmap = board.findMaskSquares(board.whiteToMove, board.occSquares);
             board.maskBitMap(bmap); //create a new bitmap for the current legal position for board.kingInCheck()

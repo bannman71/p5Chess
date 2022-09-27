@@ -260,16 +260,18 @@ class Board {
                         }
                     }
                     else if (destRow - piece.row === 1){
-                        if (this.occSquares[2][destCol] == PieceType.none){
+                        if (this.occSquares[2][destCol] == PieceType.none){ //if moves once
                             this.pawnMovedTwoSquares = false;
                             return true;
                         }
                     }
                 }        
                 else{
-                    if (this.occSquares[destRow][destCol] == PieceType.none){
-                        this.pawnMovedTwoSquares = false;
-                        return true;
+                    if (destRow - piece.row === 1){
+                        if (this.occSquares[destRow][destCol] == PieceType.none){
+                            this.pawnMovedTwoSquares = false;
+                            return true;
+                        }
                     }
                 }
             }
@@ -504,7 +506,7 @@ class Board {
                         }
                     }
                 
-                    if ((this.pawnMovedTwoSquares === true) && (piece.row === 3)){
+                    if ((this.pawnMovedTwoSquares === true) && (piece.row === 4)){
                         arr.push((piece.row + 1) + '' + this.pawnMovedTwoSquaresCol);
                     }
                 }
@@ -811,12 +813,9 @@ class Board {
         for (let i = 0; i < 8; i++){
             for (let j = 0; j < 8; j++){
                 if (this.occSquares[i][j] !== 0){
-                    print('BBBBBBBBBBBBBBBBBBBBBBBBb');
                     for (let pinned of this.pinnedPieces){
-                        print(pinned.piece.row);
                         if ((pinned.piece.row === i) && (pinned.piece.col === j)){ 
                             piecePinned = true;
-                            print('she pipnned');
                             break;
                         }
                     }
