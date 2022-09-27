@@ -34,7 +34,7 @@ function setup() {
     BLOCK_SIZE = (windowHeight * 0.8) / 8; //can be width but it is a square
     SPACING = Math.floor((BLOCK_SIZE * (1 - PIECE_SCALE)) / 2);
     
-    board = new Board('r3k2r/1pp2ppp/8/8/1q6/3PKPP1/8/8');
+    board = new Board('1r1k1r2/6n1/2q5/8/8/5Q2/1N6/R2K3R');
     //r3k3/1pp2ppp/8/8/1q6/3PKPP1/8/8
     //r3k2r/5N2/8/8/8/8/PPPPPPP1/RNBQKBNR
     //1r1k1r2/6n1/2q5/8/8/5Q2/1N6/R2K3R
@@ -51,7 +51,7 @@ function draw() {
     drawAllPieces(board.occSquares,pieceAtMouse);
 
     if (board.isInCheck){
-        drawBlockableSquares(blockableSquares);
+        //drawBlockableSquares(blockableSquares);
     }
 
     if (MouseDown){
@@ -136,7 +136,7 @@ function mouseReleased(){
                 board.enPassentTaken = false;
             }
 
-            
+
             if (pieceAtMouse.colour === PieceType.black) board.moveCounter++; //after blacks move -> the move counter always increases
 
             if (!(pieceAtMouse.type === PieceType.pawn)) board.pawnMovedTwoSquares = false; //variable is set to false inside legal moves function and here
@@ -160,6 +160,8 @@ function mouseReleased(){
             if (board.kingInCheck()){
                 print('check');
                 board.isInCheck = true;
+                
+
                 
                 blockableSquares = board.findBlockableSquares();
                

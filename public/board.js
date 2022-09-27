@@ -42,6 +42,9 @@ class Board {
         this.isInCheck = false;
 
         this.castled = false;
+
+        this.piecesToDefendCheck = [];
+
     }
 
     FENToBoard(FEN){
@@ -357,7 +360,6 @@ class Board {
 
         piece.updateSquare(destRow, destCol);
         
-
     }
 
     shortCastles(king){
@@ -733,7 +735,7 @@ class Board {
         return outOfCheck;
     }
 
-    findBlockableSquares(){
+    findBlockableSquares(){ //when in check, find the squares + piece that a piece can be put in between the king and the checking piece
         var blockableSquares = [];
         var tempSquares;
         let numPiecesAttacking = 0;
@@ -801,8 +803,6 @@ class Board {
                 }
             }
         }
-
-
 
         for (let i = 0; i < 8; i++){
             for (let j = 0; j < 8; j++){
