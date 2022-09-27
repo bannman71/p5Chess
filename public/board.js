@@ -286,7 +286,7 @@ class Board {
         if (this.whiteToMove === false && piece.colour === PieceType.white) return false;
 
         if ((destCol - piece.col) >= 2 && piece.row === destRow){ //if attempts to short castle
-            if((this.whiteToMove && this.whiteShortCastlingRights) === true){
+            if((this.whiteToMove && this.whiteShortCastlingRights) === true){ //if white attempted
                 if (this.checkKingRank(piece,1)){ // checks if there are pieces in the way (dir 1 = right)
                     this.shortCastles(piece); //is a legal castle move
                     this.removeCastlingRights(true,true);
@@ -295,7 +295,7 @@ class Board {
                     return true;
                 }
                 
-            }else if (this.whiteToMove === false && this.blackShortCastlingRights === true){
+            }else if (this.whiteToMove === false && this.blackShortCastlingRights === true){ //if black attempted
                 if (this.checkKingRank(piece,1)){ // checks if there are pieces in the way (dir 1 = right)
                     this.shortCastles(piece); 
                     this.removeCastlingRights(true,true);
@@ -306,7 +306,7 @@ class Board {
             }
         }  
         else if(destCol - piece.col <= -2 && piece.row === destRow){ //if attempts to long castle
-            if((this.whiteToMove && this.whiteLongCastlingRights) === true ){
+            if((this.whiteToMove && this.whiteLongCastlingRights) === true ){ //if white attempted
                 if (this.checkKingRank(piece,-1)){
                     this.longCastles(piece);
                     this.removeCastlingRights(true,true);
@@ -314,7 +314,7 @@ class Board {
 
                     return true;
                 }
-            }else if (!this.whiteToMove && this.blackLongCastlingRights === true){
+            }else if (!this.whiteToMove && this.blackLongCastlingRights === true){ //if black attempted
                 if (this.checkKingRank(piece,1)){ // checks if there are pieces in the way (dir 1 = right)
                     this.longCastles(piece); 
                     this.removeCastlingRights(true,true);
@@ -351,23 +351,12 @@ class Board {
 
     updateEnPassentMove(piece,destRow,destCol){
 
-        for(let i = 0; i < this.avPieces.length; i++){
-            if (
-                (this.avPieces[i].row === destRow + 1 || this.avPieces[i].row === destRow - 1) 
-                && (this.avPieces[i].col === destCol) 
-                && this.avPieces[i].colourAndPiece() !== piece.colourAndPiece()
-                )
-            {
-                this.occSquares[this.avPieces[i].row][this.avPieces[i].col] = 0;
+        this.occSquares[piece.row][this.pawnMovedTwoSquaresCol] = 0;
+        this.occSquares[piece.row][piece.col] = 0;
+        this.occSquares[destRow][destCol] = piece;
 
-                this.avPieces.splice(i,1);
-                break;
-            }
-        }
-
-        piece.row = destRow;
-        piece.col = destCol;
-        this.occSquares[destRow][destCol] = piece.colour;
+        piece.updateSquare(destRow, destCol);
+        
 
     }
 
@@ -894,13 +883,13 @@ class Board {
                                             pinnedPiece.push({piece: firstPiece, pinnedLegalSquares: tempPinnedLegalSquares}); //if diagonal intervals and the bishop is pinned
                                         }
                                         else if (((Math.abs(options.dx) === 1 && options.dy === 0) || (options.dx === 0 && Math.abs(options.dy) === 1)) && firstPiece.type === PieceType.rook) {
-                                            pinnedPiece.push({piece: firstPiece, pinnedLegalSquares: tempPinnedLegalSquares}); //if rank file intervals a rook is pinned 
+                                            pinnedPiece.push({piece: firstPiece, pinnedLegalSquares: tempPinnedLegalSquares}); //if rank file intervals and a rook is pinned 
                                         }
                                         else if (firstPiece.type === PieceType.queen) {
                                             pinnedPiece.push({piece: firstPiece, pinnedLegalSquares: tempPinnedLegalSquares}); //queen can always defend if pinned
                                         }
                                         else {
-                                            pinnedPiece.push({piece: firstPiece, pinnedLegalSquares: []}); 
+                                            pinnedPiece.push({piece: firstPiece, pinnedLegalSquares: []}); //can't make any moves whilst pinned
                                         }
                                         break; 
                                     case PieceType.bishop: 

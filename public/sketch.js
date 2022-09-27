@@ -34,7 +34,7 @@ function setup() {
     BLOCK_SIZE = (windowHeight * 0.8) / 8; //can be width but it is a square
     SPACING = Math.floor((BLOCK_SIZE * (1 - PIECE_SCALE)) / 2);
     
-    board = new Board('r3k3/1pp2ppp/8/8/1q6/3PKPP1/8/8');
+    board = new Board('r3k2r/1pp2ppp/8/8/1q6/3PKPP1/8/8');
     //r3k3/1pp2ppp/8/8/1q6/3PKPP1/8/8
     //r3k2r/5N2/8/8/8/8/PPPPPPP1/RNBQKBNR
     //1r1k1r2/6n1/2q5/8/8/5Q2/1N6/R2K3R
@@ -83,7 +83,6 @@ function mousePressed(){
         print(pinnedPiece.length);
 
         if ((board.whiteToMove && (pieceAtMouse.colour === PieceType.white)) || (!board.whiteToMove && (pieceAtMouse.colour === PieceType.black))){
-
 
             if (pinnedPiece.length === 0) legalCircles = board.allPiecesLegalSquares(pieceAtMouse);
             else {
@@ -137,15 +136,16 @@ function mouseReleased(){
                 board.enPassentTaken = false;
             }
 
-
-            if (pieceAtMouse.colour === PieceType.black) board.moveCounter++;
+            
+            if (pieceAtMouse.colour === PieceType.black) board.moveCounter++; //after blacks move -> the move counter always increases
 
             if (!(pieceAtMouse.type === PieceType.pawn)) board.pawnMovedTwoSquares = false; //variable is set to false inside legal moves function and here
+            
             if (board.enPassentTaken){
                 board.updateEnPassentMove(pieceAtMouse,destCoords.y,destCoords.x);
             }
             else{
-                if (!board.castles) board.updatePiecePos(pieceAtMouse,destCoords.y,destCoords.x); //castling changes position inside the castles function
+                if (!board.castled) board.updatePiecePos(pieceAtMouse,destCoords.y,destCoords.x); //castling changes position inside the castles function
             }
         
             
