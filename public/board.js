@@ -1,4 +1,35 @@
 
+const intervalsArr = [[
+    {dx: 1,dy: 0},      // rankFileIntervals
+    {dx: -1,dy: 0}, 
+    {dx: 0,dy: 1}, 
+    {dx: 0,dy: -1}
+], [
+    {dx: 1, dy: 1},     // diagIntervals
+    {dx: -1, dy : -1},
+    {dx: 1, dy: -1},
+    {dx: -1, dy: 1}
+], [
+    {dx: 1, dy: -2},    // knightIntervals
+    {dx: -1, dy: -2},
+    {dx: 1, dy: 2},
+    {dx: -1, dy: 2},
+    {dx: 2, dy: 1},
+    {dx: -2, dy: -1},
+    {dx: 2, dy: -1},
+    {dx: -2, dy: 1},
+], [
+    {dx:1, dy: 0},       // kingIntervals
+    {dx:1, dy: 1}, 
+    {dx:1, dy: -1},
+    {dx:0, dy: 1},
+    {dx:0, dy: -1},
+    {dx:-1, dy: 0},
+    {dx:-1, dy: 1},
+    {dx:-1, dy: -1},
+]
+];
+
 function create2dArray(rows,cols){
     arr = []
     for(let i = 0; i < cols; i++){
@@ -621,7 +652,6 @@ class Board {
         newPosition[piece.row][piece.col] = 0;
         newPosition[destRow][destCol] = piece;
 
-        print('hello');
         print(this.occSquares);
 
         for (let i = 0; i < 8; i++){
@@ -889,53 +919,23 @@ class Piece {
         this.colour = colour;
     }
 
-    static intervalsArr = [[
-        {dx: 1,dy: 0},      // rankFileIntervals
-        {dx: -1,dy: 0}, 
-        {dx: 0,dy: 1}, 
-        {dx: 0,dy: -1}
-    ], [
-        {dx: 1, dy: 1},     // diagIntervals
-        {dx: -1, dy : -1},
-        {dx: 1, dy: -1},
-        {dx: -1, dy: 1}
-    ], [
-        {dx: 1, dy: -2},    // knightIntervals
-        {dx: -1, dy: -2},
-        {dx: 1, dy: 2},
-        {dx: -1, dy: 2},
-        {dx: 2, dy: 1},
-        {dx: -2, dy: -1},
-        {dx: 2, dy: -1},
-        {dx: -2, dy: 1},
-    ], [
-        {dx:1, dy: 0},       // kingIntervals
-        {dx:1, dy: 1}, 
-        {dx:1, dy: -1},
-        {dx:0, dy: 1},
-        {dx:0, dy: -1},
-        {dx:-1, dy: 0},
-        {dx:-1, dy: 1},
-        {dx:-1, dy: -1},
-    ]
-    ]
-
     colourAndPiece(){
         return this.colour ^ this.type;
     }
 
     intervals(){
+        print(intervalsArr);
         switch (this.type) {
             case PieceType.rook:
-                return this.intervalsArr[0];
+                return intervalsArr[0];
             case PieceType.king:
-                return this.intervalsArr[3];
+                return intervalsArr[3];
             case PieceType.knight:
-                return this.intervalsArr[2];
+                return intervalsArr[2];
             case PieceType.bishop:
-                return this.intervalsArr[1];
+                return intervalsArr[1];
             case PieceType.queen:
-                return this.intervalsArr[0].concat(this.intervalsArr[1]);
+                return intervalsArr[0].concat(intervalsArr[1]);
             case PieceType.pawn:
                 if (this.colour === PieceType.white) return [{dx: 1, dy: -1}, {dx: -1, dy: -1}];
                 else return [{dx: 1, dy: 1}, {dx: -1, dy: 1}];
