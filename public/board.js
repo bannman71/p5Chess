@@ -1,4 +1,35 @@
 
+const intervalsArr = [[
+    {dx: 1,dy: 0},      // rankFileIntervals
+    {dx: -1,dy: 0}, 
+    {dx: 0,dy: 1}, 
+    {dx: 0,dy: -1}
+], [
+    {dx: 1, dy: 1},     // diagIntervals
+    {dx: -1, dy : -1},
+    {dx: 1, dy: -1},
+    {dx: -1, dy: 1}
+], [
+    {dx: 1, dy: -2},    // knightIntervals
+    {dx: -1, dy: -2},
+    {dx: 1, dy: 2},
+    {dx: -1, dy: 2},
+    {dx: 2, dy: 1},
+    {dx: -2, dy: -1},
+    {dx: 2, dy: -1},
+    {dx: -2, dy: 1},
+], [
+    {dx:1, dy: 0},       // kingIntervals
+    {dx:1, dy: 1}, 
+    {dx:1, dy: -1},
+    {dx:0, dy: 1},
+    {dx:0, dy: -1},
+    {dx:-1, dy: 0},
+    {dx:-1, dy: 1},
+    {dx:-1, dy: -1},
+]
+];
+
 function create2dArray(rows,cols){
     arr = []
     for(let i = 0; i < cols; i++){
@@ -55,41 +86,6 @@ class Board {
         let FENIterator = 0;
         let finalRank = false;
         let finishedIterating = false;
-
-        const rankFileIntervals = [
-            {dx: 1,dy: 0}, 
-            {dx: -1,dy: 0}, 
-            {dx: 0,dy: 1}, 
-            {dx: 0,dy: -1}
-        ]
-        const diagIntervals = [
-            {dx: 1, dy: 1},
-            {dx: -1, dy : -1},
-            {dx: 1, dy: -1},
-            {dx: -1, dy: 1}
-        ]
-        
-        const knightIntervals = [
-            {dx: 1, dy: -2},
-            {dx: -1, dy: -2},
-            {dx: 1, dy: 2},
-            {dx: -1, dy: 2},
-            {dx: 2, dy: 1},
-            {dx: -2, dy: -1},
-            {dx: 2, dy: -1},
-            {dx: -2, dy: 1},
-        ]
-        
-        const kingIntervals = [
-            {dx:1, dy: 0},
-            {dx:1, dy: 1},
-            {dx:1, dy: -1},
-            {dx:0, dy: 1},
-            {dx:0, dy: -1},
-            {dx:-1, dy: 0},
-            {dx:-1, dy: 1},
-            {dx:-1, dy: -1},
-        ]
         
         while(!finishedIterating){
             if (!(/[A-Za-z]/).test(FEN[FENIterator]) && FEN[FENIterator] !== '/'){ // if its a number
@@ -100,64 +96,48 @@ class Board {
 
                 switch (FEN[FENIterator]) {
                     case 'b':
-                        this.occSquares[row][col] = new Piece(PieceType.type[FEN[FENIterator]], row, col, PieceType.black, diagIntervals);
-                        //var newPiece = new Piece(PieceType.type[FEN[FENIterator]],row,col,PieceType.black,diagIntervals);
+                        this.occSquares[row][col] = new Piece(PieceType.type[FEN[FENIterator]], row, col, PieceType.black);
                         break;
                     case 'r':
-                        this.occSquares[row][col] = new Piece(PieceType.type[FEN[FENIterator]], row, col, PieceType.black, rankFileIntervals);
-                        //var newPiece = new Piece(PieceType.type[FEN[FENIterator]],row,col,PieceType.black,rankFileIntervals);
+                        this.occSquares[row][col] = new Piece(PieceType.type[FEN[FENIterator]], row, col, PieceType.black);
                         break;
                     case 'q':
-                        this.occSquares[row][col] = new Piece(PieceType.type[FEN[FENIterator]], row, col, PieceType.black, rankFileIntervals.concat(diagIntervals));
-                        //var newPiece = new Piece(PieceType.type[FEN[FENIterator]],row,col,PieceType.black,rankFileIntervals.concat(diagIntervals));
+                        this.occSquares[row][col] = new Piece(PieceType.type[FEN[FENIterator]], row, col, PieceType.black);
                         break;
                     case 'n':
-                        this.occSquares[row][col] = new Piece(PieceType.type[FEN[FENIterator]], row, col, PieceType.black, knightIntervals);
-                        //var newPiece = new Piece(PieceType.type[FEN[FENIterator]],row,col,PieceType.black,knightIntervals);
+                        this.occSquares[row][col] = new Piece(PieceType.type[FEN[FENIterator]], row, col, PieceType.black);
                         break;
                     case 'k': 
-                        this.occSquares[row][col] = new Piece(PieceType.type[FEN[FENIterator]], row, col, PieceType.black, kingIntervals);
-                        //var newPiece = new Piece(PieceType.type[FEN[FENIterator]],row,col,PieceType.black,kingIntervals);
+                        this.occSquares[row][col] = new Piece(PieceType.type[FEN[FENIterator]], row, col, PieceType.black);
                         break;
                     case 'p':
-                        this.occSquares[row][col] = new Piece(PieceType.type[FEN[FENIterator]], row, col, PieceType.black, [{dx: 1, dy: 1}, {dx: -1, dy: 1}]);
-                        var newPiece = new Piece(PieceType.type[FEN[FENIterator]], row, col, PieceType.black, [{dx: 1, dy: 1}, {dx: -1, dy: 1}]);
+                        this.occSquares[row][col] = new Piece(PieceType.type[FEN[FENIterator]], row, col, PieceType.black);
                         break;
                 }
-            
-                // this.occSquares[row][col] = PieceType.black;
-                // this.avPieces.push(newPiece);
 
             }
             else if ((/[A-Z]/).test(FEN[FENIterator])){ //if uppercase (white piece)
                 switch (FEN[FENIterator]) {
                     case 'B':
-                        this.occSquares[row][col] = new Piece(PieceType.type[FEN[FENIterator]], row, col, PieceType.white, diagIntervals);
+                        this.occSquares[row][col] = new Piece(PieceType.type[FEN[FENIterator]], row, col, PieceType.white);
                         break;
                     case 'R':
-                        this.occSquares[row][col] = new Piece(PieceType.type[FEN[FENIterator]], row, col, PieceType.white, rankFileIntervals);
-                        //var newPiece = new Piece(PieceType.type[FEN[FENIterator]],row,col,PieceType.white,rankFileIntervals);
+                        this.occSquares[row][col] = new Piece(PieceType.type[FEN[FENIterator]], row, col, PieceType.white);
                         break;
                     case 'Q':
-                        this.occSquares[row][col] = new Piece(PieceType.type[FEN[FENIterator]], row, col, PieceType.white, rankFileIntervals.concat(diagIntervals));
-                        //var newPiece = new Piece(PieceType.type[FEN[FENIterator]],row,col,PieceType.white,rankFileIntervals.concat(diagIntervals));
+                        this.occSquares[row][col] = new Piece(PieceType.type[FEN[FENIterator]], row, col, PieceType.white);
                         break;
                     case 'N':
-                        this.occSquares[row][col] = new Piece(PieceType.type[FEN[FENIterator]], row, col, PieceType.white, knightIntervals);
-                        //var newPiece = new Piece(PieceType.type[FEN[FENIterator]],row,col,PieceType.white,knightIntervals);
+                        this.occSquares[row][col] = new Piece(PieceType.type[FEN[FENIterator]], row, col, PieceType.white);
+                        //var newPiece = n
                         break;
                     case 'K': 
-                        this.occSquares[row][col] = new Piece(PieceType.type[FEN[FENIterator]], row, col, PieceType.white, kingIntervals);
-                        //var newPiece = new Piece(PieceType.type[FEN[FENIterator]],row,col,PieceType.white,kingIntervals);
+                        this.occSquares[row][col] = new Piece(PieceType.type[FEN[FENIterator]], row, col, PieceType.white);
                         break;
                     case 'P':
-                        this.occSquares[row][col] = new Piece(PieceType.type[FEN[FENIterator]], row, col, PieceType.white, [{dx: 1, dy: -1}, {dx: -1, dy: -1}]);
-                        //var newPiece = new Piece(PieceType.type[FEN[FENIterator]],row,col,PieceType.white,[{dx: 1, dy: -1}, {dx: -1, dy: -1}]);
+                        this.occSquares[row][col] = new Piece(PieceType.type[FEN[FENIterator]], row, col, PieceType.white);
                         break;
                 }
-                // this.occSquares[row][col] = PieceType.white;
-                // this.avPieces.push(newPiece);
-
             }
     
             
@@ -175,7 +155,7 @@ class Board {
 
     }
 
-    isLegalMove(piece,destRow,destCol){
+    isLegalMove(piece, destRow, destCol){
         var destPos = destRow + '' + destCol;
 
         if (this.whiteToMove === true && piece.colour === PieceType.black) return false;
@@ -185,21 +165,15 @@ class Board {
             return false;
         }
            
-
         switch (piece.type) {
-            case PieceType.rook:
+            case PieceType.rook: 
                 if (this.legalSquares(piece).includes(destPos)){
                     if (piece.col === 7) this.removeCastlingRights(true, false);
                     else if (piece.col === 0) this.removeCastlingRights(false, true)
                     return true;
                 }
                 break;
-            case PieceType.queen:
-                if (this.legalSquares(piece).includes(destPos)){
-                    return true;
-                }
-                break;
-            case PieceType.bishop:
+            case PieceType.bishop: case PieceType.queen: 
                 if (this.legalSquares(piece).includes(destPos)){
                     return true;
                 }
@@ -289,49 +263,26 @@ class Board {
 
     isLegalKingMove(piece,destRow,destCol){
 
-        if (this.whiteToMove === true && piece.colour === PieceType.black) return false;
-        if (this.whiteToMove === false && piece.colour === PieceType.white) return false;
+        if (this.whiteToMove === (piece.colour === PieceType.black)) return false; // hehe cool logic
 
-        if ((destCol - piece.col) >= 2 && piece.row === destRow){ //if attempts to short castle
-            if((this.whiteToMove && this.whiteShortCastlingRights) === true){ //if white attempted
-                if (this.checkKingRank(piece,1)){ // checks if there are pieces in the way (dir 1 = right)
-                    this.shortCastles(piece); //is a legal castle move
-                    this.removeCastlingRights(true,true);
-                    this.castled = true;
+        if ((destCol - piece.col) >= 2 && piece.row === destRow && this.checkKingRank(piece,1)){ //if attempts to short castle
+            if(this.whiteShortCastlingRights || this.blackShortCastlingRights){ //if white attempted
+                this.shortCastles(piece); //is a legal castle move
+                this.removeCastlingRights(true,true);
+                this.castled = true;
 
-                    return true;
-                }
-                
-            }else if (this.whiteToMove === false && this.blackShortCastlingRights === true){ //if black attempted
-                if (this.checkKingRank(piece,1)){ // checks if there are pieces in the way (dir 1 = right)
-                    this.shortCastles(piece); 
-                    this.removeCastlingRights(true,true);
-                    this.castled = true;
-
-                    return true;
-                }
+                return true;
             }
         }  
-        else if(destCol - piece.col <= -2 && piece.row === destRow){ //if attempts to long castle
-            if((this.whiteToMove && this.whiteLongCastlingRights) === true ){ //if white attempted
-                if (this.checkKingRank(piece,-1)){
-                    this.longCastles(piece);
-                    this.removeCastlingRights(true,true);
-                    this.castled = true;
+        else if(destCol - piece.col <= -2 && piece.row === destRow && this.checkKingRank(piece,-1)){ //if attempts to long castle and checks if there are pieces in the way (dir 1 = right)
+            if(this.whiteLongCastlingRights || this.blackLongCastlingRights){ //if white attempted
+                this.longCastles(piece);
+                this.removeCastlingRights(true,true);
+                this.castled = true;
 
-                    return true;
-                }
-            }else if (!this.whiteToMove && this.blackLongCastlingRights === true){ //if black attempted
-                if (this.checkKingRank(piece,1)){ // checks if there are pieces in the way (dir 1 = right)
-                    this.longCastles(piece); 
-                    this.removeCastlingRights(true,true);
-                    this.castled = true;
-
-                    return true;
-                }
+                return true;
             }
-        }
-        else{
+        }else{
             if(!(Math.abs(destRow - piece.row) > 1) || !Math.abs(destCol - piece.col) > 1) {
                 if((this.occSquares[destRow][destCol] === 0) || (piece.colour & this.occSquares[destRow][destCol].colour) === 0){
                     print(this.occSquares);
@@ -346,8 +297,8 @@ class Board {
 
     updatePiecePos(piece, newRow, newCol){
 
-        if (this.occSquares[newRow][newCol].type === PieceType.rook){ // if a piece has been captured 
-            this.checkRookCapture();   //has to remove castling rights so another rook cant be placed there and castle      
+        if (this.occSquares[newRow][newCol].type === PieceType.rook){ // if a rook has been captured 
+            this.checkRookCapture(newRow, newCol);   //has to remove castling rights so another rook cant be placed there and castle      
         }
       
         this.occSquares[piece.row][piece.col] = 0;
@@ -398,7 +349,7 @@ class Board {
     legalSquares(piece){ //gets all available squares for piece passed in
         var legalCoords = [];
 
-        for (let options of piece.intervals){
+        for (let options of piece.intervals()){
             var col_temp = piece.col + options.dx;
             var row_temp = piece.row + options.dy;
 
@@ -431,7 +382,7 @@ class Board {
 
         switch (piece.type){
             case PieceType.knight: 
-                for (let options of piece.intervals){
+                for (let options of piece.intervals()){
                     var col_temp =  piece.col + options.dx;
                     var row_temp = piece.row + options.dy;
         
@@ -443,7 +394,7 @@ class Board {
                 }
                 break;
             case PieceType.king:
-                for (let options of piece.intervals){
+                for (let options of piece.intervals()){
                     var col_temp =  piece.col + options.dx;
                     var row_temp = piece.row + options.dy;
         
@@ -512,7 +463,7 @@ class Board {
                 }
                 break;
             default:
-                for (let options of piece.intervals){
+                for (let options of piece.intervals()){
                     var col_temp =  piece.col + options.dx;
                     var row_temp = piece.row + options.dy;
     
@@ -536,9 +487,7 @@ class Board {
     }
 
     changeTurn(){ // black -> white || white -> black
-        if (this.whiteToMove === true){
-            this.whiteToMove = false;
-        }else this.whiteToMove = true;
+        this.whiteToMove = !this.whiteToMove;
     }
 
     checkKingRank(king,dir){ //checks if there are pieces on the way of castling
@@ -569,10 +518,10 @@ class Board {
     }
 
     checkRookCapture(){ //if a rook is captured castling rights need to be taken away
-        if (this.occSquares[0][0].colour !== 16) this.blackLongCastlingRights = false; //black 'a' rook
-        else if (this.occSquares[0][7].colour !== 16) this.blackShortCastlingRights = false; //black 'h' rook
-        else if (this.occSquares[7][0].colour !== 8) this.whiteLongCastlingRights = false; //white 'a' rook
-        else if(this.occSquares[7][7].colour !== 8) this.whiteShortCastlingRights = false; //white 'h' rook
+        if (this.occSquares[0][0].colour !== PieceType.black) this.blackLongCastlingRights = false; //black 'a' rook
+        else if (this.occSquares[0][7].colour !== PieceType.black) this.blackShortCastlingRights = false; //black 'h' rook
+        else if (this.occSquares[7][0].colour !== PieceType.white) this.whiteLongCastlingRights = false; //white 'a' rook
+        else if(this.occSquares[7][7].colour !== PieceType.white) this.whiteShortCastlingRights = false; //white 'h' rook
     }
 
     kingInCheck(){
@@ -617,7 +566,7 @@ class Board {
                     if ((position[i][j].colour & colourCalc) === colourCalc){ //if the piece is from the side you want to find attacks from 
                         switch (position[i][j].type){
                             case PieceType.knight: case PieceType.king: case PieceType.pawn:
-                                for (let options of position[i][j].intervals){
+                                for (let options of position[i][j].intervals()){
                                     var col_temp = j + options.dx;
                                     var row_temp = i + options.dy;
                         
@@ -634,7 +583,7 @@ class Board {
                                 }
                                 break;
                             default:
-                                for (let options of position[i][j].intervals){
+                                for (let options of position[i][j].intervals()){
                                     var col_temp = j + options.dx;
                                     var row_temp = i + options.dy;
                     
@@ -703,7 +652,6 @@ class Board {
         newPosition[piece.row][piece.col] = 0;
         newPosition[destRow][destCol] = piece;
 
-        print('hello');
         print(this.occSquares);
 
         for (let i = 0; i < 8; i++){
@@ -754,7 +702,7 @@ class Board {
                         case PieceType.knight: case PieceType.king: case PieceType.pawn:
                             break; // these can't be blocked and the king can't check another king
                         default:    
-                            for (let options of this.occSquares[i][j].intervals){
+                            for (let options of this.occSquares[i][j].intervals()){
                                 var col_temp = j + options.dx;
                                 var row_temp = i + options.dy;
                                 tempSquares = [];
@@ -832,7 +780,7 @@ class Board {
             }
         }
 
-        for (let options of king.intervals){
+        for (let options of king.intervals()){
             var col_temp =  king.col + options.dx;
             var row_temp = king.row + options.dy; 
             //allow the king to move out of a check
@@ -871,7 +819,7 @@ class Board {
         }
 
         for (let king of kings){
-            for (let options of king.intervals){
+            for (let options of king.intervals()){
                 var col_temp = king.col + options.dx;
                 var row_temp = king.row + options.dy;
                 hitFirstPiece = false;
@@ -963,17 +911,35 @@ class PieceType{
 }
 
 class Piece {
-
-    constructor(type, row, col, colour, intervals){
+    
+    constructor(type, row, col, colour){
         this.type = type;
         this.row = row;
         this.col = col;
-        this.colour = colour;   
-        this.intervals = intervals;
+        this.colour = colour;
     }
 
     colourAndPiece(){
         return this.colour ^ this.type;
+    }
+
+    intervals(){
+        print(intervalsArr);
+        switch (this.type) {
+            case PieceType.rook:
+                return intervalsArr[0];
+            case PieceType.king:
+                return intervalsArr[3];
+            case PieceType.knight:
+                return intervalsArr[2];
+            case PieceType.bishop:
+                return intervalsArr[1];
+            case PieceType.queen:
+                return intervalsArr[0].concat(intervalsArr[1]);
+            case PieceType.pawn:
+                if (this.colour === PieceType.white) return [{dx: 1, dy: -1}, {dx: -1, dy: -1}];
+                else return [{dx: 1, dy: 1}, {dx: -1, dy: 1}];
+        }
     }
 
     updateSquare(newRow,newCol){

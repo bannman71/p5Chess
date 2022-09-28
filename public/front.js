@@ -76,8 +76,8 @@ function drawLegalSquares(squares){
     for (let i = 0; i < squares.length; i++){
         row = (BLOCK_SIZE / 2) + squares[i][0] * BLOCK_SIZE;
         col =  (BLOCK_SIZE/2) + squares[i][1] * BLOCK_SIZE;
-        fill(100,200,0);
-        ellipse(col,row,30);
+        fill(80,123,101);
+        ellipse(col,row,25);
     }
     
 }
