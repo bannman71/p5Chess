@@ -96,25 +96,3 @@ function drawBlockableSquares(squares){
     } 
 
 }
-
-function drawInCheckLegalSquares(piecesToBlockAttack, x, y){
-    let clickedCol = x
-    let clickedRow = y
-    var drawRow,drawCol;
-
-    for (let i = 0; i < piecesToBlockAttack.length; i++){
-
-        if ((clickedRow + '' + clickedCol) === piecesToBlockAttack[i].locOnCoords){ //if you click a piece which can block check
-            print('inin');
-            drawRow = (BLOCK_SIZE / 2) + piecesToBlockAttack[i].move[0] * BLOCK_SIZE; 
-            drawCol = (BLOCK_SIZE / 2) + piecesToBlockAttack[i].move[1] * BLOCK_SIZE; 
-            fill(255,51,153);
-            noStroke();
-            ellipse(drawCol, drawRow, 30);
-        }
-    }
-}
-
-function hideSelectedPiece(){
-
-}

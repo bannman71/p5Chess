@@ -47,18 +47,9 @@ function draw() {
     draw_grid();
     drawAllPieces(board.occSquares,pieceAtMouse);
 
-    if (board.isInCheck){
-        //drawBlockableSquares(blockableSquares);
-    }
-
     if (MouseDown){
         drawPieceAtMousepos(pieceAtMouse,mouseX,mouseY);
-        
-        if (board.isInCheck){
-            drawInCheckLegalSquares(board.piecesToDefendCheck,selectedCoords.x,selectedCoords.y);
-        } else{
-            drawLegalSquares(legalCircles);
-        }
+        drawLegalSquares(legalCircles);
     }
 
 }
@@ -75,16 +66,17 @@ function mousePressed(){
 
         if ((board.whiteToMove && (pieceAtMouse.colour === PieceType.white)) || (!board.whiteToMove && (pieceAtMouse.colour === PieceType.black))){
 
-            if (board.pinnedPieces.length === 0) legalCircles = board.allPiecesLegalSquares(pieceAtMouse);
-            else {
-                for (let i = 0; i < board.pinnedPieces.length; i++){
-                    if (board.pinnedPieces[i].piece === pieceAtMouse) {
-                        legalCircles = board.pinnedPieces[i].pinnedLegalSquares;
-                        clickedPinnedPiece = true;
-                    }
-                }
-                if (!clickedPinnedPiece) legalCircles = board.allPiecesLegalSquares(pieceAtMouse);
-            }
+            //if (board.pinnedPieces.length === 0) legalCircles = board.allPiecesLegalSquares(pieceAtMouse);
+            legalCircles = board.allPiecesLegalSquares(pieceAtMouse);
+            // else {
+            //     for (let i = 0; i < board.pinnedPieces.length; i++){
+            //         if (board.pinnedPieces[i].piece === pieceAtMouse) {
+            //             legalCircles = board.pinnedPieces[i].pinnedLegalSquares;
+            //             clickedPinnedPiece = true;
+            //         }
+            //     }
+            //     //if (!clickedPinnedPiece) legalCircles = board.allPiecesLegalSquares(pieceAtMouse);
+            // }
         }
         MouseDown = true;
         
