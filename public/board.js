@@ -265,7 +265,10 @@ class Board {
 
         if (this.whiteToMove === (piece.colour === PieceType.black)) return false; // hehe cool logic
 
-        if ((destCol - piece.col) >= 2 && piece.row === destRow && this.checkKingRank(piece,1)){ //if attempts to short castle
+        print('asasdasd');
+        print(this.checkKingRank(piece,1) === true);
+
+        if ((destCol - piece.col) >= 2 && piece.row === destRow && (this.checkKingRank(piece,1) === true)){ //if attempts to short castle
             if(this.whiteShortCastlingRights || this.blackShortCastlingRights){ //if white attempted
                 this.shortCastles(piece); //is a legal castle move
                 this.removeCastlingRights(true,true);
@@ -492,8 +495,12 @@ class Board {
         for (let i = dir; Math.abs(i) <= 4; i += dir){
             if (this.maskMap[king.row][king.col + i] !== 0){ //if piece has been hit
 
-                if (this.maskMap[king.row][Math.min(king.col + i,6)] === 1) return false;
-                
+                if (this.maskMap[king.row][king.col + i] === 1) {
+
+                    return false;
+                }
+                print('not through check');
+
                 //if piece is same colour rook on the 'h' square
                 if ((king.col + i === 7) && this.maskMap[king.row][king.col + i] !== 0) return true;
                 //if piece is same colour rook on 'a' square
@@ -635,8 +642,6 @@ class Board {
         let kingRow,kingCol;
         let bitmap;
         let newPosition = this.occSquares.map(arr => arr.slice()); //create copy of occSquares
-        let kingWillBeTaken = false;
-
 
 
         if (piece.row === destRow && piece.col === destCol) {
