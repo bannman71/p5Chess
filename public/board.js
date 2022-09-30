@@ -55,7 +55,7 @@ class Board {
         this.occSquares = create2dArray(8,8);
         
         this.moveCounter = 0;
-        this.whiteToMove = false;
+        this.whiteToMove = true;
 
         this.blackShortCastlingRights = true;
         this.blackLongCastlingRights = true;
@@ -263,13 +263,13 @@ class Board {
 
     isLegalKingMove(piece,destRow,destCol){
 
-        if (this.whiteToMove === (piece.colour === PieceType.black)) return false; // hehe cool logic
-
-        print('asasdasd');
-        print(this.checkKingRank(piece,1) === true);
+        print('hey');
+        if (this.whiteToMove && (piece.colour === PieceType.black)) return false; // hehe cool logic
+        else if (!this.whiteToMove && (piece.colour === PieceType.white)) return false;
 
         if ((destCol - piece.col) >= 2 && piece.row === destRow && (this.checkKingRank(piece,1) === true)){ //if attempts to short castle
             if(this.whiteShortCastlingRights || this.blackShortCastlingRights){ //if white attempted
+                print('short castles');
                 this.shortCastles(piece); //is a legal castle move
                 this.removeCastlingRights(true,true);
                 this.castled = true;
@@ -494,9 +494,10 @@ class Board {
     checkKingRank(king,dir){ //checks if there are pieces on the way of castling
         for (let i = dir; Math.abs(i) <= 4; i += dir){
             if (this.maskMap[king.row][king.col + i] !== 0){ //if piece has been hit
-
+                print('hit a piece');
+                print(this.maskMap);
                 if (this.maskMap[king.row][king.col + i] === 1) {
-
+                    print('maskmap is 1');
                     return false;
                 }
                 print('not through check');
@@ -558,13 +559,16 @@ class Board {
     findMaskSquares(findAttacksFromWhite, position){ //gets all available squares that the pieces can move to (excluding captures since they aren't necessary)
         let bitmap = create2dArray(8,8);
 
-
         let colourCalc = 16; //if black
         if (findAttacksFromWhite) colourCalc = 8 //if white
+
+
+        print('colour: ' + colourCalc);
 
         for (var i = 0; i < 8; i++){
             for (var j = 0; j < 8; j++){
                 if (position[i][j] !== 0 && ((position[i][j].colour & colourCalc) === colourCalc)){ //if the piece is from the side you want to find attacks from 
+
                     switch (position[i][j].type){
                         case PieceType.knight: case PieceType.king: case PieceType.pawn:
                             for (let options of position[i][j].intervals()){
@@ -597,7 +601,6 @@ class Board {
                                             bitmap[row_temp][col_temp] = 1;
                                         }else{
                                             if (position[row_temp][col_temp].type !== PieceType.king) { //doesn't highlight the same coloured king as a valid piece to take
-                                                print('thats out king ');
                                                 bitmap[row_temp][col_temp] = 1; 
                                             break;
                                             } 
@@ -616,6 +619,9 @@ class Board {
             
         }
 
+        print('bbbbbbbbb');
+        print(bitmap);
+
         return bitmap;
     }
 
@@ -626,13 +632,8 @@ class Board {
 
         for(var i = 0; i < 8; i++){
             for (var j = 0; j < 8; j++){
-                if (bitmap[i][j] === 1) {
-                    this.maskMap[i][j] = 1;
-                }
-                else{
-                    if (pos[i][j] === 0) this.maskMap[i][j] = 0;
-                    else this.maskMap[i][j] = pos[i][j].colour;
-                }
+                if (bitmap[i][j] === 1) this.maskMap[i][j] = 1;
+                else if (bitmap[i][j] !== 0) this.maskMap[i][j] = pos[i][j].colour;
             }
         }
     }
@@ -676,9 +677,14 @@ class Board {
 
         //create and mask the bitmap for the new position
         bitmap = this.findMaskSquares(!this.whiteToMove, newPosition);
+        print('ccccccccccccccc');
+        print(bitmap);
         this.maskBitMap(bitmap);
 
+
+
         if (this.maskMap[kingRow][kingCol] === 1) {
+            print('not out of check');
             outOfCheck = false; //this is the line that makes it all happen -> disallows pinned pieces and stuff from putting the king in check
         }
         return outOfCheck;
