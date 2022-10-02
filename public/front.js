@@ -26,7 +26,7 @@ function drawPieceAtMousepos(piece, x, y){
     y -= BLOCK_SIZE * PIECE_SCALE / 2;
 
     if (piece !== 0){
-
+        
         let piece_number = piece.colourAndPiece();
 
         image(IMAGES[piece_number], 
@@ -76,7 +76,7 @@ function drawLegalSquares(squares){
     for (let i = 0; i < squares.length; i++){
         row = (BLOCK_SIZE / 2) + squares[i][0] * BLOCK_SIZE;
         col =  (BLOCK_SIZE/2) + squares[i][1] * BLOCK_SIZE;
-        fill(80,123,101);
+        fill(80,123,101, 175);
         ellipse(col,row,25);
     }
     

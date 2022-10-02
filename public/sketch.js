@@ -32,6 +32,9 @@ function setup() {
     SPACING = Math.floor((BLOCK_SIZE * (1 - PIECE_SCALE)) / 2);
     
     board = new Board('rnbqkbnr/p1pp1ppp/1p6/4P3/8/5NP1/PPPP1PBP/RNBQK2R');
+
+    board.maskBitMap(board.findMaskSquares(!board.whiteToMove, board.occSquares));
+
     //r3k3/1pp2ppp/8/8/1q6/3PKPP1/8/8
     //r3k2r/5N2/8/8/8/8/PPPPPPP1/RNBQKBNR
     //1r1k1r2/6n1/2q5/8/8/5Q2/1N6/R2K3R
@@ -45,7 +48,7 @@ function draw() {
     clear();
     background(WHITE);
     draw_grid();
-    drawAllPieces(board.occSquares,pieceAtMouse);
+    drawAllPieces(board.occSquares, pieceAtMouse);
 
     if (MouseDown){
         drawPieceAtMousepos(pieceAtMouse,mouseX,mouseY);
@@ -65,23 +68,11 @@ function mousePressed(){
         selectedCoords = getMouseCoord(mouseX, mouseY);
 
         if ((board.whiteToMove && (pieceAtMouse.colour === PieceType.white)) || (!board.whiteToMove && (pieceAtMouse.colour === PieceType.black))){
-
-            //if (board.pinnedPieces.length === 0) legalCircles = board.allPiecesLegalSquares(pieceAtMouse);
             legalCircles = board.allPiecesLegalSquares(pieceAtMouse);
-            // else {
-            //     for (let i = 0; i < board.pinnedPieces.length; i++){
-            //         if (board.pinnedPieces[i].piece === pieceAtMouse) {
-            //             legalCircles = board.pinnedPieces[i].pinnedLegalSquares;
-            //             clickedPinnedPiece = true;
-            //         }
-            //     }
-            //     //if (!clickedPinnedPiece) legalCircles = board.allPiecesLegalSquares(pieceAtMouse);
-            // }
         }
         MouseDown = true;
         
     }else legalCircles = [];
-    //print(legalCircles);
  
 }
 
@@ -90,7 +81,6 @@ function mouseReleased(){
     board.castled = false;
     let isLegal = false;
     let tempEnPassentTaken = false;
-    let tempPawnMovedTwoSquares = false;
 
 
     if (pieceAtMouse !== 0){
@@ -129,25 +119,16 @@ function mouseReleased(){
                 if (!board.castled) board.updatePiecePos(pieceAtMouse,destCoords.y,destCoords.x); //castling changes position inside the castles function
             }
         
-            //let piecesToFind = board.findColouredPieces(board.whiteToMove, board.avPieces, board.occSquares);
             let bmap = board.findMaskSquares(board.whiteToMove, board.occSquares);
             board.maskBitMap(bmap); //create a new bitmap for the current legal position for board.kingInCheck()
 
-            board.findPinnedPieceSquares();
-
             if (board.kingInCheck()){
                 board.isInCheck = true;
-                
-                board.findBlockableSquares();
-            
-                board.defendCheck();
                 
             } else board.isInCheck = false;
 
             board.changeTurn();
 
-           
-            
         }
         print(board.isInCheck);
         if (board.isInCheck && board.piecesToDefendCheck === 0){
