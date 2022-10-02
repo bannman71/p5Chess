@@ -264,10 +264,11 @@ class Board {
     isLegalKingMove(piece,destRow,destCol){
 
         print('hey');
-        if (this.whiteToMove && (piece.colour === PieceType.black)) return false; // hehe cool logic
+        if (this.whiteToMove && (piece.colour === PieceType.black)) return false;
         else if (!this.whiteToMove && (piece.colour === PieceType.white)) return false;
 
-        if ((destCol - piece.col) >= 2 && piece.row === destRow && (this.checkKingRank(piece,1) === true)){ //if attempts to short castle
+        if ((destCol - piece.col) >= 2 && piece.row === destRow && (this.checkKingRank(piece, 1) === true)){ //if attempts to short castle
+            print('short attempted');
             if(this.whiteShortCastlingRights || this.blackShortCastlingRights){ //if white attempted
                 print('short castles');
                 this.shortCastles(piece); //is a legal castle move
@@ -277,7 +278,8 @@ class Board {
                 return true;
             }
         }  
-        else if(destCol - piece.col <= -2 && piece.row === destRow && this.checkKingRank(piece,-1)){ //if attempts to long castle and checks if there are pieces in the way (dir 1 = right)
+        else if(destCol - piece.col <= -2 && piece.row === destRow && this.checkKingRank(piece, -1)){ //if attempts to long castle and checks if there are pieces in the way (dir 1 = right)
+            print('long attempted');
             if(this.whiteLongCastlingRights || this.blackLongCastlingRights){ //if white attempted
                 this.longCastles(piece);
                 this.removeCastlingRights(true,true);
@@ -286,7 +288,8 @@ class Board {
                 return true;
             }
         }else{
-            if(!(Math.abs(destRow - piece.row) > 1) || !Math.abs(destCol - piece.col) > 1) {
+            if(!(Math.abs(destRow - piece.row) > 1) && !Math.abs(destCol - piece.col) > 1) {
+                print('normal move attempted');
                 if((this.occSquares[destRow][destCol] === 0) || (piece.colour & this.occSquares[destRow][destCol].colour) === 0){
                     this.removeCastlingRights(true,true);
                     return true;
@@ -493,17 +496,23 @@ class Board {
 
     checkKingRank(king,dir){ //checks if there are pieces on the way of castling
         for (let i = dir; Math.abs(i) <= 4; i += dir){
+            print(i);
+            print(this.maskMap[king.row][king.col + i]);
             if (this.maskMap[king.row][king.col + i] !== 0){ //if piece has been hit
                 print('hit a piece');
-                print(this.maskMap);
                 if (this.maskMap[king.row][king.col + i] === 1) {
                     print('maskmap is 1');
                     return false;
                 }
                 print('not through check');
 
+                print(king.col + i);
                 //if piece is same colour rook on the 'h' square
-                if ((king.col + i === 7) && this.maskMap[king.row][king.col + i] !== 0) return true;
+                if ((king.col + i === 7) && (this.maskMap[king.row][king.col + i] !== 0)) {
+                    print('hhhhh');
+                    return true;
+
+                }
                 //if piece is same colour rook on 'a' square
                 else if((king.col + i == 0) && this.maskMap[king.row][king.col + i] !== 0) return true;
                 else return false;
@@ -628,12 +637,10 @@ class Board {
     maskBitMap(bitmap){
         this.maskMap = create2dArray(8,8);
 
-        let pos = this.occSquares.map(arr => arr.slice()); //create copy of occSquares
-
         for(var i = 0; i < 8; i++){
             for (var j = 0; j < 8; j++){
                 if (bitmap[i][j] === 1) this.maskMap[i][j] = 1;
-                else if (bitmap[i][j] !== 0) this.maskMap[i][j] = pos[i][j].colour;
+                else if (this.occSquares[i][j] !== 0) this.maskMap[i][j] = this.occSquares[i][j].colour;
             }
         }
     }
@@ -682,14 +689,12 @@ class Board {
         this.maskBitMap(bitmap);
 
 
-
         if (this.maskMap[kingRow][kingCol] === 1) {
             print('not out of check');
             outOfCheck = false; //this is the line that makes it all happen -> disallows pinned pieces and stuff from putting the king in check
         }
         return outOfCheck;
     }
-
 
     findBlockableSquares(){ //when in check, find the squares that a piece can be put in between the king and the checking piece
         var tempSquares;

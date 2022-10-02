@@ -100,10 +100,7 @@ function mouseReleased(){
 
         if (pieceAtMouse.type === PieceType.king){
             if(board.checkNextMoveBitmap(pieceAtMouse,destCoords.y,destCoords.x) === true){ //king moves need the bitmap before due to castling through a check
-                print('yea htats through');
-                if (board.isLegalKingMove(pieceAtMouse,destCoords.y,destCoords.x)) {
-                    isLegal = true;
-                }
+                if (board.isLegalKingMove(pieceAtMouse,destCoords.y,destCoords.x)) isLegal = true;
             }
         } else {
             if (board.isLegalMove(pieceAtMouse,destCoords.y,destCoords.x)){ //doesn't need the bitmap first as it can find after a move has been made whether or not it is in check
