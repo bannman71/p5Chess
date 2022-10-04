@@ -1,6 +1,7 @@
 var canv;
 const BLACK = 'rgb(140,162,173)';
 const WHITE = 'rgb(222,237,230)';
+const windowSize = 0.75;
 
 let IMAGES = {};
 
@@ -27,10 +28,10 @@ function preload(){
 }
 
 function setup() {
-    canv = createCanvas(windowHeight * 0.8, windowHeight * 0.8);
+    canv = createCanvas(windowHeight * windowSize, windowHeight * windowSize);
 
     PIECE_SCALE = 0.75;
-    BLOCK_SIZE = (windowHeight * 0.8) / 8; //can be width but it is a square
+    BLOCK_SIZE = (windowHeight * windowSize) / 8; //can be width but it is a square
     SPACING = Math.floor((BLOCK_SIZE * (1 - PIECE_SCALE)) / 2);
     
     board = new Board('rnbqkbnr/1ppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR');
@@ -157,9 +158,9 @@ function mouseReleased(){
 }
 
 function windowResized(){
-    resizeCanvas(windowHeight * 0.8, windowHeight * 0.8);
+    resizeCanvas(windowHeight * windowSize, windowHeight * windowSize);
     centerCanvas();
-    BLOCK_SIZE = (windowHeight * 0.8) / 8; //can be width but it is a square
+    BLOCK_SIZE = (windowHeight * windowSize) / 8; //can be width but it is a square
     SPACING = Math.floor((BLOCK_SIZE * (1 - PIECE_SCALE)) / 2);
 }
 

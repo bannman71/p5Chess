@@ -1,14 +1,44 @@
-<link rel="stylesheet" href="./styles.css">
 <head>
-    <meta charset="UTF-8">
+<meta charset="UTF-8">
     <script language="javascript" type="text/javascript" src="https://cdn.jsdelivr.net/npm/p5@1.4.1/lib/p5.js"></script>
     <script language="javascript" type="text/javascript" src="sketch.js"><reference path="./p5.global-mode.d.ts" /></script>
     <script language="javascript" type="text/javascript" src="front.js"></script>
     <script language="javascript" type="text/javascript" src="board.js"></script>
+<style>
+
+.header-container{
+  position: fixed;
+  z-index: 1;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  background-color: rgb(74, 74, 112);
+}
+
+a {
+  color:white;
+}
+
+
+.bottom{
+  position: relative;
+  width: 10%;
+  height: 1000px;
+  bottom:10000px;
+
+}
+
+</style>
 
 </head>
   
 <body>
-<div class="box"></div>
+
+<div class="header-container">
+  <p><a href="default.asp" target="_blank">This is a link</a></p>
+</div>
+
+<div class="bottom">hello</div>
+
 </body>
 </html>

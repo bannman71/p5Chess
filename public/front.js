@@ -65,7 +65,7 @@ function drawAllPieces(occSquares,pieceAtMouse){
 
 function centerCanvas(){
     var x = (windowWidth - width) / 2;
-    var y = (windowHeight - height) * 0.25;
+    var y = (windowHeight - height + 300) * 0.25;
     canv.position(x,y);
 }
 
