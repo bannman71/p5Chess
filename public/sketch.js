@@ -140,7 +140,10 @@ function mouseReleased(){
             board.changeTurn();
 
         }
-        
+
+        print('num ' + board.calculateNumLegalMoves());
+
+
         if (board.kingInCheck()){
             board.isInCheck = true;
                 
@@ -148,14 +151,12 @@ function mouseReleased(){
 
         } else board.isInCheck = false;
 
-        print('nummm');
-        print(numDefenses);
-
         if (board.isInCheck && numDefenses === 0){
             if (board.whiteToMove){
                 print('black wins');
             } else print('white wins');
         }
+        else if (board.calculateNumLegalMoves() === 0) print('stalemate');
         pieceAtMouse = 0;
     }   
 }
