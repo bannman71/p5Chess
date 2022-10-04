@@ -268,8 +268,8 @@ class Board {
         if (this.whiteToMove && (piece.colour === PieceType.black)) return false;
         else if (!this.whiteToMove && (piece.colour === PieceType.white)) return false;
 
-        if (!this.isInCheck && (destCol - piece.col) >= 2 && piece.row === destRow && (this.checkKingRank(piece, 1) === true)){ //if attempts to short castle
-            if(this.whiteShortCastlingRights || this.blackShortCastlingRights){ //if white attempted
+        if (!this.isInCheck && (destCol - piece.col) >= 2 && piece.row === destRow && (this.checkKingRank(piece, 1))){ //if attempts to short castle
+            if((this.whiteToMove && this.whiteShortCastlingRights) || (!this.whiteToMove && this.blackShortCastlingRights)){ //if white attempted
                 this.shortCastles(piece); //is a legal castle move
                 this.removeCastlingRights(true,true);
                 this.castled = true;
@@ -278,7 +278,7 @@ class Board {
             }
         }  
         else if(!this.isInCheck && destCol - piece.col <= -2 && piece.row === destRow && this.checkKingRank(piece, -1)){ //if attempts to long castle and checks if there are pieces in the way (dir 1 = right)
-            if(this.whiteLongCastlingRights || this.blackLongCastlingRights){ //if white attempted
+            if((this.whiteToMove && this.whiteLongCastlingRights) || (!this.whiteToMove && this.blackLongCastlingRights)){ //if white attempted
                 this.longCastles(piece);
                 this.removeCastlingRights(true,true);
                 this.castled = true;
@@ -406,11 +406,11 @@ class Board {
                 if (!this.isInCheck){
                     if (this.whiteToMove){
                         if (this.whiteShortCastlingRights && this.checkKingRank(piece, 1)) arr.push(piece.row + '' + 6); //short castles
-                        else if (this.whiteLongCastlingRights && this.checkKingRank(piece, -1)) arr.push(piece.row + '' + 3); //long castles
+                        else if (this.whiteLongCastlingRights && this.checkKingRank(piece, -1)) arr.push(piece.row + '' + 2); //long castles
                     }
                     else{
                         if (this.blackShortCastlingRights && this.checkKingRank(piece, 1)) arr.push(piece.row + '' + 6); //short castles
-                        else if (this.blackLongCastlingRights && this.checkKingRank(piece, -1)) arr.push(piece.row + '' + 3); //long castles
+                        else if (this.blackLongCastlingRights && this.checkKingRank(piece, -1)) arr.push(piece.row + '' + 2); //long castles
                     }
                 }
                 break; 
