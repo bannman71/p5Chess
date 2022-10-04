@@ -13,6 +13,8 @@ let MouseDown;
 let pieceAtMouse;
 let selectedCoords;
 
+
+
 let BIN_PIECES = {
     20: 'b_bishop', 17: 'b_king', 19: 'b_knight', 18: 'b_pawn', 22: 'b_queen', 21: 'b_rook',
     12: 'w_bishop', 9: 'w_king', 11: 'w_knight', 10: 'w_pawn', 14: 'w_queen', 13: 'w_rook'
@@ -31,7 +33,7 @@ function setup() {
     BLOCK_SIZE = (windowHeight * 0.8) / 8; //can be width but it is a square
     SPACING = Math.floor((BLOCK_SIZE * (1 - PIECE_SCALE)) / 2);
     
-    board = new Board('rnbqkbnr/p1pp1ppp/1p6/4P3/8/5NP1/PPPP1PBP/RNBQK2R');
+    board = new Board('4k2r/1q6/8/1b6/8/2Q5/8/R3K2R');
 
     board.maskBitMap(board.findMaskSquares(!board.whiteToMove, board.occSquares));
 
@@ -59,7 +61,6 @@ function draw() {
 
 function mousePressed(){
     let tempPieceAtMouse;
-    let clickedPinnedPiece = false;
     pieceAtMouse = getPieceAtMousepos(board.occSquares,mouseX,mouseY); //returns type Piece
     if (pieceAtMouse !== tempPieceAtMouse) legalCircles = []; //empties legalcircles so that it doesn't show the squares when you click on another piece
     tempPieceAtMouse = pieceAtMouse;
@@ -67,9 +68,12 @@ function mousePressed(){
     if (pieceAtMouse !== 0){
         selectedCoords = getMouseCoord(mouseX, mouseY);
 
-        if ((board.whiteToMove && (pieceAtMouse.colour === PieceType.white)) || (!board.whiteToMove && (pieceAtMouse.colour === PieceType.black))){
+        var start = performance.now();
+        if (board.whiteToMove === (pieceAtMouse.colour === PieceType.white)){
             legalCircles = board.allPiecesLegalSquares(pieceAtMouse);
         }
+        var end = performance.now();
+        print('time taken ' + (end - start));
         MouseDown = true;
         
     }else legalCircles = [];
@@ -81,6 +85,8 @@ function mouseReleased(){
     board.castled = false;
     let isLegal = false;
     let tempEnPassentTaken = false;
+
+    let numDefenses = 0;
 
 
     if (pieceAtMouse !== 0){
@@ -105,6 +111,8 @@ function mouseReleased(){
                 board.enPassentTaken = false;
             }
 
+            board.defendCheck();
+
             if (pieceAtMouse.type !== PieceType.pawn) board.pawnMovedTwoSquares = false;
             //is set to false here and in board.isLegalMove
 
@@ -125,13 +133,15 @@ function mouseReleased(){
             if (board.kingInCheck()){
                 board.isInCheck = true;
                 
+                numDefenses = board.defendCheck();
+
             } else board.isInCheck = false;
 
             board.changeTurn();
 
         }
         print(board.isInCheck);
-        if (board.isInCheck && board.piecesToDefendCheck === 0){
+        if (board.isInCheck && numDefenses === 0){
             if (board.whiteToMove){
                 print('black wins');
             } else print('white wins');

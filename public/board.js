@@ -265,14 +265,11 @@ class Board {
 
     isLegalKingMove(piece,destRow,destCol){
 
-        print('hey');
         if (this.whiteToMove && (piece.colour === PieceType.black)) return false;
         else if (!this.whiteToMove && (piece.colour === PieceType.white)) return false;
 
-        if ((destCol - piece.col) >= 2 && piece.row === destRow && (this.checkKingRank(piece, 1) === true)){ //if attempts to short castle
-            print('short attempted');
+        if (!this.isInCheck && (destCol - piece.col) >= 2 && piece.row === destRow && (this.checkKingRank(piece, 1) === true)){ //if attempts to short castle
             if(this.whiteShortCastlingRights || this.blackShortCastlingRights){ //if white attempted
-                print('short castles');
                 this.shortCastles(piece); //is a legal castle move
                 this.removeCastlingRights(true,true);
                 this.castled = true;
@@ -280,8 +277,7 @@ class Board {
                 return true;
             }
         }  
-        else if(destCol - piece.col <= -2 && piece.row === destRow && this.checkKingRank(piece, -1)){ //if attempts to long castle and checks if there are pieces in the way (dir 1 = right)
-            print('long attempted');
+        else if(!this.isInCheck && destCol - piece.col <= -2 && piece.row === destRow && this.checkKingRank(piece, -1)){ //if attempts to long castle and checks if there are pieces in the way (dir 1 = right)
             if(this.whiteLongCastlingRights || this.blackLongCastlingRights){ //if white attempted
                 this.longCastles(piece);
                 this.removeCastlingRights(true,true);
@@ -290,9 +286,11 @@ class Board {
                 return true;
             }
         }else{
-            if(!(Math.abs(destRow - piece.row) > 1) && !Math.abs(destCol - piece.col) > 1) {
-                print('normal move attempted');
+            print('thats an else');
+            if(!(Math.abs(destRow - piece.row) > 1) && !(Math.abs(destCol - piece.col) > 1)) {
+                print('yea');
                 if((this.occSquares[destRow][destCol] === 0) || (piece.colour & this.occSquares[destRow][destCol].colour) === 0){
+                    print('thats cool');
                     this.removeCastlingRights(true,true);
                     return true;
                 }
@@ -400,16 +398,15 @@ class Board {
                     var row_temp = piece.row + options.dy;
         
                     if (isOnBoard(row_temp,col_temp)){
-                        if (this.maskMap[row_temp][col_temp] === 0 || (this.maskMap[row_temp][col_temp] & piece.colour === 0) && this.checkNextMoveBitmap(piece,row_temp,col_temp)){
+                        if (this.maskMap[row_temp][col_temp] === 0 || ((this.maskMap[row_temp][col_temp] & piece.colour) === 0) && this.checkNextMoveBitmap(piece,row_temp,col_temp)){
                             arr.push(row_temp + '' + col_temp);
                         }
                     }
                 }
-                if (this.checkKingRank(piece, 1)){ // short castles
-                    arr.push(piece.row + '' + 6);
-                }   
-                if (this.checkKingRank(piece, -1)) arr.push(piece.row + '' + 2);
-
+                if (!this.isInCheck){
+                    if (this.checkKingRank(piece, 1)) arr.push(piece.row + '' + 6); //short castles
+                    if (this.checkKingRank(piece, -1)) arr.push(piece.row + '' + 2); //long castles
+                }
                 break; 
             case PieceType.pawn:
                 if (piece.colourAndPiece() == (PieceType.pawn ^ PieceType.white)){    
@@ -486,7 +483,6 @@ class Board {
                             if ((this.occSquares[row_temp][col_temp].colour & piece.colour) === 0 && this.checkNextMoveBitmap(piece, row_temp, col_temp)){ // opposite colours
                                 arr.push(row_temp + '' + col_temp);
                             }
-                            break;
                         } 
                         col_temp += options.dx;
                         row_temp += options.dy;
@@ -503,20 +499,13 @@ class Board {
 
     checkKingRank(king,dir){ //checks if there are pieces on the way of castling
         for (let i = dir; Math.abs(i) <= 4; i += dir){
-            print(i);
-            print(this.maskMap[king.row][king.col + i]);
             if (this.maskMap[king.row][king.col + i] !== 0){ //if piece has been hit
-                print('hit a piece');
-                if (this.maskMap[king.row][king.col + i] === 1) {
-                    print('maskmap is 1');
+                if (Math.abs(i) < 2 && this.maskMap[king.row][king.col + i] === 1) {
                     return false;
                 }
-                print('not through check');
 
-                print(king.col + i);
                 //if piece is same colour rook on the 'h' square
                 if ((king.col + i === 7) && (this.maskMap[king.row][king.col + i] !== 0)) {
-                    print('hhhhh');
                     return true;
 
                 }
@@ -579,8 +568,6 @@ class Board {
         if (findAttacksFromWhite) colourCalc = 8 //if white
 
 
-        print('colour: ' + colourCalc);
-
         for (var i = 0; i < 8; i++){
             for (var j = 0; j < 8; j++){
                 if (position[i][j] !== 0 && ((position[i][j].colour & colourCalc) === colourCalc)){ //if the piece is from the side you want to find attacks from 
@@ -635,9 +622,7 @@ class Board {
             
         }
 
-        print('bbbbbbbbb');
-        print(bitmap);
-
+        
         return bitmap;
     }
 
@@ -691,16 +676,28 @@ class Board {
 
         //create and mask the bitmap for the new position
         bitmap = this.findMaskSquares(!this.whiteToMove, newPosition);
-        print('ccccccccccccccc');
-        print(bitmap);
         this.maskBitMap(bitmap);
 
 
-        if (this.maskMap[kingRow][kingCol] === 1) {
-            print('not out of check');
-            outOfCheck = false; //this is the line that makes it all happen -> disallows pinned pieces and stuff from putting the king in check
-        }
+        if (this.maskMap[kingRow][kingCol] === 1) outOfCheck = false; //this is the line that makes it all happen -> disallows pinned pieces and stuff from putting the king in check
+
         return outOfCheck;
+    }
+
+    defendCheck(){
+        let colourCalc = 8;
+        if (!this.whiteToMove) colourCalc = 16; 
+        let numDefense = 0;
+
+        for (let i = 0; i < 8; i++){
+            for (let j = 0; j < 8; j++){
+                if (this.occSquares[i][j] !== 0 & (this.occSquares[i][j].colour & colourCalc) === colourCalc){
+                    numDefense += this.allPiecesLegalSquares(this.occSquares[i][j]).length;
+                }
+            }
+        }
+
+        return numDefense;
     }
 
 }
@@ -747,7 +744,6 @@ class Piece {
             case PieceType.bishop:
                 return intervalsArr[1];
             case PieceType.queen:
-                print("queeeeeNNN");
                 return intervalsArr[0].concat(intervalsArr[1]);
             case PieceType.pawn:
                 if (this.colour === PieceType.white) return [{dx: 1, dy: -1}, {dx: -1, dy: -1}];
