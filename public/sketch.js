@@ -140,7 +140,17 @@ function mouseReleased(){
             board.changeTurn();
 
         }
-        print(board.isInCheck);
+        
+        if (board.kingInCheck()){
+            board.isInCheck = true;
+                
+            numDefenses = board.defendCheck();
+
+        } else board.isInCheck = false;
+
+        print('nummm');
+        print(numDefenses);
+
         if (board.isInCheck && numDefenses === 0){
             if (board.whiteToMove){
                 print('black wins');

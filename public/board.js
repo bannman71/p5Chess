@@ -398,14 +398,20 @@ class Board {
                     var row_temp = piece.row + options.dy;
         
                     if (isOnBoard(row_temp,col_temp)){
-                        if (this.maskMap[row_temp][col_temp] === 0 || ((this.maskMap[row_temp][col_temp] & piece.colour) === 0) && this.checkNextMoveBitmap(piece,row_temp,col_temp)){
+                        if ((this.maskMap[row_temp][col_temp] === 0 || ((this.maskMap[row_temp][col_temp] & piece.colour) === 0)) && this.checkNextMoveBitmap(piece,row_temp,col_temp)){
                             arr.push(row_temp + '' + col_temp);
                         }
                     }
                 }
                 if (!this.isInCheck){
-                    if (this.checkKingRank(piece, 1)) arr.push(piece.row + '' + 6); //short castles
-                    if (this.checkKingRank(piece, -1)) arr.push(piece.row + '' + 2); //long castles
+                    if (this.whiteToMove){
+                        if (this.whiteShortCastlingRights && this.checkKingRank(piece, 1)) arr.push(piece.row + '' + 6); //short castles
+                        else if (this.whiteLongCastlingRights && this.checkKingRank(piece, -1)) arr.push(piece.row + '' + 3); //long castles
+                    }
+                    else{
+                        if (this.blackShortCastlingRights && this.checkKingRank(piece, 1)) arr.push(piece.row + '' + 6); //short castles
+                        else if (this.blackLongCastlingRights && this.checkKingRank(piece, -1)) arr.push(piece.row + '' + 3); //long castles
+                    }
                 }
                 break; 
             case PieceType.pawn:
@@ -536,26 +542,22 @@ class Board {
     }
 
     kingInCheck(){
-        let wKing, bKing;
         let numKingsFound;
         for (let i = 0; i < 8; i++){
             for (let j = 0; j < 8; j++){
                 if (this.occSquares[i][j] !== 0 && this.occSquares[i][j].colourAndPiece() === (PieceType.king ^ PieceType.white)){
-                    wKing = this.occSquares[i][j];
+                    if (this.maskMap[i][j] === 1) return true; 
                     numKingsFound++;
+                    break;
                 }
                 else if (this.occSquares[i][j] !== 0 && this.occSquares[i][j].colourAndPiece() === (PieceType.king ^ PieceType.black)){
-                    bKing = this.occSquares[i][j];
-                    numKingsFound++; 
+                    if (this.maskMap[i][j] === 1) return true;
+                    numKingsFound++;
+                    break;
                 }
-                if (numKingsFound === 2) break;
             }
             if (numKingsFound === 2) break;
         }
-
-
-        if ((!this.whiteToMove && this.maskMap[wKing.row][wKing.col] === 1) || (this.whiteToMove && this.maskMap[bKing.row][bKing.col] === 1)) return true
-        
     }
 
     //generate an array of where all pieces attack in the position
@@ -691,7 +693,7 @@ class Board {
 
         for (let i = 0; i < 8; i++){
             for (let j = 0; j < 8; j++){
-                if (this.occSquares[i][j] !== 0 & (this.occSquares[i][j].colour & colourCalc) === colourCalc){
+                if (this.occSquares[i][j] !== 0 && (this.occSquares[i][j].colour & colourCalc) === colourCalc){
                     numDefense += this.allPiecesLegalSquares(this.occSquares[i][j]).length;
                 }
             }
