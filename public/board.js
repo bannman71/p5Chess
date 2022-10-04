@@ -651,7 +651,7 @@ class Board {
         }
 
         if (newPosition[destRow][destCol] !== 0){
-            if (newPosition[destRow][destCol].type === PieceType.king) { //if you haven't caputured the king -> update the square
+            if (newPosition[destRow][destCol].type === PieceType.king) { //if you haven't captured the king -> update the square
                 return false;
             }
         }

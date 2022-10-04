@@ -33,7 +33,7 @@ function setup() {
     BLOCK_SIZE = (windowHeight * 0.8) / 8; //can be width but it is a square
     SPACING = Math.floor((BLOCK_SIZE * (1 - PIECE_SCALE)) / 2);
     
-    board = new Board('4k2r/1q6/8/1b6/8/2Q5/8/R3K2R');
+    board = new Board('rnbqkbnr/1ppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR');
 
     board.maskBitMap(board.findMaskSquares(!board.whiteToMove, board.occSquares));
 
@@ -141,14 +141,9 @@ function mouseReleased(){
 
         }
 
-        print('num ' + board.calculateNumLegalMoves());
-
-
         if (board.kingInCheck()){
             board.isInCheck = true;
-                
             numDefenses = board.defendCheck();
-
         } else board.isInCheck = false;
 
         if (board.isInCheck && numDefenses === 0){
