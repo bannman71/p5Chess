@@ -489,6 +489,7 @@ class Board {
                             if ((this.occSquares[row_temp][col_temp].colour & piece.colour) === 0 && this.checkNextMoveBitmap(piece, row_temp, col_temp)){ // opposite colours
                                 arr.push(row_temp + '' + col_temp);
                             }
+                            break;
                         } 
                         col_temp += options.dx;
                         row_temp += options.dy;

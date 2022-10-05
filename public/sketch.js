@@ -22,6 +22,7 @@ let BIN_PIECES = {
 }
 
 function preload(){
+
     for (im in BIN_PIECES){
         IMAGES[im] = loadImage('./classic_hq/' + BIN_PIECES[im] + '.png');
     }
@@ -29,6 +30,10 @@ function preload(){
 
 function setup() {
     canv = createCanvas(windowHeight * windowSize, windowHeight * windowSize);
+
+    setAttributes('antialias', true);
+
+    
 
     PIECE_SCALE = 0.75;
     BLOCK_SIZE = (windowHeight * windowSize) / 8; //can be width but it is a square
@@ -66,7 +71,7 @@ function mousePressed(){
     if (pieceAtMouse !== tempPieceAtMouse) legalCircles = []; //empties legalcircles so that it doesn't show the squares when you click on another piece
     tempPieceAtMouse = pieceAtMouse;
     
-    if (pieceAtMouse !== 0){
+    if (pieceAtMouse !== undefined){
         selectedCoords = getMouseCoord(mouseX, mouseY);
 
         var start = performance.now();
@@ -90,7 +95,7 @@ function mouseReleased(){
     let numDefenses = 0;
 
 
-    if (pieceAtMouse !== 0){
+    if (pieceAtMouse !== undefined){
         let destCoords = getMouseCoord(mouseX,mouseY); // returns coord for array [0,0] [1,1] etc     
 
         tempEnPassentTaken = board.enPassentTaken;

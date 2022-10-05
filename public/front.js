@@ -15,9 +15,14 @@ function getPieceAtMousepos(occSquares,x,y){
     x = Math.floor(x / BLOCK_SIZE);
     y = Math.floor(y / BLOCK_SIZE);
 
-    return occSquares[y][x];
-    
+    print(x);
+    print(y);
 
+    if ((x < 8 && x >= 0) && (y < 8 && y >= 0)) {
+        print('yeaeaea');
+        return occSquares[y][x];
+    }
+    else return undefined;
 }
 
 function drawPieceAtMousepos(piece, x, y){
