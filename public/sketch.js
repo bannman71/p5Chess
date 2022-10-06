@@ -71,7 +71,7 @@ function mousePressed(){
     if (pieceAtMouse !== tempPieceAtMouse) legalCircles = []; //empties legalcircles so that it doesn't show the squares when you click on another piece
     tempPieceAtMouse = pieceAtMouse;
     
-    if (pieceAtMouse !== undefined){
+    if (pieceAtMouse){
         selectedCoords = getMouseCoord(mouseX, mouseY);
 
         var start = performance.now();
@@ -95,7 +95,7 @@ function mouseReleased(){
     let numDefenses = 0;
 
 
-    if (pieceAtMouse !== undefined){
+    if (pieceAtMouse){
         let destCoords = getMouseCoord(mouseX,mouseY); // returns coord for array [0,0] [1,1] etc     
 
         tempEnPassentTaken = board.enPassentTaken;
