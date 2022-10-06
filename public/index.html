@@ -32,8 +32,15 @@ body{
   background-color: rgb(74, 74, 112);
 }
 
-.board-info-container{
-  
+.board-info{
+  position: absolute;
+  right:5%;
+  top: 14%;
+
+  border-style: dashed;
+
+  height: 75vh;
+  width:25vw;
 }
 
 
@@ -52,6 +59,12 @@ a{
   text-decoration: none;
 }
 
+.card{
+  width:10vw;
+  height: 75vh;
+}
+
+
 </style>
 
 </head>
@@ -67,10 +80,15 @@ a{
   </ul>
 </div>
 
-<div class="board-info-container">
-
+<div class="board-info">
+  <div class="card text-white bg-dark mb-3" style="max-width:18rem">
+    <div class="card-header">Header</div>
+    <div class="card-body">
+      <h5 class="card-title">Dark card title</h5>
+      <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+    </div>
+  </div>
 </div>
-
 
 </body>
 </html>
