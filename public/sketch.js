@@ -30,8 +30,7 @@ function preload(){
 
 function setup() {
     canv = createCanvas(windowHeight * windowSize, windowHeight * windowSize);
-
-    setAttributes('antialias', true);
+    canv.parent("board-canv");
 
     
 
@@ -49,7 +48,7 @@ function setup() {
     //'rnbqkbnr/1ppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR'
     //rnbqkbnr/p1pppppp/1p6/4P3/8/5NP1/PPPP1PBP/RNBQK2R
     //'rnbqk1nr/p4ppp/1p1b4/8/8/5NP1/P2K1PBP/RNBQ3R'
-    centerCanvas();
+    //centerCanvas();
 } 
 
 function draw() {
@@ -162,10 +161,10 @@ function mouseReleased(){
     }   
 }
 
-function windowResized(){
-    resizeCanvas(windowHeight * windowSize, windowHeight * windowSize);
-    centerCanvas();
-    BLOCK_SIZE = (windowHeight * windowSize) / 8; //can be width but it is a square
-    SPACING = Math.floor((BLOCK_SIZE * (1 - PIECE_SCALE)) / 2);
-}
+// function windowResized(){
+//     resizeCanvas(windowHeight * windowSize, windowHeight * windowSize);
+//     //centerCanvas();
+//     BLOCK_SIZE = (windowHeight * windowSize) / 8; //can be width but it is a square
+//     SPACING = Math.floor((BLOCK_SIZE * (1 - PIECE_SCALE)) / 2);
+// }
 
