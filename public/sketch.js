@@ -41,8 +41,6 @@ function setup() {
     canv = createCanvas(WIDTH, HEIGHT);
     canv.parent("board-container");
 
-    
-
     PIECE_SCALE = 0.75;
     BLOCK_SIZE = (WIDTH) / 8; //can be width but it is a square
     SPACING = Math.floor((BLOCK_SIZE * (1 - PIECE_SCALE)) / 2);
@@ -57,7 +55,6 @@ function setup() {
     //'rnbqkbnr/1ppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR'
     //rnbqkbnr/p1pppppp/1p6/4P3/8/5NP1/PPPP1PBP/RNBQK2R
     //'rnbqk1nr/p4ppp/1p1b4/8/8/5NP1/P2K1PBP/RNBQ3R'
-    //centerCanvas();
 } 
 
 function draw() {
