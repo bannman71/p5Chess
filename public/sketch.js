@@ -1,4 +1,9 @@
 var canv;
+var canvasDiv;
+
+var WIDTH;
+var HEIGHT;
+
 const BLACK = 'rgb(140,162,173)';
 const WHITE = 'rgb(222,237,230)';
 const windowSize = 0.75;
@@ -29,13 +34,17 @@ function preload(){
 }
 
 function setup() {
-    canv = createCanvas(windowHeight * windowSize, windowHeight * windowSize);
-    canv.parent("board-canv");
+    canvasDiv = document.getElementById("board-container");
+    print(canvasDiv.offsetHeight);
+    WIDTH = canvasDiv.offsetWidth - 4;
+    HEIGHT = canvasDiv.offsetHeight - 4;
+    canv = createCanvas(WIDTH, HEIGHT);
+    canv.parent("board-container");
 
     
 
     PIECE_SCALE = 0.75;
-    BLOCK_SIZE = (windowHeight * windowSize) / 8; //can be width but it is a square
+    BLOCK_SIZE = (WIDTH) / 8; //can be width but it is a square
     SPACING = Math.floor((BLOCK_SIZE * (1 - PIECE_SCALE)) / 2);
     
     board = new Board('rnbqkbnr/1ppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR');
@@ -161,10 +170,10 @@ function mouseReleased(){
     }   
 }
 
-// function windowResized(){
-//     resizeCanvas(windowHeight * windowSize, windowHeight * windowSize);
-//     //centerCanvas();
-//     BLOCK_SIZE = (windowHeight * windowSize) / 8; //can be width but it is a square
-//     SPACING = Math.floor((BLOCK_SIZE * (1 - PIECE_SCALE)) / 2);
-// }
+function windowResized(){
+    resizeCanvas(WIDTH, HEIGHT);
+    //centerCanvas();
+    BLOCK_SIZE = (HEIGHT) / 8; //can be width but it is a square
+    SPACING = Math.floor((BLOCK_SIZE * (1 - PIECE_SCALE)) / 2);
+}
 

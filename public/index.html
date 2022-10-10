@@ -22,6 +22,8 @@ body{
   top: 10%; 
   right:25%;
 
+  padding: 0;
+  
 
   flex-wrap: wrap;
 
@@ -30,13 +32,13 @@ body{
   height: 1200px;
   border-style: groove;
 
-  justify-content: right;
-  
+  justify-content: space-between;
+
   
 }
 
 
-.header-container{
+#header-container{
   display:flex;
   position: absolute;
 
@@ -55,17 +57,18 @@ body{
 }
 
 
-.game-info{
+#game-info-container{
   position: relative;
   
-  border-style: dashed;
+  border-style: none;
 
   height: 75%;
   width: 25%;
 }
 
-.board-container{
+#board-container{
   
+  border-style: double;
 
   width: 75%;
   height: 75%;
@@ -89,6 +92,8 @@ a{
 }
 
 .card{
+  position: absolute;
+  
   width:100%;
   height: 100%;
 }
@@ -101,14 +106,13 @@ a{
 <body>
 
 
-
 <div class="game-container">
-  <div class="board-container">
-    <div id="board-canv"></div>
+  <div id="board-container">
+    
   </div>
 
-  <div class="game-info">
-    <div class="card text-white bg-dark mb-3" style="max-width:18rem">
+  <div id="game-info-container">
+    <div class="card text-white bg-dark mb-3">
       <div class="card-header">Header</div>
       <div class="card-body">
         <h5 class="card-title">Dark card title</h5>
@@ -121,13 +125,7 @@ a{
 </div>
 
 
-
-
-
-
-
-
-<div class="header-container">
+<div id="header-container">
   <ul class="nav-list">
     <li><a href="#">Home</a></li>
     <li><a href="#">Puzzles</a></li>
