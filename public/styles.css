@@ -12,10 +12,9 @@ body{
   
 
   flex-wrap: wrap;
-
  
-  width:1200px;
-  height: 1200px;
+  width: 65vw;
+  height: 90vh;
   border-style: groove;
 
   justify-content: space-between;
@@ -42,22 +41,26 @@ body{
   background-color: rgb(74, 74, 112);
 }
 
-
 #game-info-container{
   position: relative;
   
   border-style: none;
 
-  height: 75%;
-  width: 25%;
+  width: 30%;
+  height: 70%;
+  
+  /* height should be the same as board-container's width due to the height of board container being determined by its width */
+
 }
 
 #board-container{
   
   border-style: double;
 
-  width: 75%;
-  height: 75%;
+  width: 70%; 
+  /* height is determined by width in sketch.js
+  this is because it is a square and can't be rectangular in any way */
+ 
 
 }
 

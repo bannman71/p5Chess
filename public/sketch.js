@@ -36,9 +36,9 @@ function preload(){
 function setup() {
     canvasDiv = document.getElementById("board-container");
     print(canvasDiv.offsetHeight);
-    WIDTH = canvasDiv.offsetWidth - 4;
-    HEIGHT = canvasDiv.offsetHeight - 4;
-    canv = createCanvas(WIDTH, HEIGHT);
+    WIDTH = canvasDiv.offsetWidth - 6;
+    HEIGHT = canvasDiv.offsetHeight - 6;
+    canv = createCanvas(WIDTH, WIDTH);
     canv.parent("board-container");
 
     PIECE_SCALE = 0.75;
@@ -168,9 +168,10 @@ function mouseReleased(){
 }
 
 function windowResized(){
-    resizeCanvas(WIDTH, HEIGHT);
-    //centerCanvas();
-    BLOCK_SIZE = (HEIGHT) / 8; //can be width but it is a square
+    WIDTH = canvasDiv.offsetWidth - 6;
+    HEIGHT = canvasDiv.offsetHeight - 6;
+    resizeCanvas(WIDTH, WIDTH);
+    BLOCK_SIZE = (WIDTH) / 8; //can be width but it is a square
     SPACING = Math.floor((BLOCK_SIZE * (1 - PIECE_SCALE)) / 2);
 }
 
