@@ -2,6 +2,14 @@ body{
  background-color: rgb(74, 74, 112);
 }
 
+.center{
+  margin:auto;
+  width: 50%;
+
+  border: 3px solid #73AD21;
+  padding: 10px;
+}
+
 .game-container{
   display: flex;
   position: absolute;
@@ -12,15 +20,17 @@ body{
   
 
   flex-wrap: wrap;
+
  
-  width: 65vw;
-  height: 90vh;
+  width:1200px;
+  height: 1200px;
   border-style: groove;
 
   justify-content: space-between;
 
   
 }
+
 
 
 #header-container{
@@ -30,6 +40,7 @@ body{
   justify-content: center;
   align-items: center;
 
+  min-width: 1100px;
 
   z-index: 1;
 
@@ -54,10 +65,16 @@ body{
 }
 
 #board-container{
-  
+  /* centers div */
+  position: absolute; 
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
   border-style: double;
 
-  width: 70%; 
+  width: 1000px;
+  height: 1000px; 
   /* height is determined by width in sketch.js
   this is because it is a square and can't be rectangular in any way */
  
