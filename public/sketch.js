@@ -99,8 +99,10 @@ function mouseReleased(){
     let numDefenses = 0;
 
 
-    if (pieceAtMouse){
-        let destCoords = getMouseCoord(mouseX,mouseY); // returns coord for array [0,0] [1,1] etc     
+    let destCoords = getMouseCoord(mouseX,mouseY); // returns coord for array [0,0] [1,1] etc     
+
+
+    if (isOnBoard(destCoords.y, destCoords.x) && pieceAtMouse){
 
         tempEnPassentTaken = board.enPassentTaken;
 
