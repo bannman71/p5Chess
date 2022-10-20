@@ -1,12 +1,18 @@
 const express = require('express');
 const app = express();
 const router = express.Router();
+const path = require('path');
 
 
-var server = app.listen(3000);
+const port = process.env.PORT || 8080;
+
+
+router.get('/', (req,res) => {
+  res.sendFile(path.join(__dirname, '/public/index.html'));
+});
 
 router.get('/Home', (req,res) => {
-  res.send('Hello World, This is home router');
+  res.sendFile(path.join(__dirname, '/public/index.html'));
 });
 
 
@@ -24,9 +30,12 @@ router.get('/PlayAi', (req,res) => {
   res.send('Hello World, This is AI router');
 });
 
+router.get('/PlayLocally', (req,res) => {
+  res.sendFile(path.join(__dirname, '/public/playLocalGame.html'));
+});
+
 app.use(express.static(`${__dirname}/public`));
 app.use('/', router);
 
-
-app.listen(4000);
-console.log('listening on port 3000');
+app.listen(port);
+console.log('listening on port 8080');

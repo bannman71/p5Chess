@@ -26,6 +26,17 @@ let BIN_PIECES = {
     12: 'w_bishop', 9: 'w_king', 11: 'w_knight', 10: 'w_pawn', 14: 'w_queen', 13: 'w_rook'
 }
 
+
+document.querySelector('#scrollable').addEventListener('wheel', preventScroll, {passive: false});
+
+function preventScroll(e){
+    e.preventDefault();
+    e.stopPropagation();
+
+    return false;
+}
+
+
 function preload(){
 
     for (im in BIN_PIECES){

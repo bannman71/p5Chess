@@ -2,6 +2,18 @@ body{
   background-color: rgb(74, 74, 112);
 }
 
+
+/* FOR THE BOARD PAGE */
+
+
+.scrollable{
+  overflow-y: scroll;
+  height: 200px;
+  background: #f8d0e6;
+  padding: 40px;
+}
+
+
 #header-container{
   display:flex;
   position: absolute;
@@ -97,4 +109,19 @@ a{
 .card-header{
   font-size: 3rem;
 }
+
+
+
+/* START PAGE */
+
+#game-option-container{
+  display: flex;
+  width: 60vw;
+  height: 60vh;
+
+}
+
+
+
+
 
