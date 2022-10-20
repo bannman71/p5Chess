@@ -116,10 +116,24 @@ a{
 
 #game-option-container{
   display: flex;
-  width: 60vw;
-  height: 60vh;
+  position: absolute;
+
+  width: 50vw;
+  height: 50vh;
+
+  top:25%;
+  right:25%;  
+
+  border-style: dashed;
 
 }
+
+.btn{
+  height:50%;
+}
+
+
+
 
 
 

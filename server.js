@@ -6,13 +6,11 @@ const path = require('path');
 
 const port = process.env.PORT || 8080;
 
+const dir = path.join(__dirname, '/public/views/');
 
-router.get('/', (req,res) => {
-  res.sendFile(path.join(__dirname, '/public/index.html'));
-});
 
 router.get('/Home', (req,res) => {
-  res.sendFile(path.join(__dirname, '/public/index.html'));
+  res.sendFile(path.join(dir, 'index.html'));
 });
 
 
@@ -31,7 +29,7 @@ router.get('/PlayAi', (req,res) => {
 });
 
 router.get('/PlayLocally', (req,res) => {
-  res.sendFile(path.join(__dirname, '/public/playLocalGame.html'));
+  res.sendFile(path.join(dir, '/playLocalGame.html'));
 });
 
 app.use(express.static(`${__dirname}/public`));
