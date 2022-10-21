@@ -116,10 +116,14 @@ a{
 
 #game-option-container{
   display: flex;
+  flex-wrap:wrap;
   position: absolute;
 
+  justify-content: center;
+
+
   width: 50vw;
-  height: 25vh;
+  height: 50vh;
 
   top:25%;
   right:25%;  
@@ -129,12 +133,34 @@ a{
 }
 
 .btn{
+  display: flex;
+  
 
+  justify-content: center;
+  align-items: center;
 
   background-color: #28282B;
   color: white;
 
+  height: 50%;
   width: 20%;
+
+  border-style: dashed;
+  border-color: #73AD21;
+    
+}
+
+.btn-font{
+  font-size: calc(0.5vw + 1vw);
+}
+
+.btn:hover{
+  color:cornflowerblue;
+}
+
+.wrap-text{
+  display: flex;
+  flex: 1;
 }
 
 
