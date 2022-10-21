@@ -9,7 +9,7 @@ const port = process.env.PORT || 8080;
 const dir = path.join(__dirname, '/public/views/');
 
 
-router.get('/Home', (req,res) => {
+router.get('/', (req,res) => {
   res.sendFile(path.join(dir, 'index.html'));
 });
 
