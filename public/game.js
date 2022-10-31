@@ -26,19 +26,7 @@ let BIN_PIECES = {
     12: 'w_bishop', 9: 'w_king', 11: 'w_knight', 10: 'w_pawn', 14: 'w_queen', 13: 'w_rook'
 }
 
-
-document.querySelector('#scrollable').addEventListener('wheel', preventScroll, {passive: false});
-
-function preventScroll(e){
-    e.preventDefault();
-    e.stopPropagation();
-
-    return false;
-}
-
-
 function preload(){
-
     for (im in BIN_PIECES){
         IMAGES[im] = loadImage('./classic_hq/' + BIN_PIECES[im] + '.png');
     }
@@ -52,7 +40,7 @@ function setup() {
     canv.parent("board-container");
 
     PIECE_SCALE = 0.75;
-    BLOCK_SIZE = (WIDTH) / 8; //can be width but it is a square
+    BLOCK_SIZE = (WIDTH) / 8; //can be length but it is a square
     SPACING = Math.floor((BLOCK_SIZE * (1 - PIECE_SCALE)) / 2);
     
     board = new Board('rnbqkbnr/1ppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR');

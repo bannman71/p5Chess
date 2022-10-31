@@ -2,18 +2,9 @@ body{
   background-color: rgb(74, 74, 112);
 }
 
-/* FOR BOARD PAGE */
+/* GLOBAL */
 
-
-.scrollable{
-  overflow-y: scroll;
-  height: 200px;
-  background: #f8d0e6;
-  padding: 40px;
-}
-
-
-#header-container{
+.header-container{
   display:flex;
   position: absolute;
 
@@ -31,6 +22,15 @@ body{
   background-color: rgb(74, 74, 112);
 }
 
+/* FOR BOARD PAGE */
+
+.scrollable{
+  overflow-y: scroll;
+  height: 200px;
+  background: #f8d0e6;
+  padding: 40px;
+}
+
 .center{
   margin:auto;
   width: 50%;
@@ -42,14 +42,11 @@ body{
 .game-container{
   display: flex;
   position: absolute;
+
   top: 10%; 
   right:25%;
 
-  padding: 0;
-  
-
   flex-wrap: wrap;
-
 
   width: 65vw;
   height: 90vh;
@@ -119,7 +116,6 @@ a{
   position: absolute;
 
   justify-content: center;
-
 
   width: 50vw;
   height: 50vh;

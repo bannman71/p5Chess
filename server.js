@@ -2,11 +2,19 @@ const express = require('express');
 const app = express();
 const router = express.Router();
 const path = require('path');
+const io = require('sockets.io');
 
-
-const port = process.env.PORT || 8080;
+const port = process.env.PORT || 3000;
 
 const dir = path.join(__dirname, '/public/views/');
+
+
+io.on('connection', function(socket){
+  console.log('client connected');
+  socket.on('clicked', function(){
+    io.emit('clicked');
+  });
+});
 
 
 router.get('/', (req,res) => {
