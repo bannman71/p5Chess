@@ -1,19 +1,21 @@
 const express = require('express');
 const app = express();
 const router = express.Router();
-const path = require('path');
-const io = require('sockets.io');
+var socket = require('socket.io');
 
 const port = process.env.PORT || 3000;
 
+const path = require('path');
 const dir = path.join(__dirname, '/public/views/');
 
+var server = app.listen(port);
+var io = socket(server);
 
 io.on('connection', function(socket){
   console.log('client connected');
-  socket.on('clicked', function(){
-    io.emit('clicked');
-  });
+  // socket.on('clicked', function(){
+  //   io.emit('clicked');
+  // });
 });
 
 
@@ -43,5 +45,4 @@ router.get('/PlayLocally', (req,res) => {
 app.use(express.static(`${__dirname}/public`));
 app.use('/', router);
 
-app.listen(port);
-console.log('listening on port 8080');
+console.log("listening on %s",port);

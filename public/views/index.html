@@ -9,6 +9,7 @@
   <script language="javascript" type="text/javascript" src="timer.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.3/socket.io.min.js"></script>
   <link rel="stylesheet" href="styles.css"/>
 </head>
 
@@ -94,18 +95,17 @@
 
   </div> 
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.3/socket.io.min.js"></script>
-
   <script type="text/javascript">
-    var socket = io("http://localhost:3000");
-    socket.on('connect', function(){
-      document.getElementsByClassName("btn").addEventListener("click",function(){
-        socket.emit("clicked");
-      });
-    });
-    socket.on("clicked", function(){
-      console.log('clicked');
-    })
+    var socket;
+    socket = io.connect('http://localhost:3000');
+    // socket.on('connect', function(){
+    //   document.getElementsByClassName("btn").addEventListener("click",function(){
+    //     socket.emit("clicked");
+    //   });
+    // });
+    // socket.on("clicked", function(){
+    //   console.log('clicked');
+    // })
   </script>
 
 
