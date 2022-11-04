@@ -30,7 +30,7 @@ router.get('/Puzzles', (req,res) => {
 
 
 router.get('/BoardEditor', (req,res) => {
-  res.send('Hello World, This is board editor router');
+  res.sendFile(path.join(dir, '/BoardEditor.html'))
 });
 
 

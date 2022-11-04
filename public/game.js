@@ -3,6 +3,10 @@ var canvasDiv;
 
 var WIDTH;
 var HEIGHT;
+var BLOCKWIDTH;
+var BLOCKHEIGHT;
+var HSPACING;
+var WSPACING;
 
 const BLACK = 'rgb(140,162,173)';
 const WHITE = 'rgb(222,237,230)';
@@ -34,16 +38,21 @@ function preload(){
 
 function setup() {
     canvasDiv = document.getElementById("board-container");
-    print(canvasDiv.offsetHeight);
     WIDTH = canvasDiv.offsetWidth;
-    canv = createCanvas(WIDTH, WIDTH);
+    HEIGHT = canvasDiv.offsetHeight;
+    canv = createCanvas(WIDTH, HEIGHT);
     canv.parent("board-container");
 
     PIECE_SCALE = 0.75;
-    BLOCK_SIZE = (WIDTH) / 8; //can be length but it is a square
-    SPACING = Math.floor((BLOCK_SIZE * (1 - PIECE_SCALE)) / 2);
-    
-    board = new Board('rnbqkbnr/1ppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR');
+
+    BLOCKHEIGHT = HEIGHT / 8;
+    BLOCKWIDTH = WIDTH / 8;
+
+
+    HSPACING = Math.floor((BLOCKHEIGHT * (1 - PIECE_SCALE)) / 2);
+    WSPACING = Math.floor((BLOCKWIDTH * (1 - PIECE_SCALE)) / 2);
+
+    board = new Board('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR');
 
     board.maskBitMap(board.findMaskSquares(!board.whiteToMove, board.occSquares));
 
