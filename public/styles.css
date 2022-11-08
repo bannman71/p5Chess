@@ -22,16 +22,46 @@ body{
   background-color: rgb(74, 74, 112);
 }
 
-#board-container{
 
+
+.game-container{
+  display: flex;
+  position: absolute;
+
+  top: 10%; 
+  right:25%;
+
+  flex-wrap: wrap;
+
+  width: 65vw;
+  height: 90vh;
+  border-style: dotted;
+
+  justify-content: space-between;
+}
+
+.game-info-container{
+  position: relative;
+  
   border-style: none;
-  width: calc(60%); 
+
+  width: 40%;
+  height: 0;
+  padding-bottom: 60%;
+
+}
+
+
+/* FOR BOARD PAGE */
+
+#board-container{
+  /* position: relative; */
+  border-style: none;
+  width: 60%; 
   height: 0;
   padding-bottom:60%;
  
 }
-
-/* FOR BOARD PAGE */
 
 .scrollable{
   overflow-y: scroll;
@@ -48,33 +78,6 @@ body{
   padding: 10px;
 }
 
-.game-container{
-  display: flex;
-  position: absolute;
-
-  top: 10%; 
-  right:25%;
-
-  flex-wrap: wrap;
-
-  width: 65vw;
-  height: 90vh;
-  border-style: none;
-
-  justify-content: space-between;
-}
-
-#game-info-container{
-  position: relative;
-  
-  border-style: none;
-
-  width: 40%;
-  height: 0;
-  padding-bottom: 60%;
-
-
-}
 
 
 
@@ -161,20 +164,22 @@ a{
 
 /* BOARD EDITOR */
 
-.board-editor-container{
+
+#board-editor-container{
+  width: 60%;
+  height:0;
+  padding-bottom: 50%;
+
+}
+
+.piece-selection-container{
   display: flex;
-  position: absolute;
+  flex: 1;
 
-  top: 10%; 
-  right:25%;
+  border-style: double;
 
-  flex-wrap: wrap;
-
-  width: 65vw;
-  height: 90vh;
-  border-style: dotted;
-
-  justify-content: space-between;
+  height:10%;
+  width:10%;
 }
 
 

@@ -5,15 +5,15 @@ class Coords{
 }
 
 function getMouseCoord(x,y){
-    Coords.x = Math.floor(x / BLOCKWIDTH);
-    Coords.y = Math.floor(y / BLOCKHEIGHT);
+    Coords.x = Math.floor(x / BLOCK_SIZE);
+    Coords.y = Math.floor(y / BLOCK_SIZE);
 
     return Coords;
 }
 
 function getPieceAtMousepos(occSquares,x,y){
-    x = Math.floor(x / BLOCKWIDTH);
-    y = Math.floor(y / BLOCKHEIGHT);
+    x = Math.floor(x / BLOCK_SIZE);
+    y = Math.floor(y / BLOCK_SIZE);
 
     if ((x < 8 && x >= 0) && (y < 8 && y >= 0))  return occSquares[y][x];
     else return undefined;
@@ -21,24 +21,24 @@ function getPieceAtMousepos(occSquares,x,y){
 
 function drawPieceAtMousepos(piece, x, y){
 
-    x -= BLOCKWIDTH * PIECE_SCALE / 2;  // centers piece
-    y -= BLOCKHEIGHT * PIECE_SCALE / 2;
+    x -= BLOCK_SIZE * PIECE_SCALE / 2;  // centers piece
+    y -= BLOCK_SIZE * PIECE_SCALE / 2;
 
     if (piece !== 0){
         
         let piece_number = piece.colourAndPiece();
 
         image(IMAGES[piece_number], 
-        Math.min(width - BLOCKWIDTH + SPACING, Math.max(SPACING, x)), 
-        Math.min(height - BLOCKHEIGHT + SPACING, Math.max(SPACING, y)), BLOCKWIDTH * PIECE_SCALE, BLOCKHEIGHT * PIECE_SCALE);
+        Math.min(width - BLOCK_SIZE + SPACING, Math.max(SPACING, x)), 
+        Math.min(height - BLOCK_SIZE + SPACING, Math.max(SPACING, y)), BLOCK_SIZE * PIECE_SCALE, BLOCK_SIZE * PIECE_SCALE);
     }
 }
 
 function draw_piece(piece,coordX,coordY){
-    coordX = HSPACING + coordX * BLOCKHEIGHT;
-    coordY = WSPACING + coordY * BLOCkWIDTH;
+    coordX = SPACING + coordX * BLOCK_SIZE;
+    coordY = SPACING + coordY * BLOCK_SIZE;
   
-    image(IMAGES[piece],coordX,coordY, BLOCKWIDTH * PIECE_SCALE, BLOCKHEIGHT * PIECE_SCALE);
+    image(IMAGES[piece],coordX,coordY, BLOCK_SIZE * PIECE_SCALE, BLOCK_SIZE * PIECE_SCALE);
     
 }
 
