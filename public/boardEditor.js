@@ -29,9 +29,11 @@ function setup(){
     PIECE_SCALE = 0.75;
     SPACING = Math.floor((BLOCK_SIZE * (1 - PIECE_SCALE)) / 2);
     
-    $(function() {
+    $(function() { //make piece selection boxes same width as the board
         $("#black-piece-selection-container").width(size);
+        $("#white-piece-selection-container").width(size); 
     });
+    
     canv = createCanvas(size, size);
     canv.parent("board-editor-container");
 
@@ -54,12 +56,12 @@ function draw(){
 }
 
 function windowResized(){
-
     WIDTH = canvasDiv.offsetWidth;
     HEIGHT = canvasDiv.offsetHeight;
 
     size = Math.min(WIDTH,HEIGHT);
     $("#black-piece-selection-container").width(size);
+    $("#white-piece-selection-container").width(size);
     resizeCanvas(size, size);
     BLOCK_SIZE = (size) / 8; //can be width but it is a square
     SPACING = Math.floor((BLOCK_SIZE * (1 - PIECE_SCALE)) / 2);
