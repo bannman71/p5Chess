@@ -1,3 +1,10 @@
+const BLACK = 'rgb(140,162,173)';
+const WHITE = 'rgb(222,237,230)';
+
+let BIN_PIECES = {
+    20: 'b_bishop', 17: 'b_king', 19: 'b_knight', 18: 'b_pawn', 22: 'b_queen', 21: 'b_rook',
+    12: 'w_bishop', 9: 'w_king', 11: 'w_knight', 10: 'w_pawn', 14: 'w_queen', 13: 'w_rook'
+}
 
 class Coords{
     static x;

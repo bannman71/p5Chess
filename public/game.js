@@ -5,9 +5,6 @@ var BLOCK_SIZE;
 var PIECE_SCALE;
 var PIECE_SCALE;
 
-const BLACK = 'rgb(140,162,173)';
-const WHITE = 'rgb(222,237,230)';
-const windowSize = 0.75;
 
 let IMAGES = {};
 
@@ -22,10 +19,6 @@ let selectedCoords;
 
 
 
-let BIN_PIECES = {
-    20: 'b_bishop', 17: 'b_king', 19: 'b_knight', 18: 'b_pawn', 22: 'b_queen', 21: 'b_rook',
-    12: 'w_bishop', 9: 'w_king', 11: 'w_knight', 10: 'w_pawn', 14: 'w_queen', 13: 'w_rook'
-}
 
 function preload(){
     for (im in BIN_PIECES){
