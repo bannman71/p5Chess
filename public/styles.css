@@ -37,7 +37,6 @@ body{
 
   width: 66vw;
   height: 90vh;
-  border-style: dotted;
 
   justify-content: space-between;
 }
@@ -183,25 +182,25 @@ a{
 #black-piece-selection-container{
   display: flex;
 
-  background-color: rgb(192,192,192);
+  background-color:#70704A;
 
   border-style: none; 
   width: 100%;
   height: 13%;
 
-  gap: 1rem;
+  gap: 0rem;
 
   justify-content: center;
   align-items: center;
 
 
-  border-radius: 5px;
+  border-radius: 10px;
 }
 
 #white-piece-selection-container{
   display: flex;
 
-  background-color: rgb(192,192,192);
+  background-color: #70704A;
 
   justify-content: center;
   align-items: center;
@@ -209,7 +208,7 @@ a{
   width: 100%;
   height: 13%;
 
-  gap: 1rem;
+  gap:0rem;
 
   border-radius: 5px;
 
@@ -217,13 +216,31 @@ a{
 
 .img-size img {
   position: relative;
-  float:left;
+  float:right;
+
+  right:5%;
 
   border-style: none;
   max-width: 90%;
   max-height: 100%;
 }
 
+.selection-square{
+  display: flex;
+  height: 100%;
+  width: 100%;
 
+
+
+  align-items:center;
+  justify-content:center;
+
+}
+
+#b-rook-square:hover{
+  background-color: aliceblue;
+  border-radius: 50%;
+  width:90%;
+}
 
 

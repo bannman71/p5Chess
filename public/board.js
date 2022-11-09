@@ -165,11 +165,8 @@ class Board {
             for (let j = 0; j < 8; j++){
 
                 if (this.occSquares[i][j] === 0){
-
                     numEmpty = 1;
-
                     for (let k = j; k < 8; k++){
-                        console.log(`in the thing with k${i}, ${k}`);
                         if (this.occSquares[i][k] !== 0){ //if a piece is now there
                             //stop and concatenate the number of empty squares
                             FEN += numEmpty - 1;
@@ -188,13 +185,10 @@ class Board {
                 if (this.occSquares[i][j] !== 0){
                     FEN += (PieceType.numToType[this.occSquares[i][j].colourAndPiece()]);
                 }
-                console.log(`${i},${j}`);
 
             }
             if (i !== 7) FEN += "/";
         }
-
-        console.log(FEN);
 
         return FEN;
     }
