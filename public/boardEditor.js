@@ -91,7 +91,7 @@ function mouseReleased(){
 
     $("#black-pawn").off('click').on("click",function() {
         selectedPiece = PieceType.pawn ^ PieceType.black;
-        alert( "Handler for black pawn called." );
+        // alert( "Handler for black pawn called." );
     });
 
     $("#white-rook").off('click').on("click",function() {

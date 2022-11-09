@@ -157,6 +157,49 @@ class Board {
 
     }
 
+    boardToFEN(){
+        let FEN = "";
+        let numEmpty;
+
+        for (let i = 0; i < 8; i++){
+            for (let j = 0; j < 8; j++){
+
+                if (this.occSquares[i][j] === 0){
+
+                    numEmpty = 1;
+
+                    for (let k = j; k < 8; k++){
+                        console.log(`in the thing with k${i}, ${k}`);
+                        if (this.occSquares[i][k] !== 0){ //if a piece is now there
+                            //stop and concatenate the number of empty squares
+                            FEN += numEmpty - 1;
+                            j = k;
+                            break;
+                        }
+                        else if (k === 7){
+                            FEN += numEmpty;
+                            j = k;
+                            break;
+                        }
+                        numEmpty++;
+                    }
+                }
+                
+                if (this.occSquares[i][j] !== 0){
+                    FEN += (PieceType.numToType[this.occSquares[i][j].colourAndPiece()]);
+                }
+                console.log(`${i},${j}`);
+
+            }
+            if (i !== 7) FEN += "/";
+        }
+
+        console.log(FEN);
+
+        return FEN;
+    }
+
+
     isLegalMove(piece, destRow, destCol){
         var destPos = destRow + '' + destCol;
 
@@ -726,6 +769,10 @@ class PieceType{
     static type = {
         'k': 1, 'p' : 2, 'n' : 3, 'b': 4, 'r': 5, 'q': 6,
         'K': 1, 'P' : 2, 'N' : 3, 'B': 4, 'R': 5, 'Q': 6 
+    }
+    static numToType = {
+        9: 'K', 10: 'P', 11: 'N', 12: 'B', 13: 'R', 14: 'Q',
+        17: 'k', 18: 'p', 19: 'n', 20: 'b', 21: 'r', 22: 'q'
     }
 
     static none = 0;
