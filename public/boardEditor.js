@@ -10,6 +10,13 @@ var PIECE_SCALE;
 
 let IMAGES = {};
 
+var board;
+
+var selectedPiece;
+
+var getClickedSquare;
+var pieceAtMouse;
+
 
 function preload(){
     for (im in BIN_PIECES){
@@ -21,12 +28,15 @@ function preload(){
 
 
 function setup(){
+
+    board = new Board('8/8/8/8/8/8/8/8');
     canvasDiv = document.getElementById("board-editor-container");
     WIDTH = canvasDiv.offsetWidth;
     HEIGHT = canvasDiv.offsetHeight;
 
     var size = Math.min(WIDTH,HEIGHT);
     
+
     BLOCK_SIZE = size / 8;
 
     PIECE_SCALE = 0.75;
@@ -42,13 +52,11 @@ function setup(){
 
 }
 
-
-
 function draw(){
     clear();
     background(WHITE);
     draw_grid();
-
+    drawAllPieces(board.occSquares, pieceAtMouse);
 
 }
 
@@ -57,58 +65,73 @@ function mouseReleased(){
     //if there is a piece at mouse from html
 
     $("#black-rook").off('click').on("click", function() {
-        alert( "Handler for black rook called." );
+        selectedPiece = PieceType.rook ^ PieceType.black;
+        // alert( "Handler for black rook called." );
     });
 
     $("#black-knight").off('click').on("click", function() {
-        alert( "Handler for black knight called." );
+        selectedPiece = PieceType.knight ^ PieceType.black; 
+        // alert( "Handler for black knight called." );
     });
 
     $("#black-bishop").off('click').on("click",function() {
-    alert( "Handler for bishop called." );
+        selectedPiece = PieceType.bishop ^ PieceType.black;
+        // alert( "Handler for bishop called." );
     });
 
     $("#black-queen").off('click').on("click",function() {
-    alert( "Handler for black queen called." );
+        selectedPiece = PieceType.queen ^ PieceType.black;
+        // alert( "Handler for black queen called." );
     });
 
     $("#black-king").off('click').on("click",function() {
-    alert( "Handler for black king called." );
+        selectedPiece = PieceType.king ^ PieceType.black;
+        // alert( "Handler for black king called." );
     });
 
     $("#black-pawn").off('click').on("click",function() {
-    alert( "Handler for black pawn called." );
+        selectedPiece = PieceType.pawn ^ PieceType.black;
+        alert( "Handler for black pawn called." );
     });
 
     $("#white-rook").off('click').on("click",function() {
-    alert( "Handler for white rook called." );
+        selectedPiece = PieceType.rook ^ PieceType.white;
+        // alert( "Handler for white rook called." );
     });
 
     $("#white-knight").off('click').on("click",function() {
-    alert( "Handler for white knight called." );
+
+        selectedPiece = PieceType.knight ^ PieceType.white;
+        // alert( "Handler for white knight called." );
     });
 
     $("#white-bishop").off('click').on("click",function() {
-    alert( "Handler for white bishop called." );
+        selectedPiece = PieceType.bishop ^ PieceType.white;
+        // alert( "Handler for white bishop called." );
     });
 
     $("#white-queen").off('click').on("click",function() {
-    alert( "Handler for white queen called." );
+        selectedPiece = PieceType.queen ^ PieceType.white;
+        // alert( "Handler for white queen called." );
     });
 
     $("#white-king").off('click').on("click",function() {
-    alert( "Handler for white king called." );
+        selectedPiece = PieceType.king ^ PieceType.white;
+        // alert( "Handler for white king called." );
     });
 
     $("#white-pawn").off('click').on("click",function() {
-    alert( "Handler for white pawn called." );
+        selectedPiece = PieceType.pawn ^ PieceType.white;
+        // alert( "Handler for white pawn called." );
     });
 
-
+    if (isOnBoard(getClickedSquare.y,getClickedSquare.x)){
+        board.occSquares[getClickedSquare.y][getClickedSquare.x] = new Piece((selectedPiece & 7), getClickedSquare.y,getClickedSquare.x, (selectedPiece & 24));
+    }
 }
 
 function mousePressed(){
-    
+    getClickedSquare = getMouseCoord(mouseX,mouseY);
     
 }
 
