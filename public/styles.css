@@ -243,4 +243,68 @@ a{
   width:90%;
 }
 
+#b-knight-square:hover{
+  background-color: aliceblue;
+  border-radius: 50%;
+  width:90%;
+}
 
+#b-bishop-square:hover{
+  background-color: aliceblue;
+  border-radius: 50%;
+  width:90%;
+}
+
+#b-queen-square:hover{
+  background-color: aliceblue;
+  border-radius: 50%;
+  width:90%;
+}
+
+#b-pawn-square:hover{
+  background-color: aliceblue;
+  border-radius: 50%;
+  width:90%;
+}
+
+#b-king-square:hover{
+  background-color: aliceblue;
+  border-radius: 50%;
+  width:90%;
+}
+
+#w-rook-square:hover{
+  background-color: aliceblue;
+  border-radius: 50%;
+  width:90%;
+}
+
+#w-knight-square:hover{
+  background-color: aliceblue;
+  border-radius: 50%;
+  width:90%;
+}
+
+#w-bishop-square:hover{
+  background-color: aliceblue;
+  border-radius: 50%;
+  width:90%;
+}
+
+#w-queen-square:hover{
+  background-color: aliceblue;
+  border-radius: 50%;
+  width:90%;
+}
+
+#w-king-square:hover{
+  background-color: aliceblue;
+  border-radius: 50%;
+  width:90%;
+}
+
+#w-pawn-square:hover{
+  background-color: aliceblue;
+  border-radius: 50%;
+  width:90%;
+}
