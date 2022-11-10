@@ -17,15 +17,27 @@ var selectedPiece;
 var getClickedSquare;
 var pieceAtMouse;
 
+const SELECTEDSTYLE = {
+    'background-color': '#F0F0F0',
+    'border-radius': '70%', 
+    'height': '90%', 
+    'width': '90%'
+}
+
+const DEFSTYLE = {
+    'background-color': 'transparent',
+    'border-radius': '0%', 
+    'height': '100%', 
+    'width': '100%' 
+}
+
+const pieces = ['pawn', 'king', 'knight', 'bishop', 'rook', 'queen'];
 
 function preload(){
     for (im in BIN_PIECES){
         IMAGES[im] = loadImage('./classic_hq/' + BIN_PIECES[im] + '.png');
     }
 }
-
-
-
 
 function setup(){
 
@@ -57,6 +69,29 @@ function draw(){
     background(WHITE);
     draw_grid();
     drawAllPieces(board.occSquares, pieceAtMouse);
+
+
+    let whitePieceToSelect;
+    let blackPieceToSelect;
+    for (var piece of pieces){
+        whitePieceToSelect = '#w-' + piece + '-square';
+        blackPieceToSelect = '#b-' + piece + '-square'; 
+
+        $(blackPieceToSelect).css(DEFSTYLE);
+        $(whitePieceToSelect).css(DEFSTYLE);
+
+        if ((selectedPiece & 24) === PieceType.black){
+            if (PieceType.numToPieceName[selectedPiece & 7] === piece){
+                $(blackPieceToSelect).css(SELECTEDSTYLE);
+            }
+        }else {
+            if (PieceType.numToPieceName[selectedPiece & 7] === piece){
+                $(whitePieceToSelect).css(SELECTEDSTYLE);
+            }
+        }
+
+    }
+
 
 }
 
@@ -129,17 +164,8 @@ function mouseReleased(){
         board.occSquares[getClickedSquare.y][getClickedSquare.x] = new Piece((selectedPiece & 7), getClickedSquare.y,getClickedSquare.x, (selectedPiece & 24));
     }
 
-    switch (selectedPiece){
-        case PieceType.black ^ PieceType.pawn:
-            console.log('yooo');
-            $("#b-pawn-square").css("background-color", "#F0F0F0", "border-radius", "50%");
-        case PieceType.black ^ PieceType.pawn:
-        case PieceType.black ^ PieceType.pawn:
-        case PieceType.black ^ PieceType.pawn:
-        case PieceType.black ^ PieceType.pawn:  
-        case PieceType.black ^ PieceType.pawn:
-        
-    }
+    console.log(PieceType.numToPieceName[selectedPiece & 7]);
+
 
 
 }

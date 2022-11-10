@@ -769,6 +769,10 @@ class PieceType{
         17: 'k', 18: 'p', 19: 'n', 20: 'b', 21: 'r', 22: 'q'
     }
 
+    static numToPieceName = {
+        1: 'king', 2: 'pawn', 3: 'knight', 4: 'bishop', 5: 'rook', 6: 'queen'
+    }
+
     static none = 0;
     static king = 1;
     static pawn = 2;
