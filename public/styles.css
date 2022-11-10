@@ -219,6 +219,7 @@ a{
   float:right;
 
   right:5%;
+  top: 50%;
 
   border-style: none;
   max-width: 90%;
@@ -227,84 +228,21 @@ a{
 
 .selection-square{
   display: flex;
-  height: 100%;
+ 
   width: 100%;
-
-
+  height:100%;
 
   align-items:center;
   justify-content:center;
 
+  background-color: #70704A;;
+
 }
 
-#b-rook-square:hover{
-  background-color: aliceblue;
-  border-radius: 50%;
-  width:90%;
+.selection-square:hover{
+  background-color:white;
+  border-radius: 70%;
+  width: 90%;
+  height: 90%
 }
 
-#b-knight-square:hover{
-  background-color: aliceblue;
-  border-radius: 50%;
-  width:90%;
-}
-
-#b-bishop-square:hover{
-  background-color: aliceblue;
-  border-radius: 50%;
-  width:90%;
-}
-
-#b-queen-square:hover{
-  background-color: aliceblue;
-  border-radius: 50%;
-  width:90%;
-}
-
-#b-pawn-square:hover{
-  background-color: aliceblue;
-  border-radius: 50%;
-  width:90%;
-}
-
-#b-king-square:hover{
-  background-color: aliceblue;
-  border-radius: 50%;
-  width:90%;
-}
-
-#w-rook-square:hover{
-  background-color: aliceblue;
-  border-radius: 50%;
-  width:90%;
-}
-
-#w-knight-square:hover{
-  background-color: aliceblue;
-  border-radius: 50%;
-  width:90%;
-}
-
-#w-bishop-square:hover{
-  background-color: aliceblue;
-  border-radius: 50%;
-  width:90%;
-}
-
-#w-queen-square:hover{
-  background-color: aliceblue;
-  border-radius: 50%;
-  width:90%;
-}
-
-#w-king-square:hover{
-  background-color: aliceblue;
-  border-radius: 50%;
-  width:90%;
-}
-
-#w-pawn-square:hover{
-  background-color: aliceblue;
-  border-radius: 50%;
-  width:90%;
-}

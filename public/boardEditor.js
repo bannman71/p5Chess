@@ -128,6 +128,20 @@ function mouseReleased(){
     if (isOnBoard(getClickedSquare.y,getClickedSquare.x)){
         board.occSquares[getClickedSquare.y][getClickedSquare.x] = new Piece((selectedPiece & 7), getClickedSquare.y,getClickedSquare.x, (selectedPiece & 24));
     }
+
+    switch (selectedPiece){
+        case PieceType.black ^ PieceType.pawn:
+            console.log('yooo');
+            $("#b-pawn-square").css("background-color", "#F0F0F0", "border-radius", "50%");
+        case PieceType.black ^ PieceType.pawn:
+        case PieceType.black ^ PieceType.pawn:
+        case PieceType.black ^ PieceType.pawn:
+        case PieceType.black ^ PieceType.pawn:  
+        case PieceType.black ^ PieceType.pawn:
+        
+    }
+
+
 }
 
 function mousePressed(){
