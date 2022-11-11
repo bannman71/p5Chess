@@ -4,6 +4,8 @@ body{
 
 /* GLOBAL */
 
+
+
 .header-container{
   display:flex;
   position: absolute;
@@ -22,8 +24,6 @@ body{
   background-color: rgb(74, 74, 112);
 }
 
-
-
 .game-container{
   display: flex;
   position: absolute;
@@ -32,13 +32,15 @@ body{
   left:17%;
 
   flex-wrap: wrap;
+  flex-direction: row;
 
   font-size: 0px;
 
   width: 66vw;
   height: 90vh;
 
-  justify-content: space-between;
+  justify-content: flex-start;
+  align-items: center;
 }
 
 .game-info-container{
@@ -219,7 +221,7 @@ a{
   float:right;
 
   right:5%;
-  top: 50%;
+  /* bottom: 50%; */
 
   border-style: none;
   max-width: 90%;
@@ -227,13 +229,8 @@ a{
 }
 
 .selection-square{
-  display: flex;
- 
   width: 100%;
   height:100%;
-
-  align-items:center;
-  justify-content:center;
 
   background-color: #70704A;;
 
@@ -247,3 +244,14 @@ a{
   
 }
 
+#FEN-container{
+  position:relative;
+  border-style: solid;
+
+ 
+  bottom:75%;
+  left: 5%;
+
+  min-width:20%;
+  height:5%;
+}

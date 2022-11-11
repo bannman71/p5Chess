@@ -28,7 +28,7 @@ const DEFSTYLE = {
     'background-color': 'transparent',
     'border-radius': '0%', 
     'height': '100%', 
-    'width': '100%' 
+    'width': '100%'
 }
 
 const pieces = ['pawn', 'king', 'knight', 'bishop', 'rook', 'queen'];
@@ -73,6 +73,7 @@ function draw(){
 
     let whitePieceToSelect;
     let blackPieceToSelect;
+    //highlights the piece that has been selected to place on the board
     for (var piece of pieces){
         whitePieceToSelect = '#w-' + piece + '-square';
         blackPieceToSelect = '#b-' + piece + '-square'; 
@@ -89,9 +90,9 @@ function draw(){
                 $(whitePieceToSelect).css(SELECTEDSTYLE);
             }
         }
-
     }
 
+    document.getElementById('FEN-container').innerHTML = "hello";
 
 }
 
