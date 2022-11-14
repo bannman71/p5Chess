@@ -17,6 +17,9 @@ var selectedPiece;
 var getClickedSquare;
 var pieceAtMouse;
 
+var boardFEN = '8/8/8/8/8/8/8/8';
+
+
 const SELECTEDSTYLE = {
     'background-color': '#F0F0F0',
     'border-radius': '70%', 
@@ -92,13 +95,21 @@ function draw(){
         }
     }
 
-    document.getElementById('FEN-container').innerHTML = "hello";
+
+    var endOfFen;
+    if ($('#white-castling-short').is(':checked')){
+    }
+
+
+    $('#FEN-container').html('FEN: ' + boardFEN);
 
 }
 
 function mouseReleased(){
 
     //if there is a piece at mouse from html
+
+   
 
     $("#black-rook").off('click').on("click", function() {
         selectedPiece = PieceType.rook ^ PieceType.black;
@@ -164,6 +175,8 @@ function mouseReleased(){
     if (isOnBoard(getClickedSquare.y,getClickedSquare.x)){
         board.occSquares[getClickedSquare.y][getClickedSquare.x] = new Piece((selectedPiece & 7), getClickedSquare.y,getClickedSquare.x, (selectedPiece & 24));
     }
+
+    boardFEN = board.boardToFEN();
 
     console.log(PieceType.numToPieceName[selectedPiece & 7]);
 

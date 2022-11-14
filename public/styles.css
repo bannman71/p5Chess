@@ -2,6 +2,10 @@ body{
   background-color: rgb(74, 74, 112);
 }
 
+p{
+  color: #73AD21;
+}
+
 /* GLOBAL */
 
 
@@ -33,6 +37,8 @@ body{
 
   flex-wrap: wrap;
   flex-direction: row;
+
+  border-style: dashed;
 
   font-size: 0px;
 
@@ -245,13 +251,48 @@ a{
 }
 
 #FEN-container{
-  position:relative;
-  border-style: solid;
+  position: relative;
 
- 
+  border-style: dashed;
+
+  color: white;
+
   bottom:75%;
-  left: 5%;
+  left: 0%;
 
-  min-width:20%;
-  height:5%;
+  min-width: 20%;
+  height: 5%;
 }
+
+#checkbox-FEN-info{
+  display: flex;
+  position: relative;
+
+  border-style: dashed;
+
+  flex-direction: column;
+
+  right: 0%;
+  bottom:25%;
+
+  justify-content: space-between;
+
+  width:25%;
+  height: 20%;
+
+}
+
+.form-check{
+  position: relative;
+  font-size: 1rem;  
+}
+
+.form-check-label{
+  color: #FFFFFF;
+}
+
+.scroll{
+  overflow-x: scroll;
+  white-space: nowrap;
+}
+
