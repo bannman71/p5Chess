@@ -253,22 +253,31 @@ a{
 #FEN-container{
   position: relative;
 
-  border-style: dashed;
+  color: white;
+
+  /* bottom:75%;
+  left: 0%;
+  */
+  max-width: 100%;
+
+}
+
+#FEN-box{
+  position: relative;
 
   color: white;
 
   bottom:75%;
   left: 0%;
 
-  min-width: 20%;
-  height: 5%;
+  min-width: 50%;
+  max-width: 100%;
+  height: 5%; 
 }
 
 #checkbox-FEN-info{
   display: flex;
   position: relative;
-
-  border-style: dashed;
 
   flex-direction: column;
 
@@ -294,5 +303,8 @@ a{
 .scroll{
   overflow-x: scroll;
   white-space: nowrap;
+
+  background-color: #70704A;
+  width: 40%;
 }
 
