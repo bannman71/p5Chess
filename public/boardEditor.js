@@ -18,6 +18,7 @@ var getClickedSquare;
 var pieceAtMouse;
 
 var boardFEN = '8/8/8/8/8/8/8/8';
+var endOfFen;
 
 
 const SELECTEDSTYLE = {
@@ -51,6 +52,8 @@ function setup(){
 
     var size = Math.min(WIDTH,HEIGHT);
     
+    boardFEN = '8/8/8/8/8/8/8/8';
+    $('#FEN-container').html('FEN: ' + boardFEN);
 
     BLOCK_SIZE = size / 8;
 
@@ -96,20 +99,21 @@ function draw(){
     }
 
 
-    var endOfFen;
-    if ($('#white-castling-short').is(':checked')){
-    }
+    endOfFen = '';
+    if ($('#white-to-move').is(':checked')) endOfFen += ' w '; else endOfFen += ' b ';
+    if ($('#white-castling-short').is(':checked')) endOfFen += 'K';
+    if ($('#white-castling-long').is(':checked')) endOfFen += 'Q';
+    if ($('#black-castling-short').is(':checked')) endOfFen += 'k';
+    if ($('#black-castling-long').is(':checked')) endOfFen += 'q';
 
+    $('#FEN-container').html(boardFEN + endOfFen + ' - 0 1');
 
-    $('#FEN-container').html('FEN: ' + boardFEN);
 
 }
 
 function mouseReleased(){
 
     //if there is a piece at mouse from html
-
-   
 
     $("#black-rook").off('click').on("click", function() {
         selectedPiece = PieceType.rook ^ PieceType.black;
@@ -172,21 +176,25 @@ function mouseReleased(){
         // alert( "Handler for white pawn called." );
     });
 
-    if (isOnBoard(getClickedSquare.y,getClickedSquare.x)){
-        board.occSquares[getClickedSquare.y][getClickedSquare.x] = new Piece((selectedPiece & 7), getClickedSquare.y,getClickedSquare.x, (selectedPiece & 24));
-    }
+   
 
     boardFEN = board.boardToFEN();
-
-    console.log(PieceType.numToPieceName[selectedPiece & 7]);
-
 
 
 }
 
 function mousePressed(){
-    getClickedSquare = getMouseCoord(mouseX,mouseY);
     
+}
+
+function mouseDragged(){
+
+    getClickedSquare = getMouseCoord(mouseX,mouseY);
+
+    if (isOnBoard(getClickedSquare.y,getClickedSquare.x)){
+        board.occSquares[getClickedSquare.y][getClickedSquare.x] = new Piece((selectedPiece & 7), getClickedSquare.y,getClickedSquare.x, (selectedPiece & 24));
+    }
+
 }
 
 function windowResized(){
@@ -196,6 +204,7 @@ function windowResized(){
     size = Math.min(WIDTH,HEIGHT);
     $("#black-piece-selection-container").width(size);
     $("#white-piece-selection-container").width(size);
+
     resizeCanvas(size, size);
     BLOCK_SIZE = (size) / 8; //can be width but it is a square
     SPACING = Math.floor((BLOCK_SIZE * (1 - PIECE_SCALE)) / 2);

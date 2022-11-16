@@ -173,28 +173,57 @@ a{
 
 /* BOARD EDITOR */
 
+#board-editor-full-container{
+  display: flex;
+  position: absolute;
+
+  top: 12%; 
+  left:17%;
+
+  flex-wrap: wrap;
+  flex-direction: row;
+
+  border-style: none;
+
+  font-size: 0px;
+
+  width: 66vw;
+  height: 110vh;
+
+  justify-content: center;
+  align-items: center;
+
+
+}
+
 
 #board-editor-container{
-  position: relative;
-  width: 70%;
-  height: 70%;
+  position: absolute;
+
+  top: 12%;
+  left: 0%;
+  width: 43%;
+  height: 50%;
 
   border-style: none;
 
 }
 
-#customise-game-options{
-
-}
-
 #black-piece-selection-container{
   display: flex;
+  position: absolute;
+
+
+  top:0%;
+  left: 0%;
 
   background-color:#70704A;
 
   border-style: none; 
   width: 100%;
-  height: 13%;
+  height: 10%;
+
+
 
   gap: 0rem;
 
@@ -207,14 +236,17 @@ a{
 
 #white-piece-selection-container{
   display: flex;
+  position: absolute;
+
+  top: 65%;
+  left:0%;
 
   background-color: #70704A;
 
   justify-content: center;
   align-items: center;
 
-  width: 100%;
-  height: 13%;
+  height: 10%;
 
   gap:0rem;
 
@@ -239,7 +271,6 @@ a{
   height:100%;
 
   background-color: #70704A;;
-
 }
 
 .selection-square:hover{
@@ -251,48 +282,33 @@ a{
 }
 
 #FEN-container{
-  position: relative;
-
   color: white;
-
-  /* bottom:75%;
-  left: 0%;
-  */
-  max-width: 100%;
-
-}
-
-#FEN-box{
-  position: relative;
-
-  color: white;
-
-  bottom:75%;
-  left: 0%;
-
-  min-width: 50%;
-  max-width: 100%;
-  height: 5%; 
 }
 
 #checkbox-FEN-info{
   display: flex;
-  position: relative;
+  position:absolute;
+
+  border-radius: 10px;
+
+  left: 65%;
+  top:25%;
 
   flex-direction: column;
 
-  right: 0%;
-  bottom:25%;
+  background-color: #28282B;
 
   justify-content: space-between;
 
-  width:25%;
-  height: 20%;
+  width:30%;
+  height: 20%; 
+  min-width: 10rem;
 
 }
 
 .form-check{
   position: relative;
+  left:5%;
   font-size: 1rem;  
 }
 
@@ -300,11 +316,50 @@ a{
   color: #FFFFFF;
 }
 
+#white-castling-boxes{
+  display: flex;
+  position: absolute;
+
+  top: 30%;
+  left:10%;
+
+  flex-direction: column;
+  justify-content: space-between;
+
+}
+
+#black-castling-boxes{
+  display:flex;
+  position: absolute;
+
+  top:30%;
+  left: 67%;
+
+  flex-direction: column;
+
+  justify-content: space-between;
+
+
+}
+
+
 .scroll{
   overflow-x: scroll;
   white-space: nowrap;
 
-  background-color: #70704A;
-  width: 40%;
+  position: absolute;
+  left: 5%;
+  bottom:15%;
+
+  background-color: #28282B;
+  border-radius: 5px;
+  width:40%;
+}
+
+#FEN-text{
+  position:absolute; 
+  left: 0%;
+  bottom: 15%;
+  color:#FFFFFF;
 }
 
