@@ -14,16 +14,14 @@ var io = socket(server);
 io.on('connection', (socket) => {
   console.log('client connected');
 
-  socket.on('one-zero', (args) => {
-    console.log(args);
+  socket.on('timeControlChosen', (data) => {
+    console.log(data);
   })
 
   // socket.on('clicked', function(){
   //   io.emit('clicked');
   // });
 });
-
-socket.on
 
 router.get('/', (req,res) => {
   res.sendFile(path.join(dir, 'index.html'));

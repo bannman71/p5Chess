@@ -44,8 +44,6 @@
         <p>3|0</p>
       </div>  
     </a>
-   
-
 
     <button class="btn" id="three-two">
       <div class="btn-font">
@@ -100,42 +98,42 @@
   <script type="text/javascript">
     var socket = io.connect('http://localhost:3000/');
 
+    function chooseTimeControl(time, increment){
+      var data = {'time': time, 'increment': increment};
+      socket.emit('timeControlChosen', data);
+    }
+
+
     $('#one-zero').click(() => {
-      var data = {
-        'time': 1,
-        'increment': 0
-      }
-
-
-      socket.emit('one-zero', data);
+      chooseTimeControl(1,0);
     });
 
     $('#three-zero').click(() => {
-      alert('hello');
+      chooseTimeControl(3,0);
     });
 
     $('#three-two').click(() => {
-      alert('hello');
+      chooseTimeControl(3,2);
     });
 
     $('#five-zero').click(() => {
-      alert('hello');
+      chooseTimeControl(5,0);
     });
     $('#five-three').click(() => {
-
-      alert('hello');
+      chooseTimeControl(5,3);
     });
 
     $('#ten-zero').click(() => {
-      alert('hello');
+      chooseTimeControl(10,0);
     });
 
-    $('#30-zero').click(() => {
-      alert('hello');
+    $('#thirty-zero').click(() => {
+      chooseTimeControl(30,0);
     });
 
     $('#custom').click(() => {
-      alert('hello');
+      //have some sorta menu which chooses these numbers
+      // chooseTimeControl();
     });
 
     // socket.on('connect', function(){
