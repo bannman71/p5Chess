@@ -11,8 +11,9 @@ const dir = path.join(__dirname, '/public/views/');
 var server = app.listen(port);
 var io = socket(server);
 
-io.on('connection', function(socket){
+io.on('connection', (socket) => {
   console.log('client connected');
+  console.log(socket);
   // socket.on('clicked', function(){
   //   io.emit('clicked');
   // });
