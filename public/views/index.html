@@ -31,56 +31,58 @@
 
   <div id="game-option-container">
       
-    <button onclick="onClickHandler(this)"; "location.href='/PlayLocally';" class="btn">
-      <div class="btn-font">
-        <p>Bullet</p>
-        <p>1|0</p>
-      </div> 
+    <button class="btn" id="one-zero">
+        <div class="btn-font">
+          <p>Bullet</p>
+          <p>1|0</p>
+        </div> 
     </button>
-  
-    <button onclick="location.href='/PlayLocally';" class="btn">
+
+    <button class="btn" id="three-zero">
       <div class="btn-font">
         <p>Blitz</p>
         <p>3|0</p>
       </div>  
     </a>
    
-    <button type="button" class="btn">
+
+
+    <button class="btn" id="three-two">
       <div class="btn-font">
         <p>Blitz</p>
         <p>3|2</p>
       </div>  
     </button>
 
-    <button type="button" class="btn">
+    <button class="btn" id="five-zero">
       <div class="btn-font">
         <p>Blitz</p>
         <p>5|0</p>
       </div>  
     </button>
 
-    <button type="button" class="btn">
+    <button class="btn" id="five-three">
       <div class="btn-font">
         <p>Blitz</p>
         <p>5|3</p>
       </div>  
     </button>
     
-    <button type="button" class="btn">
+    <button class="btn" id="ten-zero">
       <div class="btn-font">
         <p>Rapid</p>
         <p>10|0</p>
       </div>  
     </button>
 
-    <button type="button" class="btn">
+    <button class="btn" id="thirty-zero"> 
       <div class="btn-font">
         <p>Classical</p>
         <p>30|0</p>
       </div>  
     </button>
     
-    <button type="button" class="btn">
+    <button class="btn" id="custom">
       <div class="btn-font">
         <p>Custom</p>
       </div>
@@ -97,6 +99,44 @@
 
   <script type="text/javascript">
     var socket = io.connect('http://localhost:3000/');
+
+    $('#one-zero').click(() => {
+      var data = {
+        'time': 1,
+        'increment': 0
+      }
+
+
+      socket.emit('one-zero', data);
+    });
+
+    $('#three-zero').click(() => {
+      alert('hello');
+    });
+
+    $('#three-two').click(() => {
+      alert('hello');
+    });
+
+    $('#five-zero').click(() => {
+      alert('hello');
+    });
+    $('#five-three').click(() => {
+
+      alert('hello');
+    });
+
+    $('#ten-zero').click(() => {
+      alert('hello');
+    });
+
+    $('#30-zero').click(() => {
+      alert('hello');
+    });
+
+    $('#custom').click(() => {
+      alert('hello');
+    });
 
     // socket.on('connect', function(){
     //   document.getElementsByClassName("btn").addEventListener("click",function(){

@@ -2,13 +2,7 @@ body{
   background-color: rgb(74, 74, 112);
 }
 
-p{
-  color: #73AD21;
-}
-
 /* GLOBAL */
-
-
 
 .header-container{
   display:flex;
@@ -64,7 +58,6 @@ p{
 /* FOR BOARD PAGE */
 
 #board-container{
-  /* position: relative; */
   border-style: none;
   width: 60%; 
   height: 0;
@@ -86,9 +79,6 @@ p{
   border: 3px solid #73AD21;
   padding: 10px;
 }
-
-
-
 
 .nav-list{
   display: flex;
@@ -151,7 +141,6 @@ a{
   border-color: grey;
 
   background-color: #28282B;
-  color: white;
 
   width: calc(100% / 4);
   height: 50%;
@@ -159,12 +148,16 @@ a{
 }
 
 .btn-font{
-  color:#FFFFFF;
+  color:#c5c0c0;
   font-size: calc(0.5vw + 1vw);
 }
 
 .btn:hover{
-  color:cornflowerblue;
+  border-color:aqua;
+}
+
+.btn:hover p{
+  color: #FFFFFF
 }
 
 .wrap-text{
