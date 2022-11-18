@@ -80,8 +80,6 @@ class Board {
 
     }
 
-
-
     FENToBoard(FEN){
         let col = 0;
         let row = 0;
@@ -192,7 +190,6 @@ class Board {
 
         return FEN;
     }
-
 
     isLegalMove(piece, destRow, destCol){
         var destPos = destRow + '' + destCol;
@@ -598,9 +595,6 @@ class Board {
         }
     }
 
-    //generate an array of where all pieces attack in the position
-    //if the king is in an attacked square (represented as 1) they are in check -> therefore disallow that move
-
     findMaskSquares(findAttacksFromWhite, position){ //gets all available squares that the pieces can move to (excluding captures since they aren't necessary)
         let bitmap = create2dArray(8,8);
 
@@ -755,7 +749,6 @@ class Board {
 
         return numLegal;
     }
-
 
 }
 class PieceType{

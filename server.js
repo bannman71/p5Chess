@@ -6,25 +6,64 @@ var socket = require('socket.io');
 const port = process.env.PORT || 3000;
 
 const path = require('path');
+const { match } = require('assert');
 const dir = path.join(__dirname, '/public/views/');
 
 var server = app.listen(port);
 var io = socket(server);
 
+var matchmaking = [];
+
+
 io.on('connection', (socket) => {
   console.log('client connected');
+  console.log(socket.id);
+
 
   socket.on('timeControlChosen', (data) => {
-    console.log(data);
+    matchmaking.push(data);
+
+    //every time a new client searches for a game
+    //search current players
+    //if another player has same time and increment
+    //pair them
+
+
+    for (let i = 0; i < matchmaking.length; i++){
+      for (let j = i + 1; j < matchmaking.length; j++){
+        if ((matchmaking[i].time === matchmaking[j].time) && (matchmaking[i].interval === matchmaking[j].interval) /*&& (matchmaking[i].id !== matchmaking[j].id)*/){
+          
+
+          console.log('match made');
+          socket.join(() => { //generate random room code
+            var roomCode = '';
+            for (let i = 0; i < 6; i++){
+              roomCode += Math.floor((Math.random() * 122) + 48);
+            }
+            console.log('room ' + roomCode);
+            return roomCode;
+          });
+        }
+      }
+    } 
   })
 
-  // socket.on('clicked', function(){
-  //   io.emit('clicked');
-  // });
 });
+
+//0 1 2 3 4 5
+
+setInterval(function() {
+  console.log(matchmaking);
+  // do your stuff here.
+}, 2000);
+
 
 router.get('/', (req,res) => {
   res.sendFile(path.join(dir, 'index.html'));
+});
+
+router.get('/OnlineGame', (req, res) => {
+
 });
 
 

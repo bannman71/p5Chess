@@ -92,14 +92,13 @@
       </div>
     </button>
 
-
   </div> 
 
   <script type="text/javascript">
     var socket = io.connect('http://localhost:3000/');
 
-    function chooseTimeControl(time, increment){
-      var data = {'time': time, 'increment': increment};
+    function chooseTimeControl(cTime, cIncrement){
+      var data = {time: cTime, increment: cIncrement, id: socket.id};
       socket.emit('timeControlChosen', data);
     }
 
