@@ -43,7 +43,7 @@ function updateTableHTML(socket){
   </tbody>
   </table>
   `;
-  socket.emit("updateMatchmakingTable", table);
+  io.sockets.emit("updateMatchmakingTable", table); //send all clients updated table
 
 }
 
@@ -56,7 +56,10 @@ io.on('connection', (socket) => {
   socket.on('timeControlChosen', (data) => {
     let alreadySearching = false;
     for(let m = 0; m < matchmaking.length; m++){
-      if (matchmaking[m].id === data.id) alreadySearching = true;
+      if (matchmaking[m].id === data.id){
+        matchmaking[m] = data; //updates if the player changes what game type they want to find
+        alreadySearching = true; //stops the same player from being duplicated in matchmaking
+      }
     }
     if (!alreadySearching) matchmaking.push(data);
 
@@ -69,7 +72,6 @@ io.on('connection', (socket) => {
       for (let j = i + 1; j < matchmaking.length; j++){
         if ((matchmaking[i].time === matchmaking[j].time) && (matchmaking[i].interval === matchmaking[j].interval)){
           
-
           console.log('match made');
           socket.join(() => { //generate random room code
             var roomCode = '';
@@ -85,13 +87,16 @@ io.on('connection', (socket) => {
           });
         }
       }
-    } 
+    }
     
     updateTableHTML(socket);
 
   });
 
   socket.on('disconnect', () => {
+    for (i = 0; i < matchmaking.length; i++){
+      if (matchmaking[i].id === socket.id) matchmaking.splice(i,1);
+    }
     console.log('gone');
   });
 
