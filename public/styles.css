@@ -112,12 +112,8 @@ a{
 
 /* START PAGE */
 
-#matchmaking-list-container{
-  display: grid;
-  grid-template-columns: auto auto auto;
+#matchmaking-table{
   position: absolute;
-
-  border-style: double;
 
   width:50vw;
   height:25vh;
@@ -125,16 +121,6 @@ a{
   top: 78%;
   right: 25%;
 }
-
-.grid-title{
-  background-color: #c5c0c0;
-  padding:5px;
-  font-size: 15spx;
-  text-align: center;
-
-  height:15%;
-}
-
 
 #game-option-container{
   display: flex;

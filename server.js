@@ -19,8 +19,16 @@ io.on('connection', (socket) => {
   console.log('client connected');
   console.log(socket.id);
 
-	let tableData = document.getElementById("matchmaking-table");
-
+  let table = `
+  <table class="table">
+    <thead class="thead-dark">
+      <tr>
+          <th scope="col">Player</th>
+          <th scope="col">Game Type</th>
+        </tr>
+    </thead>
+    <tbody>
+  `;
 
   socket.on('timeControlChosen', (data) => {
     matchmaking.push(data);
@@ -30,36 +38,6 @@ io.on('connection', (socket) => {
     //if another player has same time and increment
     //pair them
 
-		let table = `
-    	<table class="table">
-      	<thead>
-        	<tr>
-        		<th scope="col">Player</th>
-            <th scope="col">Game Type</th>
-        	</tr>
-      	</thead>
-      	<tbody>
-    `;
-    
-		//update rows and cols for current players
-
-		for (let i = 0; i < matchmaking.length; i++){
-      table = table + `
-      <tr>
-      	<td>${matchmaking[i].id}</td>
-        <td>${matchmaking[i].time}|${matchmaking[i].increment}</td>
-      </tr>`;
-  	}
-    
-    //ending lines for table
-		table = table + `
-    </tbody>
-    </table>
-    `;
-    
-    tableData.innerHTML = table;
-
-	
     for (let i = 0; i < matchmaking.length; i++){
       for (let j = i + 1; j < matchmaking.length; j++){
         if ((matchmaking[i].time === matchmaking[j].time) && (matchmaking[i].interval === matchmaking[j].interval) /*&& (matchmaking[i].id !== matchmaking[j].id)*/){
@@ -77,7 +55,43 @@ io.on('connection', (socket) => {
         }
       }
     } 
+
+    table = `
+    <table class="table">
+      <thead class="thead-dark">
+        <tr>
+            <th scope="col">Player</th>
+            <th scope="col">Game Type</th>
+          </tr>
+      </thead>
+      <tbody>
+    `;	
+    
+		//update rows and cols for current players
+
+		for (let i = 0; i < matchmaking.length; i++){
+      table = table + `
+      <tr>
+      	<td>${matchmaking[i].id}</td>
+        <td>${matchmaking[i].time}|${matchmaking[i].increment}</td>
+      </tr>`;
+  	}
+
+    //ending lines for table
+		table = table + `
+    </tbody>
+    </table>
+    `;
+    socket.emit("updateMatchmakingTable", table);
+    console.log('emitted');
   })
+
+  //ending lines for table
+  table = table + `
+    </tbody>
+  </table>
+  `;
+  socket.emit("updateMatchmakingTable", table);
 
 });
 

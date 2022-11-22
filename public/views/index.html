@@ -93,6 +93,13 @@
   <script type="text/javascript">
     var socket = io.connect('http://localhost:3000/');
 
+    let tableData = document.getElementById('matchmaking-table');
+
+    socket.on("updateMatchmakingTable", (data) => {
+      console.log(data);
+      tableData.innerHTML = data;
+    });
+
     function chooseTimeControl(cTime, cIncrement){
       var data = {time: cTime, increment: cIncrement, id: socket.id};
       socket.emit('timeControlChosen', data);
