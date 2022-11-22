@@ -23,6 +23,7 @@ function updateTableHTML(socket){
       <tr>
           <th scope="col">Player</th>
           <th scope="col">Game Type</th>
+
         </tr>
     </thead>
     <tbody>
@@ -63,28 +64,25 @@ io.on('connection', (socket) => {
     }
     if (!alreadySearching) matchmaking.push(data);
 
-    //every time a new client searches for a game
-    //search current players
-    //if another player has same time and increment
-    //pair them
-
     for (let i = 0; i < matchmaking.length; i++){
       for (let j = i + 1; j < matchmaking.length; j++){
         if ((matchmaking[i].time === matchmaking[j].time) && (matchmaking[i].interval === matchmaking[j].interval)){
           
           console.log('match made');
-          socket.join(() => { //generate random room code
-            var roomCode = '';
-            for (let i = 0; i < 6; i++){
-              roomCode += Math.floor((Math.random() * 122) + 48);
-            }
-            console.log('room ' + roomCode);
 
-            matchmaking.splice(i, 1);
-            matchmaking.splice(j, 1);
+          socket.join('room1');/*() => {*/ //generate random room code
+          //   var roomCode = '';
+          //   for (let i = 0; i < 6; i++){
+          //     roomCode += Math.floor((Math.random() * 122) + 48);
+          //   }
+          //   console.log('room ' + roomCode);
 
-            return roomCode;
-          });
+          //   matchmaking.splice(i, 1);
+          //   matchmaking.splice(j, 1);
+
+          //   return roomCode;
+          // });
+          io.to('room1').emit('Hello', 'whatsup');
         }
       }
     }
@@ -101,6 +99,8 @@ io.on('connection', (socket) => {
   });
 
 });
+
+
 
 
 setInterval(function() {

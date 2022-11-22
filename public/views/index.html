@@ -13,9 +13,6 @@
   <link rel="stylesheet" href="styles.css"/>
 </head>
 
-
-
-
 <body>
 
   <div class="header-container">
@@ -92,19 +89,23 @@
 
   <script type="text/javascript">
     var socket = io.connect('http://localhost:3000/');
-
     let tableData = document.getElementById('matchmaking-table');
+
 
     socket.on("updateMatchmakingTable", (data) => {
       console.log(data);
       tableData.innerHTML = data;
     });
 
+    socket.on('Hello', (args) => {
+      console.log(args);
+    });
+
+
     function chooseTimeControl(cTime, cIncrement){
       var data = {time: cTime, increment: cIncrement, id: socket.id};
       socket.emit('timeControlChosen', data);
     }
-
 
     $('#one-zero').click(() => {
       chooseTimeControl(1,0);
