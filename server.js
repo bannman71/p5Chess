@@ -54,7 +54,11 @@ io.on('connection', (socket) => {
   updateTableHTML(socket);
   
   socket.on('timeControlChosen', (data) => {
-    matchmaking.push(data);
+    let alreadySearching = false;
+    for(let m = 0; m < matchmaking.length; m++){
+      if (matchmaking[m].id === data.id) alreadySearching = true;
+    }
+    if (!alreadySearching) matchmaking.push(data);
 
     //every time a new client searches for a game
     //search current players
@@ -63,7 +67,7 @@ io.on('connection', (socket) => {
 
     for (let i = 0; i < matchmaking.length; i++){
       for (let j = i + 1; j < matchmaking.length; j++){
-        if ((matchmaking[i].time === matchmaking[j].time) && (matchmaking[i].interval === matchmaking[j].interval) /*&& (matchmaking[i].id !== matchmaking[j].id)*/){
+        if ((matchmaking[i].time === matchmaking[j].time) && (matchmaking[i].interval === matchmaking[j].interval)){
           
 
           console.log('match made');
@@ -73,6 +77,10 @@ io.on('connection', (socket) => {
               roomCode += Math.floor((Math.random() * 122) + 48);
             }
             console.log('room ' + roomCode);
+
+            matchmaking.splice(i, 1);
+            matchmaking.splice(j, 1);
+
             return roomCode;
           });
         }
@@ -82,9 +90,13 @@ io.on('connection', (socket) => {
     updateTableHTML(socket);
 
   });
+
+  socket.on('disconnect', () => {
+    console.log('gone');
+  });
+
 });
 
-//0 1 2 3 4 5
 
 setInterval(function() {
   console.log(matchmaking);
