@@ -15,10 +15,8 @@ var io = socket(server);
 var matchmaking = [];
 
 
-io.on('connection', (socket) => {
-  console.log('client connected');
-  console.log(socket.id);
-
+function updateTableHTML(socket){
+  //header
   let table = `
   <table class="table">
     <thead class="thead-dark">
@@ -30,6 +28,31 @@ io.on('connection', (socket) => {
     <tbody>
   `;
 
+  //body of table - contents and players queued
+
+  for (let i = 0; i < matchmaking.length; i++){
+    table = table + `
+    <tr>
+      <td>${matchmaking[i].id}</td>
+      <td>${matchmaking[i].time}|${matchmaking[i].increment}</td>
+    </tr>`;
+  }
+
+  //ending lines for table
+  table = table + `
+  </tbody>
+  </table>
+  `;
+  socket.emit("updateMatchmakingTable", table);
+
+}
+
+io.on('connection', (socket) => {
+  console.log('client connected');
+  console.log(socket.id);
+
+  updateTableHTML(socket);
+  
   socket.on('timeControlChosen', (data) => {
     matchmaking.push(data);
 
@@ -55,44 +78,10 @@ io.on('connection', (socket) => {
         }
       }
     } 
-
-    table = `
-    <table class="table">
-      <thead class="thead-dark">
-        <tr>
-            <th scope="col">Player</th>
-            <th scope="col">Game Type</th>
-          </tr>
-      </thead>
-      <tbody>
-    `;	
     
-		//update rows and cols for current players
+    updateTableHTML(socket);
 
-		for (let i = 0; i < matchmaking.length; i++){
-      table = table + `
-      <tr>
-      	<td>${matchmaking[i].id}</td>
-        <td>${matchmaking[i].time}|${matchmaking[i].increment}</td>
-      </tr>`;
-  	}
-
-    //ending lines for table
-		table = table + `
-    </tbody>
-    </table>
-    `;
-    socket.emit("updateMatchmakingTable", table);
-    console.log('emitted');
-  })
-
-  //ending lines for table
-  table = table + `
-    </tbody>
-  </table>
-  `;
-  socket.emit("updateMatchmakingTable", table);
-
+  });
 });
 
 //0 1 2 3 4 5
