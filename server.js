@@ -28,7 +28,6 @@ io.on('connection', (socket) => {
     //if another player has same time and increment
     //pair them
 
-
     for (let i = 0; i < matchmaking.length; i++){
       for (let j = i + 1; j < matchmaking.length; j++){
         if ((matchmaking[i].time === matchmaking[j].time) && (matchmaking[i].interval === matchmaking[j].interval) /*&& (matchmaking[i].id !== matchmaking[j].id)*/){
