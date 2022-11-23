@@ -98,12 +98,13 @@
     });
 
     socket.on('Hello', (args) => {
-      console.log(args);
+      alert(args);
     });
 
 
     function chooseTimeControl(cTime, cIncrement){
       var data = {time: cTime, increment: cIncrement, id: socket.id};
+
       socket.emit('timeControlChosen', data);
     }
 
@@ -135,18 +136,10 @@
     });
 
     $('#custom').click(() => {
+      socket.emit('getClients', '');
       //have some sorta menu which chooses these numbers
       // chooseTimeControl();
     });
-
-    // socket.on('connect', function(){
-    //   document.getElementsByClassName("btn").addEventListener("click",function(){
-    //     socket.emit("clicked");
-    //   });
-    // });
-    // socket.on("clicked", function(){
-    //   console.log('clicked');
-    // })
     
   </script>
 
