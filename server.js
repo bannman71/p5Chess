@@ -76,8 +76,10 @@ function moveClientsToGameRoom(p1ID, p2ID){
 
     if (clientID === p1ID || clientID === p2ID){
       clientSocket.leave('waitingRoom');
-    
       clientSocket.join(roomCode);
+
+      clientSocket.emit('redirect', '/onlineGame');
+
     }
   }
 }
@@ -88,7 +90,6 @@ io.on('connection', (socket) => {
 
   socket.join('waitingRoom');
   updateTableHTML();
-  
 
   socket.on('timeControlChosen', (data) => {
     let alreadySearching = false;
@@ -106,12 +107,15 @@ io.on('connection', (socket) => {
       for (let j = i + 1; j < matchmaking.length; j++){
         if ((matchmaking[i].time === matchmaking[j].time) && (matchmaking[i].interval === matchmaking[j].interval)){
           console.log('socket ' + '' + socket.id);
-
+          //move them to game room
           moveClientsToGameRoom(matchmaking[i].id, matchmaking[j].id);
+          
+          //remove them from matchmaking list as they have found a game
           matchmaking.splice(j,1);
           matchmaking.splice(i,1);
 
-          io.to(gameRooms[0]).emit('Hello', 'whatsup');
+          io.emit
+
           gameFound = true;
           break;
         }
@@ -155,8 +159,8 @@ router.get('/', (req,res) => {
   res.sendFile(path.join(dir, 'index.html'));
 });
 
-router.get('/OnlineGame', (req, res) => {
-
+router.get('/onlineGame', (req, res) => {
+  res.sendFile(path.join(dir, '/onlineGame.html'));
 });
 
 

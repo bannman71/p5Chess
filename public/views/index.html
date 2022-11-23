@@ -97,8 +97,8 @@
       tableData.innerHTML = data;
     });
 
-    socket.on('Hello', (args) => {
-      alert(args);
+    socket.on('redirect', (page) => {
+      window.location.href = page;
     });
 
 
