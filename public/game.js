@@ -17,6 +17,7 @@ let MouseDown;
 let pieceAtMouse;
 let selectedCoords;
 
+var start = Date.now();
 
 
 
@@ -69,6 +70,14 @@ function draw() {
     }
 
 }
+
+setInterval(() => {
+    var delta = Date.now() - start; // milliseconds elapsed since start
+    
+    //console.log(Math.floor(delta / 1000)); // in seconds
+}, 100);
+
+
 
 function mousePressed(){
     let tempPieceAtMouse;
