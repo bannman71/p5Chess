@@ -66,7 +66,7 @@ function generateRoomCode(){
 }
 
 
-function moveClientsToGameRoom(p1ID, p2ID){
+function moveClientsToGameRoom(p1, p2){
   let clients = io.sockets.adapter.rooms.get('waitingRoom');
   let roomCode = generateRoomCode();
   console.log(roomCode);
@@ -74,12 +74,15 @@ function moveClientsToGameRoom(p1ID, p2ID){
   for (let clientID of clients){
     const clientSocket = io.sockets.sockets.get(clientID);
 
-    if (clientID === p1ID || clientID === p2ID){
+    if (clientID === p1.id){
       clientSocket.leave('waitingRoom');
       clientSocket.join(roomCode);
-
-      clientSocket.emit('redirect', '/onlineGame');
-
+      clientSocket.emit('redirect', ({client: p1, page: '/onlineGame', "roomCode": roomCode}));
+    }
+    else if(clientID === p2.id){
+      clientSocket.leave('waitingRoom');
+      clientSocket.join(roomCode);
+      clientSocket.emit('redirect', ({client: p2, page: '/onlineGame', "roomCode": roomCode}));
     }
   }
 }
@@ -108,7 +111,7 @@ io.on('connection', (socket) => {
         if ((matchmaking[i].time === matchmaking[j].time) && (matchmaking[i].interval === matchmaking[j].interval)){
           console.log('socket ' + '' + socket.id);
           //move them to game room
-          moveClientsToGameRoom(matchmaking[i].id, matchmaking[j].id);
+          moveClientsToGameRoom(matchmaking[i], matchmaking[j]);
           
           //remove them from matchmaking list as they have found a game
           matchmaking.splice(j,1);

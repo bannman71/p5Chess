@@ -97,8 +97,9 @@
       tableData.innerHTML = data;
     });
 
-    socket.on('redirect', (page) => {
-      window.location.href = page;
+    socket.on('redirect', (data) => {
+      var url = data.page + '?time=' + data.client.time + '&increment=' + data.client.increment + '&roomCode=' + data.roomCode;
+      window.location.href = url;
     });
 
 

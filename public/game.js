@@ -38,6 +38,10 @@ function setup() {
 
     BLOCK_SIZE = WIDTH / 8;
 
+    const queryString = window.location.search;
+    const urlpara = new URLSearchParams(queryString);
+    var urlpar = urlpara.get('time');
+    console.log(urlpar);
 
     SPACING = Math.floor((BLOCK_SIZE * (1 - PIECE_SCALE)) / 2);
 
