@@ -18,6 +18,7 @@ let pieceAtMouse;
 let selectedCoords;
 
 var start = Date.now();
+var blackTime, whiteTime;
 
 
 
@@ -40,9 +41,13 @@ function setup() {
     BLOCK_SIZE = WIDTH / 8;
 
     const queryString = window.location.search;
-    const urlpara = new URLSearchParams(queryString);
-    var urlpar = urlpara.get('time');
-    console.log(urlpar);
+    const urlParameters = new URLSearchParams(queryString);
+    var time = urlParameters.get('time');
+    var increment = urlParameters.get('increment');
+
+    blackTime = new Timer(time, increment);
+    whiteTime = new Timer(time, increment);
+
 
     SPACING = Math.floor((BLOCK_SIZE * (1 - PIECE_SCALE)) / 2);
 
@@ -69,15 +74,20 @@ function draw() {
         drawLegalSquares(legalCircles);
     }
 
+
+
 }
 
+//move this into draw function to make the check
 setInterval(() => {
     var delta = Date.now() - start; // milliseconds elapsed since start
     
+    //if move made:
+    //  timer -= delta
+
+
     //console.log(Math.floor(delta / 1000)); // in seconds
 }, 100);
-
-
 
 function mousePressed(){
     let tempPieceAtMouse;
@@ -113,6 +123,8 @@ function mouseReleased(){
 
 
     if (isOnBoard(destCoords.y, destCoords.x) && pieceAtMouse){
+
+        
 
         tempEnPassentTaken = board.enPassentTaken;
 

@@ -6,6 +6,7 @@ var socket = require('socket.io');
 const port = process.env.PORT || 3000;
 
 const path = require('path');
+const { machine } = require('os');
 const dir = path.join(__dirname, '/public/views/');
 
 var server = app.listen(port);
@@ -20,7 +21,6 @@ function getRandomInt(min, max) {
   max = Math.floor(max);
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
-
 
 function updateTableHTML(){
   //header
@@ -65,26 +65,8 @@ function generateRoomCode(){
   return roomCode;
 }
 
-
 function moveClientsToGameRoom(p1, p2){
-  let clients = io.sockets.adapter.rooms.get('waitingRoom');
-  let roomCode = generateRoomCode();
-  console.log(roomCode);
-
-  for (let clientID of clients){
-    const clientSocket = io.sockets.sockets.get(clientID);
-
-    if (clientID === p1.id){
-      clientSocket.leave('waitingRoom');
-      clientSocket.join(roomCode);
-      clientSocket.emit('redirect', ({client: p1, page: '/onlineGame', "roomCode": roomCode}));
-    }
-    else if(clientID === p2.id){
-      clientSocket.leave('waitingRoom');
-      clientSocket.join(roomCode);
-      clientSocket.emit('redirect', ({client: p2, page: '/onlineGame', "roomCode": roomCode}));
-    }
-  }
+  
 }
 
 io.on('connection', (socket) => {
@@ -106,20 +88,42 @@ io.on('connection', (socket) => {
     }
     if (!alreadySearching) matchmaking.push(data);
 
+    //searches for a game and creates one if possible
     for (let i = 0; i < matchmaking.length; i++){
       for (let j = i + 1; j < matchmaking.length; j++){
         if ((matchmaking[i].time === matchmaking[j].time) && (matchmaking[i].interval === matchmaking[j].interval)){
-          console.log('socket ' + '' + socket.id);
-          //move them to game room
-          moveClientsToGameRoom(matchmaking[i], matchmaking[j]);
+          //moves matched players to game room
+          let clients = io.sockets.adapter.rooms.get('waitingRoom');
+          let roomCode = generateRoomCode();
+          console.log(roomCode);
+        
+          for (let clientID of clients){
+            const clientSocket = io.sockets.sockets.get(clientID);
+        
+            if (clientID === matchmaking[i].id){
+              clientSocket.leave('waitingRoom');
+              clientSocket.join(roomCode);
+              clientSocket.emit('redirect', ({client: matchmaking[i], page: '/onlineGame', "roomCode": roomCode}));
+            }
+            else if(clientID === matchmaking[j].id){
+              clientSocket.leave('waitingRoom');
+              clientSocket.join(roomCode);
+              clientSocket.emit('redirect', ({client: matchmaking[j], page: '/onlineGame', "roomCode": roomCode}));
+            }
+          }
           
+
+          if (!gameRooms[roomCode]) gameRooms[roomCode] = {};
+          gameRooms[roomCode].board = new Board('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR')
+          gameRooms[roomCode].whiteTimer = new Timer(matchmaking[i].time, matchmaking[j].increment);
+          gameRooms[roomCode].blackTimer = new Timer(matchmaking[i].time, matchmaking[j].increment);
+          gameRooms[roomCode].PGN = '';
+          gameFound = true;
+
           //remove them from matchmaking list as they have found a game
           matchmaking.splice(j,1);
           matchmaking.splice(i,1);
 
-          io.emit
-
-          gameFound = true;
           break;
         }
       if (gameFound) break;

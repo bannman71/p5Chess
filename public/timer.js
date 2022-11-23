@@ -20,9 +20,9 @@ class Timer{
         this.increment = increment;
     }
 
-    update(){
-
-    }
+    update(start, delta){
+        
+    }   
 
     addIncrement(){
         this.time += this.increment;
