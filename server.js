@@ -6,13 +6,13 @@ var socket = require('socket.io');
 const port = process.env.PORT || 3000;
 
 const path = require('path');
-const { match } = require('assert');
 const dir = path.join(__dirname, '/public/views/');
 
 var server = app.listen(port);
 var io = socket(server);
 
 var matchmaking = [];
+var gameRooms = [];
 
 
 function updateTableHTML(){
@@ -47,31 +47,46 @@ function updateTableHTML(){
 
 }
 
+function generateRoomCode(){
+  var roomCode = '';
+  for (let i = 0; i < 6; i++){
+    roomCode += String.fromCharCode(Math.floor((Math.random() * 122) + 48));
+  }
+
+  gameRooms.push(roomCode);
+
+  return roomCode;
+}
+
+
 function moveClientsToGameRoom(p1ID, p2ID){
   let clients = io.sockets.adapter.rooms.get('waitingRoom');
+  let roomCode = generateRoomCode();
+  console.log(roomCode);
 
   for (let clientID of clients){
     const clientSocket = io.sockets.sockets.get(clientID);
 
     if (clientID === p1ID || clientID === p2ID){
       clientSocket.leave('waitingRoom');
-      clientSocket.join('newGame');
+    
+      clientSocket.join(roomCode);
     }
   }
 }
 
 io.on('connection', (socket) => {
-  console.log('client connecteddd');
+  console.log('client connected');
   console.log(socket.id);
 
-
   socket.join('waitingRoom');
-
-  updateTableHTML(socket);
+  updateTableHTML();
   
-  socket.on('timeControlChosen', (data) => {
 
+  socket.on('timeControlChosen', (data) => {
     let alreadySearching = false;
+    let gameFound = false;
+
     for(let m = 0; m < matchmaking.length; m++){
       if (matchmaking[m].id === data.id){ //checks if player has already picked something
         matchmaking[m] = data; //updates if the player changes what game type they want to find
@@ -84,34 +99,30 @@ io.on('connection', (socket) => {
       for (let j = i + 1; j < matchmaking.length; j++){
         if ((matchmaking[i].time === matchmaking[j].time) && (matchmaking[i].interval === matchmaking[j].interval)){
           
+
+          console.log('socket ' + '' + socket.id);
+
           moveClientsToGameRoom(matchmaking[i].id, matchmaking[j].id);
 
-          //socket.join('room1');/*() => {*/ //generate random room code
-        
-          //   var roomCode = '';
-          //   for (let i = 0; i < 6; i++){
-          //     roomCode += Math.floor((Math.random() * 122) + 48);
-          //   }
-          //   console.log('room ' + roomCode);
-
-          // matchmaking.splice(i, 1);
-          // matchmaking.splice(j, 1);
-
-          //   return roomCode;
-          // });
-          io.to('newGame').emit('Hello', 'whatsup');
+          matchmaking.splice(i, 1);
+          matchmaking.splice(j, 1);
+  
+          io.to(gameRooms[0]).emit('Hello', 'whatsup');
+          gameFound = true;
+          break;
         }
-        
+      if (gameFound) break;
       }
     }
     
-    updateTableHTML(socket);
+    updateTableHTML();
 
   });
 
   socket.on('getClients', (data) => {
     console.log('getting them');
-    let clients = io.sockets.adapter.rooms.get('newGame');
+    console.log(gameRooms);
+    let clients = io.sockets.adapter.rooms.get(gameRooms[0]);
     for (let client of clients){
       console.log(client);
     }
@@ -130,10 +141,10 @@ io.on('connection', (socket) => {
 
 
 
-setInterval(function() {
-  console.log(matchmaking);
-  // do your stuff here.
-}, 2000);
+// setInterval(function() {
+//   console.log(matchmaking);
+//   // do your stuff here.
+// }, 2000);
 
 
 router.get('/', (req,res) => {
