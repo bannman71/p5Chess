@@ -15,6 +15,13 @@ var matchmaking = [];
 var gameRooms = [];
 
 
+function getRandomInt(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+
 function updateTableHTML(){
   //header
   let table = `
@@ -50,7 +57,7 @@ function updateTableHTML(){
 function generateRoomCode(){
   var roomCode = '';
   for (let i = 0; i < 6; i++){
-    roomCode += String.fromCharCode(Math.floor((Math.random() * 122) + 48));
+    roomCode += String.fromCharCode(getRandomInt(48,122));
   }
 
   gameRooms.push(roomCode);
@@ -98,15 +105,12 @@ io.on('connection', (socket) => {
     for (let i = 0; i < matchmaking.length; i++){
       for (let j = i + 1; j < matchmaking.length; j++){
         if ((matchmaking[i].time === matchmaking[j].time) && (matchmaking[i].interval === matchmaking[j].interval)){
-          
-
           console.log('socket ' + '' + socket.id);
 
           moveClientsToGameRoom(matchmaking[i].id, matchmaking[j].id);
+          matchmaking.splice(j,1);
+          matchmaking.splice(i,1);
 
-          matchmaking.splice(i, 1);
-          matchmaking.splice(j, 1);
-  
           io.to(gameRooms[0]).emit('Hello', 'whatsup');
           gameFound = true;
           break;
