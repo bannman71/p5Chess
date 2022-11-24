@@ -820,3 +820,5 @@ class Piece {
     }
 
 }
+
+module.exports = Board;

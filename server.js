@@ -3,11 +3,14 @@ const app = express();
 const router = express.Router();
 var socket = require('socket.io');
 
+
 const port = process.env.PORT || 3000;
 
 const path = require('path');
-const { machine } = require('os');
 const dir = path.join(__dirname, '/public/views/');
+
+var board = require('./public/board.js');
+var timer = require('./public/timer.js');
 
 var server = app.listen(port);
 var io = socket(server);
@@ -59,14 +62,9 @@ function generateRoomCode(){
   for (let i = 0; i < 6; i++){
     roomCode += String.fromCharCode(getRandomInt(48,122));
   }
-
-  gameRooms.push(roomCode);
-
+  gameRooms.push({"roomCode": [gameRooms.length], "rC": roomCode});
+  // make the roomcode return an index
   return roomCode;
-}
-
-function moveClientsToGameRoom(p1, p2){
-  
 }
 
 io.on('connection', (socket) => {
@@ -75,6 +73,7 @@ io.on('connection', (socket) => {
 
   socket.join('waitingRoom');
   updateTableHTML();
+
 
   socket.on('timeControlChosen', (data) => {
     let alreadySearching = false;
@@ -111,14 +110,19 @@ io.on('connection', (socket) => {
               clientSocket.emit('redirect', ({client: matchmaking[j], page: '/onlineGame', "roomCode": roomCode}));
             }
           }
-          
+
+          console.log(gameRooms[roomCode]);
+          console.log()
 
           if (!gameRooms[roomCode]) gameRooms[roomCode] = {};
-          gameRooms[roomCode].board = new Board('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR')
-          gameRooms[roomCode].whiteTimer = new Timer(matchmaking[i].time, matchmaking[j].increment);
-          gameRooms[roomCode].blackTimer = new Timer(matchmaking[i].time, matchmaking[j].increment);
+          gameRooms[roomCode].board = new board('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR');
+          gameRooms[roomCode].whiteTimer = new timer(matchmaking[i].time, matchmaking[j].increment);
+          gameRooms[roomCode].blackTimer = new timer(matchmaking[i].time, matchmaking[j].increment);
           gameRooms[roomCode].PGN = '';
           gameFound = true;
+
+          console.log(gameRooms[roomCode]);
+
 
           //remove them from matchmaking list as they have found a game
           matchmaking.splice(j,1);

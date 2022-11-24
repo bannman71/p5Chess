@@ -1,7 +1,3 @@
-let blackTime;
-let whiteTime;
-
-
 function chooseTimeControl(time,increment){
     blackTime = new Timer(time, increment);
     whiteTime = new Timer(time, increment);
@@ -30,3 +26,5 @@ class Timer{
     
 
 }
+
+module.exports = Timer;
