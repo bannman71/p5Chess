@@ -36,7 +36,7 @@ function setup() {
     canv = createCanvas(WIDTH, HEIGHT);
     canv.parent("board-container");
 
-    PIECE_SCALE = 0.75;
+    PIECE_SCALE = 1;
 
     BLOCK_SIZE = WIDTH / 8;
 

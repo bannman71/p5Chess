@@ -22,14 +22,14 @@ var endOfFen;
 
 
 const SELECTEDSTYLE = {
-    'background-color': '#F0F0F0',
+    'background-color': 'transparent',
     'border-radius': '70%', 
     'height': '90%', 
     'width': '90%'
 }
 
 const DEFSTYLE = {
-    'background-color': 'transparent',
+    'background-color': '#bababa',
     'border-radius': '0%', 
     'height': '100%', 
     'width': '100%'
@@ -57,7 +57,7 @@ function setup(){
 
     BLOCK_SIZE = size / 8;
 
-    PIECE_SCALE = 0.75;
+    PIECE_SCALE = 1;
     SPACING = Math.floor((BLOCK_SIZE * (1 - PIECE_SCALE)) / 2);
     
     $(function() { //make piece selection boxes same width as the board
