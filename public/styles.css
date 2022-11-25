@@ -2,6 +2,10 @@ body{
   background-color: rgb(74, 74, 112);
 }
 
+.card-body p{
+  font-size:16px;
+}
+
 /* GLOBAL */
 
 .header-container{
@@ -160,8 +164,15 @@ a{
   font-size: calc(0.5vw + 1vw);
 }
 
+.btn p{
+  color:#c5c0c0;
+  font-size: calc(0.5vw + 1vw);
+
+}
+
 .btn:hover{
   border-color:aqua;
+  background-color: #19191d;
 }
 
 .btn:hover p{
@@ -345,7 +356,6 @@ a{
 
 }
 
-
 .scroll{
   overflow-x: scroll;
   white-space: nowrap;
@@ -366,3 +376,13 @@ a{
   color:#FFFFFF;
 }
 
+#white-timer{
+  position: absolute;
+
+  top:0%;
+
+  z-index: 99;
+
+  background-color: #73AD21;
+
+}

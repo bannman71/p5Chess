@@ -28,7 +28,7 @@ function getRandomInt(min, max) {
 function updateTableHTML(){
   //header
   let table = `
-  <table class="table">
+  <table class="table table-dark">
     <thead class="thead-dark">
       <tr>
           <th scope="col">Player</th>
