@@ -22,7 +22,7 @@ var endOfFen;
 
 
 const SELECTEDSTYLE = {
-    'background-color': 'transparent',
+    'background-color': 'white',
     'border-radius': '70%', 
     'height': '90%', 
     'width': '90%'
@@ -30,7 +30,7 @@ const SELECTEDSTYLE = {
 
 const DEFSTYLE = {
     'background-color': '#bababa',
-    'border-radius': '0%', 
+    'border-radius': '100%', 
     'height': '100%', 
     'width': '100%'
 }
