@@ -9,7 +9,7 @@ const port = process.env.PORT || 3000;
 const path = require('path');
 const dir = path.join(__dirname, '/public/views/');
 
-var board = require('./public/board.js');
+import Board from './public/board.mjs';
 var timer = require('./public/timer.js');
 
 var server = app.listen(port);

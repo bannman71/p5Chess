@@ -55,6 +55,7 @@
     var roomCode = urlParameters.get('roomCode'); 
 
     var url = 'http://localhost:3000/onlineGame' + '?time=' + time + '&increment=' + increment + '&roomCode=' + roomCode;
+    console.log(url);
     var socket = io.connect(url);
 
 

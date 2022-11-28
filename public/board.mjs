@@ -821,4 +821,4 @@ class Piece {
 
 }
 
-module.exports = Board;
+export default Board;
