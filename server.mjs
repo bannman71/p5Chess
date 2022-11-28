@@ -1,19 +1,25 @@
-const express = require('express');
-const app = express();
-const router = express.Router();
-var socket = require('socket.io');
+import { Server } from 'socket.io';
+import express from 'express';
+import { createServer } from 'http';
 
+const app = express(); 
+const server = createServer(); 
+const io = new Server(server);
+const router = express.Router();
 
 const port = process.env.PORT || 3000;
 
-const path = require('path');
+import path from 'path';
+import {fileURLToPath} from 'url';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 const dir = path.join(__dirname, '/public/views/');
-
 import Board from './public/board.mjs';
-var timer = require('./public/timer.js');
 
-var server = app.listen(port);
-var io = socket(server);
+// const board = require('./public/board.mjs');
+// const timer = require('./public/timer.js');
+
 
 var matchmaking = [];
 var gameRooms = [];
@@ -116,7 +122,7 @@ io.on('connection', (socket) => {
 
           if (!gameRooms[roomCode]) gameRooms[roomCode] = {};
           gameRooms[roomCode].roomCode = roomCode;
-          gameRooms[roomCode].board = new board('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR');
+          gameRooms[roomCode].board = new Board('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR');
           gameRooms[roomCode].whiteTimer = new timer(matchmaking[i].time, matchmaking[j].increment);
           gameRooms[roomCode].blackTimer = new timer(matchmaking[i].time, matchmaking[j].increment);
           gameRooms[roomCode].PGN = '';
@@ -174,16 +180,13 @@ io.on('connection', (socket) => {
 
 });
 
-
-
-
 // setInterval(function() {
 //   console.log(matchmaking);
 //   // do your stuff here.
 // }, 2000);
 
 
-router.get('/', (req,res) => {
+app.get('/', (req,res) => {
   res.sendFile(path.join(dir, 'index.html'));
 });
 
@@ -210,7 +213,9 @@ router.get('/PlayLocally', (req,res) => {
   res.sendFile(path.join(dir, '/playLocalGame.html'));
 });
 
-app.use(express.static(`${__dirname}/public`));
+app.use(express.static('public'));
 app.use('/', router);
 
+
+server.listen(port);
 console.log("listening on %s",port);

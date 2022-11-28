@@ -1,12 +1,13 @@
 {
-  "name": "p5first",
+  "name": "p5chess",
   "version": "1.0.0",
   "description": "",
-  "main": "server.js",
+  "main": "server.mjs",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node server.mjs"
   },
+  "type": "module",
   "author": "",
   "license": "ISC",
   "dependencies": {

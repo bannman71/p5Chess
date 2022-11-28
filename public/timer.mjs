@@ -9,7 +9,7 @@ function test(){
 }
 
 
-class Timer{
+export default class Timer{
 
     constructor(time, increment){
         this.time = time;

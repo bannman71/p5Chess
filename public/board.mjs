@@ -48,7 +48,7 @@ function isOnBoard(Row,Col){ //is used in legal squares so that it doent iterate
     return false;
 }
 
-class Board {
+export default class Board {
 
     constructor(FEN){
         
@@ -751,6 +751,7 @@ class Board {
     }
 
 }
+
 class PieceType{
 
     static type = {
@@ -821,4 +822,3 @@ class Piece {
 
 }
 
-export default Board;
