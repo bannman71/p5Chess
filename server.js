@@ -115,10 +115,12 @@ io.on('connection', (socket) => {
           console.log()
 
           if (!gameRooms[roomCode]) gameRooms[roomCode] = {};
+          gameRooms[roomCode].roomCode = roomCode;
           gameRooms[roomCode].board = new board('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR');
           gameRooms[roomCode].whiteTimer = new timer(matchmaking[i].time, matchmaking[j].increment);
           gameRooms[roomCode].blackTimer = new timer(matchmaking[i].time, matchmaking[j].increment);
           gameRooms[roomCode].PGN = '';
+          gameRooms[roomCode].clients = [];
           gameFound = true;
 
           console.log(gameRooms[roomCode]);
@@ -137,6 +139,21 @@ io.on('connection', (socket) => {
     updateTableHTML();
 
   });
+
+  socket.on('roomConnect', (roomCode) => {
+
+    for (let i = 0; i < gameRooms.length; i++){
+      if (gameRooms[i].roomCode === roomCode){
+        gameRooms[i].clients.push();
+      }
+    }
+   //search;roomcodes
+    //append clients to said room
+
+
+  });
+ 
+
 
   socket.on('getClients', (data) => {
     console.log('getting them');

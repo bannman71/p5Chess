@@ -46,8 +46,22 @@
 
   
   <script>
-    var socket = io.connect('http://localhost:3000/');
 
+    const queryString = window.location.search;
+    const urlParameters = new URLSearchParams(queryString);
+
+    var time = urlParameters.get('time');
+    var increment = urlParameters.get('increment');
+    var roomCode = urlParameters.get('roomCode'); 
+
+    var url = 'http://localhost:3000/onlineGame' + '?time=' + time + '&increment=' + increment + '&roomCode=' + roomCode;
+    var socket = io.connect(url);
+
+
+    socket.emit('roomConnect', (data) => {
+      console.log('hello! ' + '' + socket.id);
+      return urlParameters.get('roomCode');
+    });
 
   </script>
 
