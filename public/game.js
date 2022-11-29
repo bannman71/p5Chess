@@ -6,14 +6,14 @@ new p5(function(p5){
     var canv;
     var canvasDiv;
     
-    var front = new Front();
-
     var board;
+    var front;
     
     var BLOCK_SIZE;
     var PIECE_SCALE;
     var WIDTH, HEIGHT, SPACING;
-    
+    const BIN_PIECES = {20: 'b_bishop', 17: 'b_king', 19: 'b_knight', 18: 'b_pawn', 22: 'b_queen', 21: 'b_rook',
+    12: 'w_bishop', 9: 'w_king', 11: 'w_knight', 10: 'w_pawn', 14: 'w_queen', 13: 'w_rook'}
     
     let IMAGES = {};
     
@@ -29,13 +29,6 @@ new p5(function(p5){
     
     var start = Date.now();
     var blackTime, whiteTime;
-
-
-    p5.preload = () => {
-        for (let im in front.BIN_PIECES){
-            IMAGES[im] = p5.loadImage('./classic_hq/' + BIN_PIECES[im] + '.png');
-        }
-    }
 
     p5.setup = () =>{
         canvasDiv = document.getElementById('board-container');
@@ -64,6 +57,14 @@ new p5(function(p5){
 
         board.maskBitMap(board.findMaskSquares(!board.whiteToMove, board.occSquares));
 
+
+
+
+        for (let im in BIN_PIECES){
+            IMAGES[im] = p5.loadImage('./classic_hq/' + BIN_PIECES[im] + '.png');
+        }
+
+        front = new Front(SPACING, BLOCK_SIZE, PIECE_SCALE, IMAGES);
         //r3k3/1pp2ppp/8/8/1q6/3PKPP1/8/8
         //r3k2r/5N2/8/8/8/8/PPPPPPP1/RNBQKBNR
         //1r1k1r2/6n1/2q5/8/8/5Q2/1N6/R2K3R
@@ -74,19 +75,19 @@ new p5(function(p5){
 
     p5.draw = () => {
         p5.clear();
-        p5.background(WHITE);
+        p5.background(front.white);
         for(let y = 0; y < 8; y++ ){
             for(let x = 0; x < 4; x++){
-                p5.fill(BLACK);
+                p5.fill(front.white);
                 p5.noStroke();
                 p5.square((x*2 + ((y+1) % 2)) * BLOCK_SIZE, y * BLOCK_SIZE, BLOCK_SIZE);
             } 
         }
-        front.drawAllPieces(board.occSquares, pieceAtMouse);
+        front.drawAllPieces(board.occSquares, pieceAtMouse, p5);
 
         if (MouseDown){
-            drawPieceAtMousepos(pieceAtMouse,mouseX,mouseY);
-            drawLegalSquares(legalCircles);
+            drawPieceAtMousepos(pieceAtMouse,mouseX,mouseY, p5);
+            drawLegalSquares(legalCircles, p5);
         }
     }
 
