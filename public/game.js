@@ -1,5 +1,9 @@
+
 var canv;
 var canvasDiv;
+
+
+
 
 var BLOCK_SIZE;
 var PIECE_SCALE;

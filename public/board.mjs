@@ -31,7 +31,7 @@ const intervalsArr = [[
 ];
 
 function create2dArray(rows,cols){
-    arr = []
+    let arr = []
     for(let i = 0; i < cols; i++){
         arr[i] = [];
         for (let j = 0; j < rows; j++){

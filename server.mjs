@@ -1,13 +1,15 @@
 import { Server } from 'socket.io';
 import express from 'express';
 import { createServer } from 'http';
+const port = process.env.PORT || 3000;
+
 
 const app = express(); 
-const server = createServer(); 
+const server = createServer(app).listen(port); 
 const io = new Server(server);
 const router = express.Router();
 
-const port = process.env.PORT || 3000;
+
 
 import path from 'path';
 import {fileURLToPath} from 'url';
@@ -16,6 +18,7 @@ const __dirname = path.dirname(__filename);
 
 const dir = path.join(__dirname, '/public/views/');
 import Board from './public/board.mjs';
+import Timer from './public/timer.mjs';
 
 // const board = require('./public/board.mjs');
 // const timer = require('./public/timer.js');
@@ -123,8 +126,8 @@ io.on('connection', (socket) => {
           if (!gameRooms[roomCode]) gameRooms[roomCode] = {};
           gameRooms[roomCode].roomCode = roomCode;
           gameRooms[roomCode].board = new Board('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR');
-          gameRooms[roomCode].whiteTimer = new timer(matchmaking[i].time, matchmaking[j].increment);
-          gameRooms[roomCode].blackTimer = new timer(matchmaking[i].time, matchmaking[j].increment);
+          gameRooms[roomCode].whiteTimer = new Timer(matchmaking[i].time, matchmaking[j].increment);
+          gameRooms[roomCode].blackTimer = new Timer(matchmaking[i].time, matchmaking[j].increment);
           gameRooms[roomCode].PGN = '';
           gameRooms[roomCode].clients = [];
           gameFound = true;
@@ -172,7 +175,7 @@ io.on('connection', (socket) => {
 
 
   socket.on('disconnect', () => {
-    for (i = 0; i < matchmaking.length; i++){
+    for (let i = 0; i < matchmaking.length; i++){
       if (matchmaking[i].socket === socket) matchmaking.splice(i,1);
     }
     console.log('gone');
@@ -217,5 +220,5 @@ app.use(express.static('public'));
 app.use('/', router);
 
 
-server.listen(port);
+
 console.log("listening on %s",port);
