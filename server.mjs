@@ -162,8 +162,6 @@ io.on('connection', (socket) => {
 
   });
  
-
-
   socket.on('getClients', (data) => {
     console.log('getting them');
     console.log(gameRooms);
@@ -172,7 +170,6 @@ io.on('connection', (socket) => {
       console.log(client);
     }
   });
-
 
   socket.on('disconnect', () => {
     for (let i = 0; i < matchmaking.length; i++){
@@ -190,11 +187,11 @@ io.on('connection', (socket) => {
 
 
 app.get('/', (req,res) => {
-  res.sendFile(path.join(dir, 'index.html'));
+  res.sendFile(path.join(dir, '/index.html'));
 });
 
 router.get('/onlineGame', (req, res) => {
-  res.sendFile(path.join(dir, '/onlineGame.html'));
+  res.sendFile(path.join(dir, 'onlineGame.html'));
 });
 
 
@@ -212,11 +209,11 @@ router.get('/PlayAi', (req,res) => {
   res.send('Hello World, This is AI router');
 });
 
-router.get('/PlayLocally', (req,res) => {
-  res.sendFile(path.join(dir, '/playLocalGame.html'));
+app.get('/PlayLocally', (req,res) => {
+  res.sendFile(path.join(dir, 'playLocalGame.html'));
 });
 
-app.use(express.static(dir + '/public'));
+app.use(express.static(__dirname + '/public'));
 app.use('/', router);
 
 

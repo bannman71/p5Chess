@@ -1,8 +1,8 @@
 var canv;
 var canvasDiv;
 
-import Board from './public/board.mjs';
-import Timer from './public/timer.mjs';
+import Board from './board.mjs';
+import Timer from './timer.mjs';
 
 
 var BLOCK_SIZE;
@@ -11,6 +11,7 @@ var PIECE_SCALE;
 
 
 let IMAGES = {};
+
 
 // let board;
 let bitmap;
