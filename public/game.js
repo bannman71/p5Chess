@@ -1,8 +1,8 @@
-
 var canv;
 var canvasDiv;
 
-
+import Board from './public/board.mjs';
+import Timer from './public/timer.mjs';
 
 
 var BLOCK_SIZE;
@@ -12,7 +12,7 @@ var PIECE_SCALE;
 
 let IMAGES = {};
 
-let board;
+// let board;
 let bitmap;
 
 let legalCircles = [];
@@ -23,7 +23,6 @@ let selectedCoords;
 
 var start = Date.now();
 var blackTime, whiteTime;
-
 
 
 function preload(){

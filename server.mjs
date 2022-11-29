@@ -216,7 +216,7 @@ router.get('/PlayLocally', (req,res) => {
   res.sendFile(path.join(dir, '/playLocalGame.html'));
 });
 
-app.use(express.static('public'));
+app.use(express.static(dir + '/public'));
 app.use('/', router);
 
 

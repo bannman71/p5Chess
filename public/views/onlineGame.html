@@ -3,11 +3,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     
-  <script language="javascript" type="text/javascript" src="https://cdn.jsdelivr.net/npm/p5@1.4.1/lib/p5.js"></script>
-  <script language="javascript" type="modulepreload" src="timer.mjs"></script>
-  <script language="javascript" type="modulepreload" src="board.mjs"></script>
-  <script language="javascript" type="text/javascript" src="front.js"></script>
-  <script language="javascript" type="text/javascript" src="game.js"><reference path="./p5.global-mode.d.ts" /></script>
+  <script language="javascript" type="module" src="https://cdn.jsdelivr.net/npm/p5@1.4.1/lib/p5.js"></script>
+  <script language="javascript" type="module" src="./timer.mjs"></script>
+  <script language="javascript" type="module" src="./board.mjs"></script>
+  <script language="javascript" type="module" src="front.js"></script>
+  <script language="javascript" type="module" src="game.js"><reference path="./p5.global-mode.d.ts" /></script>
   <script src="https://cdn.socket.io/4.5.4/socket.io.min.js" integrity="sha384-/KNQL8Nu5gCHLqwqfQjA689Hhoqgi2S84SNUxC3roTe4EhJ9AfLkp8QiQcU8AMzI" crossorigin="anonymous"></script>
 
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css">
@@ -47,22 +47,22 @@
   
   <script>
 
-    const queryString = window.location.search;
-    const urlParameters = new URLSearchParams(queryString);
+    // const queryString = window.location.search;
+    // const urlParameters = new URLSearchParams(queryString);
 
-    var time = urlParameters.get('time');
-    var increment = urlParameters.get('increment');
-    var roomCode = urlParameters.get('roomCode'); 
+    // var time = urlParameters.get('time');
+    // var increment = urlParameters.get('increment');
+    // var roomCode = urlParameters.get('roomCode'); 
 
-    var url = 'http://localhost:3000/onlineGame' + '?time=' + time + '&increment=' + increment + '&roomCode=' + roomCode;
-    console.log(url);
-    var socket = io.connect(url);
+    // var url = 'http://localhost:3000/onlineGame' + '?time=' + time + '&increment=' + increment + '&roomCode=' + roomCode;
+    // console.log(url);
+    // var socket = io.connect(url);
 
 
-    socket.emit('roomConnect', (data) => {
-      console.log('hello! ' + '' + socket.id);
-      return urlParameters.get('roomCode');
-    });
+    // socket.emit('roomConnect', (data) => {
+    //   console.log('hello! ' + '' + socket.id);
+    //   return urlParameters.get('roomCode');
+    // });
 
   </script>
 
