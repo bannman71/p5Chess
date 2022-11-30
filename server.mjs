@@ -17,6 +17,7 @@ const __dirname = path.dirname(__filename);
 const dir = path.join(__dirname, '/public/views/');
 import Board from './public/board.mjs';
 import Timer from './public/timer.mjs';
+import {PieceType} from './public/board.mjs';
 
 var matchmaking = [];
 var gameRooms = [];
@@ -81,7 +82,7 @@ io.on('connection', (socket) => {
   socket.on('roomConnect', (roomCode) => {
     socket.leave('waitingroom');
     socket.join(roomCode);
-    console.log('hello! on room' + roomCode);
+    console.log('hello! on room ' + roomCode);
   });
 
   socket.on('timeControlChosen', (data) => {
@@ -109,13 +110,9 @@ io.on('connection', (socket) => {
             const clientSocket = io.sockets.sockets.get(clientID);
         
             if (clientID === matchmaking[i].id){
-              clientSocket.leave('waitingRoom');
-              clientSocket.join(roomCode);
-              clientSocket.emit('redirect', ({client: matchmaking[i], page: '/onlineGame', "roomCode": roomCode}));
+              clientSocket.emit('redirect', ({client: matchmaking[i], page: '/onlineGame', "roomCode": roomCode})); //emits to index.html
             }
             else if(clientID === matchmaking[j].id){
-              clientSocket.leave('waitingRoom');
-              clientSocket.join(roomCode);
               clientSocket.emit('redirect', ({client: matchmaking[j], page: '/onlineGame', "roomCode": roomCode}));
             }
           }
@@ -148,19 +145,6 @@ io.on('connection', (socket) => {
     updateTableHTML();
 
   });
-
-  socket.on('roomConnect', (roomCode) => {
-
-    for (let i = 0; i < gameRooms.length; i++){
-      if (gameRooms[i].roomCode === roomCode){
-        gameRooms[i].clients.push();
-      }
-    }
-   //search;roomcodes
-    //append clients to said room
-
-
-  });
  
   socket.on('getClients', (data) => {
     console.log('getting them');
@@ -177,6 +161,64 @@ io.on('connection', (socket) => {
     }
     console.log('gone');
   });
+
+
+  //GAME LOGIC
+
+  socket.on('moveAttempted', (data) => { //data = fCoords, gameRoom and pieceMoved
+    let isLegal = false;
+    let tempEnPassentTaken = false;
+
+    if (data.pieceMoved.type === PieceType.king){
+      if(gameRooms[data.room].board.checkNextMoveBitmap(data.pieceMoved, data.fCoords.y, data.fCoords.x) === true){ //king moves need the bitmap before due to castling through a check
+        if (gameRooms[data.room].board.isLegalKingMove(data.pieceMoved,data.fCoords.y,data.fCoords.x)) isLegal = true;
+      }
+    } else {
+      if (gameRooms[data.room].board.isLegalMove(pieceAtMouse,destCoords.y,destCoords.x)){ //doesn't need the bitmap first as it can find after a move has been made whether or not it is in check
+        if (gameRooms[data.room].board.checkNextMoveBitmap(pieceAtMouse,destCoords.y,destCoords.x) === true) isLegal = true;
+      }
+    }
+
+
+    if (isLegal){
+
+      if (tempEnPassentTaken === true) {
+        gameRooms[data.room].board.enPassentTaken = false;
+      }
+
+      gameRooms[data.room].board.defendCheck();
+
+      if (pieceAtMouse.type !== PieceType.pawn) gameRooms[data.room].board.pawnMovedTwoSquares = false;
+      //is set to false here and in board.isLegalMove
+
+
+      if (pieceAtMouse.colour === PieceType.black) gameRooms[data.room].board.moveCounter++; //after blacks move -> the move counter always increases
+
+      
+      if (gameRooms[data.room].board.enPassentTaken){
+          gameRooms[data.room].board.updateEnPassentMove(pieceAtMouse,destCoords.y,destCoords.x);
+      }
+      else{
+        //if they didn't castle -> call the function which makes a normal move
+        if (!gameRooms[data.room].board.castled) gameRooms[data.room].board.updatePiecePos(pieceAtMouse,destCoords.y,destCoords.x); //castling changes position inside the castles function
+      }
+      //create a new bitmap for the current legal position for board.kingInCheck()
+      let bmap = gameRooms[data.room].board.findMaskSquares(gameRooms[data.room].board.whiteToMove, gameRooms[data.room].board.occSquares);
+      gameRooms[data.room].board.maskBitMap(bmap); 
+
+      if (gameRooms[data.room].board.kingInCheck()){
+          gameRooms[data.room].board.isInCheck = true;
+          numDefenses = gameRooms[data.room].board.defendCheck();
+
+      } else gameRooms[data.room].board.isInCheck = false;
+
+      gameRooms[data.room].board.changeTurn();
+
+
+    }
+
+  });
+
 
 });
 

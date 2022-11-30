@@ -6,6 +6,8 @@ import Front from './front.mjs';
 new p5(function(p5){
     var canv;
     var canvasDiv;
+
+    var roomCode;
     
     var board;
     var front;
@@ -47,6 +49,7 @@ new p5(function(p5){
         const urlParameters = new URLSearchParams(queryString);
         var time = urlParameters.get('time');
         var increment = urlParameters.get('increment');
+        roomCode = urlParameters.get('roomCode');
 
         blackTime = new Timer(time, increment);
         whiteTime = new Timer(time, increment);
@@ -57,9 +60,6 @@ new p5(function(p5){
         board = new Board('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR');
 
         board.maskBitMap(board.findMaskSquares(!board.whiteToMove, board.occSquares));
-
-
-
 
         for (let im in BIN_PIECES){
             IMAGES[im] = p5.loadImage('./classic_hq/' + BIN_PIECES[im] + '.png');
@@ -131,17 +131,13 @@ new p5(function(p5){
 
 
         if (board.isOnBoard(destCoords.y, destCoords.x) && pieceAtMouse){
+
+            let data = {fCoordsX: destCoords.x, fCoordsY: destCoords.y, pieceMoved: pieceAtMouse, room: roomCode};
+            socket.emit('moveAttempted', data); 
+
             tempEnPassentTaken = board.enPassentTaken;
 
-            if (pieceAtMouse.type === PieceType.king){
-                if(board.checkNextMoveBitmap(pieceAtMouse,destCoords.y,destCoords.x) === true){ //king moves need the bitmap before due to castling through a check
-                    if (board.isLegalKingMove(pieceAtMouse,destCoords.y,destCoords.x)) isLegal = true;
-                }
-            } else {
-                if (board.isLegalMove(pieceAtMouse,destCoords.y,destCoords.x)){ //doesn't need the bitmap first as it can find after a move has been made whether or not it is in check
-                    if (board.checkNextMoveBitmap(pieceAtMouse,destCoords.y,destCoords.x) === true) isLegal = true;
-                }
-            }
+            
 
 
             if (isLegal){
