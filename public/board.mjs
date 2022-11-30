@@ -41,13 +41,6 @@ function create2dArray(rows,cols){
     return arr;
 }
 
-function isOnBoard(Row,Col){ //is used in legal squares so that it doent iterate outside the board
-    if (Row >= 0 && Row < 8 && Col >= 0 && Col < 8){
-        return true;;
-    }
-    return false;
-}
-
 export default class Board {
 
     constructor(FEN){
@@ -154,7 +147,7 @@ export default class Board {
         }
 
     }
-
+    
     boardToFEN(){
         let FEN = "";
         let numEmpty;
@@ -320,11 +313,8 @@ export default class Board {
                 return true;
             }
         }else{
-            print('thats an else');
             if(!(Math.abs(destRow - piece.row) > 1) && !(Math.abs(destCol - piece.col) > 1)) {
-                print('yea');
                 if((this.occSquares[destRow][destCol] === 0) || (piece.colour & this.occSquares[destRow][destCol].colour) === 0){
-                    print('thats cool');
                     this.removeCastlingRights(true,true);
                     return true;
                 }
@@ -392,7 +382,7 @@ export default class Board {
             var row_temp = piece.row + options.dy;
 
 
-            while(isOnBoard(row_temp,col_temp)){ //while hasn't gone outside of the array
+            while(this.isOnBoard(row_temp,col_temp)){ //while hasn't gone outside of the array
                 if (this.occSquares[row_temp][col_temp] === 0){
                     legalCoords.push(row_temp + '' + col_temp);
                 }
@@ -418,7 +408,7 @@ export default class Board {
                     var col_temp =  piece.col + options.dx;
                     var row_temp = piece.row + options.dy;
         
-                    if (isOnBoard(row_temp,col_temp))
+                    if (this.isOnBoard(row_temp,col_temp))
                     { 
                         if ((this.occSquares[row_temp][col_temp].colour & piece.colour) === 0 && this.checkNextMoveBitmap(piece,row_temp,col_temp)){
                             arr.push(row_temp + '' + col_temp);
@@ -431,7 +421,7 @@ export default class Board {
                     var col_temp =  piece.col + options.dx;
                     var row_temp = piece.row + options.dy;
         
-                    if (isOnBoard(row_temp,col_temp)){
+                    if (this.isOnBoard(row_temp,col_temp)){
                         if ((this.maskMap[row_temp][col_temp] === 0 || ((this.maskMap[row_temp][col_temp] & piece.colour) === 0)) && this.checkNextMoveBitmap(piece,row_temp,col_temp)){
                             arr.push(row_temp + '' + col_temp);
                         }
@@ -463,7 +453,7 @@ export default class Board {
                     }
                     //diagonal capture
                     for (let i = 1; i >= -1 ; i -= 2){ //checks both directions
-                        if (isOnBoard(piece.row - 1, piece.col + i)){
+                        if (this.isOnBoard(piece.row - 1, piece.col + i)){
 
                             if (this.occSquares[piece.row - 1][piece.col + i] !== 0 && this.checkNextMoveBitmap(piece, piece.row - 1,piece.col + i)){
                                 if ((this.occSquares[piece.row - 1][piece.col + i].colour & piece.colour) === 0) arr.push((piece.row - 1) + '' + (piece.col + i));
@@ -496,7 +486,7 @@ export default class Board {
                 
                     //diagonal capture
                     for (let i = 1; i >= -1 ; i -= 2){
-                        if (isOnBoard(piece.row + 1, piece.col + i)){
+                        if (this.isOnBoard(piece.row + 1, piece.col + i)){
                             if (this.occSquares[piece.row + 1][piece.col + i] !== 0){ 
                                 if ((this.occSquares[piece.row + 1][piece.col + i].colour & piece.colour) === 0 && this.checkNextMoveBitmap(piece, piece.row + 1, piece.col + i)){
                                     arr.push((piece.row + 1) + '' + (piece.col + i));
@@ -515,7 +505,7 @@ export default class Board {
                     var col_temp =  piece.col + options.dx;
                     var row_temp = piece.row + options.dy;
    
-                    while(isOnBoard(row_temp,col_temp)){ //while hasn't gone outside of the array
+                    while(this.isOnBoard(row_temp,col_temp)){ //while hasn't gone outside of the array
                         if (this.occSquares[row_temp][col_temp] === 0 && this.checkNextMoveBitmap(piece, row_temp, col_temp)){
                             arr.push(row_temp + '' + col_temp);
                         }
@@ -612,7 +602,7 @@ export default class Board {
                                 var col_temp = j + options.dx;
                                 var row_temp = i + options.dy;
                     
-                                if (isOnBoard(row_temp,col_temp)){
+                                if (this.isOnBoard(row_temp,col_temp)){
                                     if (position[row_temp][col_temp] === 0){
                                         bitmap[row_temp][col_temp] = 1;
                                     }
@@ -629,7 +619,7 @@ export default class Board {
                                 var col_temp = j + options.dx;
                                 var row_temp = i + options.dy;
                 
-                                while(isOnBoard(row_temp,col_temp)){ //while hasn't gone outside of the array
+                                while(this.isOnBoard(row_temp,col_temp)){ //while hasn't gone outside of the array
                                     if (position[row_temp][col_temp] === 0){
                                         bitmap[row_temp][col_temp] = 1;
                                     }
@@ -750,9 +740,16 @@ export default class Board {
         return numLegal;
     }
 
+    isOnBoard(Row,Col){ //is used in legal squares so that it doent iterate outside the board
+        if (Row >= 0 && Row < 8 && Col >= 0 && Col < 8){
+            return true;;
+        }
+        return false;
+    }
+
 }
 
-class PieceType{
+export class PieceType{
 
     static type = {
         'k': 1, 'p' : 2, 'n' : 3, 'b': 4, 'r': 5, 'q': 6,

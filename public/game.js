@@ -1,4 +1,5 @@
 import Board from './board.mjs';
+import {PieceType} from './board.mjs'; 
 import Timer from './timer.mjs';
 import Front from './front.mjs';
 
@@ -64,7 +65,7 @@ new p5(function(p5){
             IMAGES[im] = p5.loadImage('./classic_hq/' + BIN_PIECES[im] + '.png');
         }
 
-        front = new Front(SPACING, BLOCK_SIZE, PIECE_SCALE, IMAGES);
+        front = new Front(p5, SPACING, BLOCK_SIZE, PIECE_SCALE, IMAGES);
         //r3k3/1pp2ppp/8/8/1q6/3PKPP1/8/8
         //r3k2r/5N2/8/8/8/8/PPPPPPP1/RNBQKBNR
         //1r1k1r2/6n1/2q5/8/8/5Q2/1N6/R2K3R
@@ -76,18 +77,12 @@ new p5(function(p5){
     p5.draw = () => {
         p5.clear();
         p5.background(front.white);
-        for(let y = 0; y < 8; y++ ){
-            for(let x = 0; x < 4; x++){
-                p5.fill(front.white);
-                p5.noStroke();
-                p5.square((x*2 + ((y+1) % 2)) * BLOCK_SIZE, y * BLOCK_SIZE, BLOCK_SIZE);
-            } 
-        }
-        front.drawAllPieces(board.occSquares, pieceAtMouse, p5);
-
+        front.draw_grid();
+        front.drawAllPieces(board.occSquares, pieceAtMouse);
+        
         if (MouseDown){
-            drawPieceAtMousepos(pieceAtMouse,mouseX,mouseY, p5);
-            drawLegalSquares(legalCircles, p5);
+            front.drawPieceAtMousepos(pieceAtMouse,p5.mouseX,p5.mouseY);
+            front.drawLegalSquares(legalCircles);
         }
     }
 
@@ -104,19 +99,19 @@ new p5(function(p5){
 
     p5.mousePressed = () => {
         let tempPieceAtMouse;
-        pieceAtMouse = front.getPieceAtMousepos(board.occSquares,mouseX,mouseY); //returns type Piece
+        pieceAtMouse = front.getPieceAtMousepos(board.occSquares,p5.mouseX,p5.mouseY); //returns type Piece
         if (pieceAtMouse !== tempPieceAtMouse) legalCircles = []; //empties legalcircles so that it doesn't show the squares when you click on another piece
         tempPieceAtMouse = pieceAtMouse;
         
         if (pieceAtMouse){
-            selectedCoords = front.getMouseCoord(mouseX, mouseY);
+            selectedCoords = front.getMouseCoord(p5.mouseX, p5.mouseY);
 
             var start = performance.now();
             if (board.whiteToMove === (pieceAtMouse.colour === PieceType.white)){
                 legalCircles = board.allPiecesLegalSquares(pieceAtMouse);
             }
             var end = performance.now();
-            print('time taken ' + (end - start));
+            // print('time taken ' + (end - start));
             MouseDown = true;
             
         }else legalCircles = [];
@@ -132,10 +127,10 @@ new p5(function(p5){
         let numDefenses = 0;
 
 
-        let destCoords = front.getMouseCoord(mouseX,mouseY); // returns coord for array [0,0] [1,1] etc     
+        let destCoords = front.getMouseCoord(p5.mouseX, p5.mouseY); // returns coord for array [0,0] [1,1] etc     
 
 
-        if (front.isOnBoard(destCoords.y, destCoords.x) && pieceAtMouse){
+        if (board.isOnBoard(destCoords.y, destCoords.x) && pieceAtMouse){
 
             
 
@@ -153,7 +148,6 @@ new p5(function(p5){
 
 
             if (isLegal){
-                print('here');
                 if (tempEnPassentTaken === true) {
                     board.enPassentTaken = false;
                 }
