@@ -19,6 +19,8 @@ export default class Front {
 
     }
  
+    
+
 
     getMouseCoord(x,y){
         Coords.x = Math.floor(x / this.blockSize);

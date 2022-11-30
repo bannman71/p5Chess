@@ -41,11 +41,88 @@ function create2dArray(rows,cols){
     return arr;
 }
 
+export function FENToBoard(FEN){
+    let arr = create2dArray(8,8);
+    let col = 0;
+    let row = 0;
+    let FENIterator = 0;
+    let finalRank = false;
+    let finishedIterating = false;
+    
+    while(!finishedIterating){
+        if (!(/[A-Za-z]/).test(FEN[FENIterator]) && FEN[FENIterator] !== '/'){ // if its a number
+            col += FEN[FENIterator].charCodeAt(0) - 49;
+        }
+
+        if ((/[a-z]/).test(FEN[FENIterator])){ // if lowercase (black piece)
+
+            switch (FEN[FENIterator]) {
+                case 'b':
+                    arr[row][col] = new Piece(PieceType.type[FEN[FENIterator]], row, col, PieceType.black);
+                    break;
+                case 'r':
+                    arr[row][col] = new Piece(PieceType.type[FEN[FENIterator]], row, col, PieceType.black);
+                    break;
+                case 'q':
+                    arr[row][col] = new Piece(PieceType.type[FEN[FENIterator]], row, col, PieceType.black);
+                    break;
+                case 'n':
+                    arr[row][col] = new Piece(PieceType.type[FEN[FENIterator]], row, col, PieceType.black);
+                    break;
+                case 'k': 
+                    arr[row][col] = new Piece(PieceType.type[FEN[FENIterator]], row, col, PieceType.black);
+                    break;
+                case 'p':
+                    arr[row][col] = new Piece(PieceType.type[FEN[FENIterator]], row, col, PieceType.black);
+                    break;
+            }
+
+        }
+        else if ((/[A-Z]/).test(FEN[FENIterator])){ //if uppercase (white piece)
+            switch (FEN[FENIterator]) {
+                case 'B':
+                    arr[row][col] = new Piece(PieceType.type[FEN[FENIterator]], row, col, PieceType.white);
+                    break;
+                case 'R':
+                    arr[row][col] = new Piece(PieceType.type[FEN[FENIterator]], row, col, PieceType.white);
+                    break;
+                case 'Q':
+                    arr[row][col] = new Piece(PieceType.type[FEN[FENIterator]], row, col, PieceType.white);
+                    break;
+                case 'N':
+                    arr[row][col] = new Piece(PieceType.type[FEN[FENIterator]], row, col, PieceType.white);
+                    //var newPiece = n
+                    break;
+                case 'K': 
+                    arr[row][col] = new Piece(PieceType.type[FEN[FENIterator]], row, col, PieceType.white);
+                    break;
+                case 'P':
+                    arr[row][col] = new Piece(PieceType.type[FEN[FENIterator]], row, col, PieceType.white);
+                    break;
+            }
+        }
+
+        
+        if (col == 8){
+            row += 1;
+            col = 0;
+        }else col += 1;
+
+        if (finalRank && col == 8){
+            finishedIterating = true;
+        }
+        if (row == 7) finalRank = true;
+        FENIterator++;
+    }
+
+    return arr;
+}
+
 export default class Board {
 
     constructor(FEN){
         
-        this.occSquares = create2dArray(8,8);
+        this.occSquares = FENToBoard(FEN);
         
         this.moveCounter = 0;
         this.whiteToMove = true;
@@ -54,8 +131,6 @@ export default class Board {
         this.blackLongCastlingRights = true;
         this.whiteShortCastlingRights = true;
         this.whiteLongCastlingRights = true;
-
-        this.FENToBoard(FEN); // fills up avPieces and occSquares (sus)
 
         this.maskMap = create2dArray(8,8);
 
@@ -67,86 +142,8 @@ export default class Board {
 
         this.castled = false;
 
-        this.pinnedPieces = [];
-        this.piecesToDefendCheck = [];
-        this.blockableSquares = [];
-
     }
 
-    FENToBoard(FEN){
-        let col = 0;
-        let row = 0;
-        let FENIterator = 0;
-        let finalRank = false;
-        let finishedIterating = false;
-        
-        while(!finishedIterating){
-            if (!(/[A-Za-z]/).test(FEN[FENIterator]) && FEN[FENIterator] !== '/'){ // if its a number
-                col += FEN[FENIterator].charCodeAt(0) - 49;
-            }
-    
-            if ((/[a-z]/).test(FEN[FENIterator])){ // if lowercase (black piece)
-
-                switch (FEN[FENIterator]) {
-                    case 'b':
-                        this.occSquares[row][col] = new Piece(PieceType.type[FEN[FENIterator]], row, col, PieceType.black);
-                        break;
-                    case 'r':
-                        this.occSquares[row][col] = new Piece(PieceType.type[FEN[FENIterator]], row, col, PieceType.black);
-                        break;
-                    case 'q':
-                        this.occSquares[row][col] = new Piece(PieceType.type[FEN[FENIterator]], row, col, PieceType.black);
-                        break;
-                    case 'n':
-                        this.occSquares[row][col] = new Piece(PieceType.type[FEN[FENIterator]], row, col, PieceType.black);
-                        break;
-                    case 'k': 
-                        this.occSquares[row][col] = new Piece(PieceType.type[FEN[FENIterator]], row, col, PieceType.black);
-                        break;
-                    case 'p':
-                        this.occSquares[row][col] = new Piece(PieceType.type[FEN[FENIterator]], row, col, PieceType.black);
-                        break;
-                }
-
-            }
-            else if ((/[A-Z]/).test(FEN[FENIterator])){ //if uppercase (white piece)
-                switch (FEN[FENIterator]) {
-                    case 'B':
-                        this.occSquares[row][col] = new Piece(PieceType.type[FEN[FENIterator]], row, col, PieceType.white);
-                        break;
-                    case 'R':
-                        this.occSquares[row][col] = new Piece(PieceType.type[FEN[FENIterator]], row, col, PieceType.white);
-                        break;
-                    case 'Q':
-                        this.occSquares[row][col] = new Piece(PieceType.type[FEN[FENIterator]], row, col, PieceType.white);
-                        break;
-                    case 'N':
-                        this.occSquares[row][col] = new Piece(PieceType.type[FEN[FENIterator]], row, col, PieceType.white);
-                        //var newPiece = n
-                        break;
-                    case 'K': 
-                        this.occSquares[row][col] = new Piece(PieceType.type[FEN[FENIterator]], row, col, PieceType.white);
-                        break;
-                    case 'P':
-                        this.occSquares[row][col] = new Piece(PieceType.type[FEN[FENIterator]], row, col, PieceType.white);
-                        break;
-                }
-            }
-    
-            
-            if (col == 8){
-                row += 1;
-                col = 0;
-            }else col += 1;
-    
-            if (finalRank && col == 8){
-                finishedIterating = true;
-            }
-            if (row == 7) finalRank = true;
-            FENIterator++;
-        }
-
-    }
     
     boardToFEN(){
         let FEN = "";
@@ -194,6 +191,8 @@ export default class Board {
             return false;
         }
            
+        
+
         switch (piece.type) {
             case PieceType.rook: 
                 if (this.legalSquares(piece).includes(destPos)){
@@ -776,7 +775,7 @@ export class PieceType{
     static black = 16;
 }
 
-class Piece {
+export class Piece {
     
     constructor(type, row, col, colour){
         this.type = type;

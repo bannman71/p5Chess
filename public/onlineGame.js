@@ -1,43 +1,62 @@
 import Board from './board.mjs';
-import {PieceType} from './board.mjs'; 
+import { FENToBoard } from './board.mjs';
+import { PieceType } from './board.mjs';
+import { Piece } from './board.mjs';
 import Timer from './timer.mjs';
 import Front from './front.mjs';
 
-new p5(function(p5){
+new p5(function (p5) {
+    const socket = io('http://localhost:3000/');
+
+    const queryString = window.location.search;
+    const urlParameters = new URLSearchParams(queryString);
+    var time = urlParameters.get('time');
+    var increment = urlParameters.get('increment');
+    roomCode = urlParameters.get('roomCode');
+
+
+    socket.emit('roomConnect', roomCode);
+
     var canv;
     var canvasDiv;
 
     var roomCode;
-    
+
     var board;
     var front;
-    
+    var piece;
+
     var BLOCK_SIZE;
     var PIECE_SCALE;
     var WIDTH, HEIGHT, SPACING;
-    const BIN_PIECES = {20: 'b_bishop', 17: 'b_king', 19: 'b_knight', 18: 'b_pawn', 22: 'b_queen', 21: 'b_rook',
-    12: 'w_bishop', 9: 'w_king', 11: 'w_knight', 10: 'w_pawn', 14: 'w_queen', 13: 'w_rook'}
-    
+    const BIN_PIECES = {
+        20: 'b_bishop', 17: 'b_king', 19: 'b_knight', 18: 'b_pawn', 22: 'b_queen', 21: 'b_rook',
+        12: 'w_bishop', 9: 'w_king', 11: 'w_knight', 10: 'w_pawn', 14: 'w_queen', 13: 'w_rook'
+    }
+
     let IMAGES = {};
-    
-    
+
+
     // let board;
     let bitmap;
-    
+
     let legalCircles = [];
-    
+
     let MouseDown;
     let pieceAtMouse;
     let selectedCoords;
-    
+
     var start = Date.now();
     var blackTime, whiteTime;
 
-    p5.setup = () =>{
+    p5.setup = () => {
+
+
+
         canvasDiv = document.getElementById('board-container');
         WIDTH = canvasDiv.offsetWidth;
         HEIGHT = canvasDiv.offsetHeight;
-        
+
         canv = p5.createCanvas(WIDTH, HEIGHT);
         canv.parent("board-container");
 
@@ -45,11 +64,6 @@ new p5(function(p5){
 
         BLOCK_SIZE = WIDTH / 8;
 
-        const queryString = window.location.search;
-        const urlParameters = new URLSearchParams(queryString);
-        var time = urlParameters.get('time');
-        var increment = urlParameters.get('increment');
-        roomCode = urlParameters.get('roomCode');
 
         blackTime = new Timer(time, increment);
         whiteTime = new Timer(time, increment);
@@ -61,7 +75,7 @@ new p5(function(p5){
 
         board.maskBitMap(board.findMaskSquares(!board.whiteToMove, board.occSquares));
 
-        for (let im in BIN_PIECES){
+        for (let im in BIN_PIECES) {
             IMAGES[im] = p5.loadImage('./classic_hq/' + BIN_PIECES[im] + '.png');
         }
 
@@ -72,16 +86,16 @@ new p5(function(p5){
         //'rnbqkbnr/1ppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR'
         //rnbqkbnr/p1pppppp/1p6/4P3/8/5NP1/PPPP1PBP/RNBQK2R
         //'rnbqk1nr/p4ppp/1p1b4/8/8/5NP1/P2K1PBP/RNBQ3R'
-    } 
+    }
 
     p5.draw = () => {
         p5.clear();
         p5.background(front.white);
         front.draw_grid();
         front.drawAllPieces(board.occSquares, pieceAtMouse);
-        
-        if (MouseDown){
-            front.drawPieceAtMousepos(pieceAtMouse,p5.mouseX,p5.mouseY);
+
+        if (MouseDown) {
+            front.drawPieceAtMousepos(pieceAtMouse, p5.mouseX, p5.mouseY);
             front.drawLegalSquares(legalCircles);
         }
     }
@@ -89,7 +103,7 @@ new p5(function(p5){
     //move this into draw function to make the check
     setInterval(() => {
         var delta = Date.now() - start; // milliseconds elapsed since start
-        
+
         //if move made:
         //  timer -= delta
 
@@ -99,23 +113,23 @@ new p5(function(p5){
 
     p5.mousePressed = () => {
         let tempPieceAtMouse;
-        pieceAtMouse = front.getPieceAtMousepos(board.occSquares,p5.mouseX,p5.mouseY); //returns type Piece
+        pieceAtMouse = front.getPieceAtMousepos(board.occSquares, p5.mouseX, p5.mouseY); //returns type Piece
         if (pieceAtMouse !== tempPieceAtMouse) legalCircles = []; //empties legalcircles so that it doesn't show the squares when you click on another piece
         tempPieceAtMouse = pieceAtMouse;
-        
-        if (pieceAtMouse){
+
+        if (pieceAtMouse) {
             selectedCoords = front.getMouseCoord(p5.mouseX, p5.mouseY);
 
             // var start = performance.now();
-            if (board.whiteToMove === (pieceAtMouse.colour === PieceType.white)){
+            if (board.whiteToMove === (pieceAtMouse.colour === PieceType.white)) {
                 legalCircles = board.allPiecesLegalSquares(pieceAtMouse);
             }
             // var end = performance.now();
             // print('time taken ' + (end - start));
             MouseDown = true;
-            
-        }else legalCircles = [];
-    
+
+        } else legalCircles = [];
+
     }
 
     p5.mouseReleased = () => {
@@ -129,65 +143,13 @@ new p5(function(p5){
 
         let destCoords = front.getMouseCoord(p5.mouseX, p5.mouseY); // returns coord for array [0,0] [1,1] etc     
 
+        console.log(pieceAtMouse);
 
-        if (board.isOnBoard(destCoords.y, destCoords.x) && pieceAtMouse){
-
-            let data = {fCoordsX: destCoords.x, fCoordsY: destCoords.y, pieceMoved: pieceAtMouse, room: roomCode};
-            socket.emit('moveAttempted', data); 
-
-            tempEnPassentTaken = board.enPassentTaken;
-
-            
-
-
-            if (isLegal){
-                if (tempEnPassentTaken === true) {
-                    board.enPassentTaken = false;
-                }
-
-                board.defendCheck();
-
-                if (pieceAtMouse.type !== PieceType.pawn) board.pawnMovedTwoSquares = false;
-                //is set to false here and in board.isLegalMove
-
-
-                if (pieceAtMouse.colour === PieceType.black) board.moveCounter++; //after blacks move -> the move counter always increases
-
-                
-                if (board.enPassentTaken){
-                    board.updateEnPassentMove(pieceAtMouse,destCoords.y,destCoords.x);
-                }
-                else{
-                    if (!board.castled) board.updatePiecePos(pieceAtMouse,destCoords.y,destCoords.x); //castling changes position inside the castles function
-                }
-            
-                let bmap = board.findMaskSquares(board.whiteToMove, board.occSquares);
-                board.maskBitMap(bmap); //create a new bitmap for the current legal position for board.kingInCheck()
-
-                if (board.kingInCheck()){
-                    board.isInCheck = true;
-                    
-                    numDefenses = board.defendCheck();
-
-                } else board.isInCheck = false;
-
-                board.changeTurn();
-
-            }
-
-            if (board.kingInCheck()){
-                board.isInCheck = true;
-                numDefenses = board.defendCheck();
-            } else board.isInCheck = false;
-
-            if (board.isInCheck && numDefenses === 0){
-                if (board.whiteToMove){
-                    print('black wins');
-                } else print('white wins');
-            }
-            else if (board.calculateNumLegalMoves() === 0) print('stalemate');
+        if (board.isOnBoard(destCoords.y, destCoords.x) && pieceAtMouse) {
+            var data = { fCoordsX: destCoords.x, fCoordsY: destCoords.y, pieceMoved: pieceAtMouse, colourAndPiece: pieceAtMouse.colourAndPiece(), room: roomCode };
+            socket.emit('moveAttempted', data);
             pieceAtMouse = 0;
-        }   
+        }
     }
 
     p5.windowResized = () => {
@@ -197,5 +159,11 @@ new p5(function(p5){
         BLOCK_SIZE = (WIDTH) / 8; //can be width but it is a square
         SPACING = Math.floor((BLOCK_SIZE * (1 - PIECE_SCALE)) / 2);
     }
+
+    socket.on('legalMoveMade', (data) => {
+        board = data;
+        board.occSquares = FENToBoard(data.FEN);
+        console.log(board);
+    });
 
 });
