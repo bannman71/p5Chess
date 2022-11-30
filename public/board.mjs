@@ -585,7 +585,7 @@ export default class Board {
         }
     }
 
-    findMaskSquares(findAttacksFromWhite, position){ //gets all available squares that the pieces can move to (excluding captures since they aren't necessary)
+    findMaskSquares(findAttacksFromWhite, position){ //gets all available squares that the pieces can move to.
         let bitmap = create2dArray(8,8);
 
         let colourCalc = 16; //if black

@@ -7,8 +7,6 @@ const port = process.env.PORT || 3000;
 const app = express(); 
 const server = createServer(app).listen(port); 
 const io = new Server(server);
-const router = express.Router();
-
 
 
 import path from 'path';
@@ -19,10 +17,6 @@ const __dirname = path.dirname(__filename);
 const dir = path.join(__dirname, '/public/views/');
 import Board from './public/board.mjs';
 import Timer from './public/timer.mjs';
-
-// const board = require('./public/board.mjs');
-// const timer = require('./public/timer.js');
-
 
 var matchmaking = [];
 var gameRooms = [];
@@ -83,6 +77,12 @@ io.on('connection', (socket) => {
   socket.join('waitingRoom');
   updateTableHTML();
 
+
+  socket.on('roomConnect', (roomCode) => {
+    socket.leave('waitingroom');
+    socket.join(roomCode);
+    console.log('hello! on room' + roomCode);
+  });
 
   socket.on('timeControlChosen', (data) => {
     let alreadySearching = false;
@@ -190,22 +190,22 @@ app.get('/', (req,res) => {
   res.sendFile(path.join(dir, '/index.html'));
 });
 
-router.get('/onlineGame', (req, res) => {
+app.get('/onlineGame', (req, res) => {
   res.sendFile(path.join(dir, 'onlineGame.html'));
 });
 
 
-router.get('/Puzzles', (req,res) => {
+app.get('/Puzzles', (req,res) => {
   res.send('Hello World, This is puzzles router');
 });
 
 
-router.get('/BoardEditor', (req,res) => {
+app.get('/BoardEditor', (req,res) => {
   res.sendFile(path.join(dir, '/BoardEditor.html'))
 });
 
 
-router.get('/PlayAi', (req,res) => {
+app.get('/PlayAi', (req,res) => {
   res.send('Hello World, This is AI router');
 });
 
@@ -214,8 +214,5 @@ app.get('/PlayLocally', (req,res) => {
 });
 
 app.use(express.static(__dirname + '/public'));
-app.use('/', router);
-
-
 
 console.log("listening on %s",port);

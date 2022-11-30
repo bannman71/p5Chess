@@ -2,8 +2,11 @@ import Board from './board.mjs';
 import {PieceType} from './board.mjs'; 
 import Timer from './timer.mjs';
 import Front from './front.mjs';
+import { io } from "socket.io-client";
 
 new p5(function(p5){
+   const socket = io('http://localhost:3000'); 
+
     var canv;
     var canvasDiv;
     
@@ -106,11 +109,11 @@ new p5(function(p5){
         if (pieceAtMouse){
             selectedCoords = front.getMouseCoord(p5.mouseX, p5.mouseY);
 
-            var start = performance.now();
+            // var start = performance.now();
             if (board.whiteToMove === (pieceAtMouse.colour === PieceType.white)){
                 legalCircles = board.allPiecesLegalSquares(pieceAtMouse);
             }
-            var end = performance.now();
+            // var end = performance.now();
             // print('time taken ' + (end - start));
             MouseDown = true;
             
@@ -132,7 +135,9 @@ new p5(function(p5){
 
         if (board.isOnBoard(destCoords.y, destCoords.x) && pieceAtMouse){
 
-            
+
+            let data = {fCoordsX: destCoords.x, fCoordsY: destCoords.y, pieceMoved: pieceAtMouse};
+            socket.emit('moveAttempted', data); 
 
             tempEnPassentTaken = board.enPassentTaken;
 
