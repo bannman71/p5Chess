@@ -161,9 +161,63 @@ new p5(function (p5) {
 
         if (board.isOnBoard(destCoords.y, destCoords.x) && pieceAtMouse) {
             var data = { fCoordsX: destCoords.x, fCoordsY: destCoords.y, pieceMoved: pieceAtMouse, colourAndPiece: pieceAtMouse.colourAndPiece(), room: roomCode };
-            socket.emit('moveAttempted', data);
             pieceAtMouse = 0;
+             if (pieceAtMouse.type === PieceType.king){
+                if(board.checkNextMoveBitmap(piece, destCoords.y, destCoords.y) === true){  
+                    //king moves need the bitmap before due to castling through a check
+                    if (board.isLegalKingMove(piece, destCoords.y, destCoords.x)){
+                        isLegal = true;
+                        socket.emit('moveAttempted', data);
+                    }
+                }
+            } else {
+                if (board.isLegalMove(piece, destCoords.y, destCoords.x)){ 
+                    //doesn't need the bitmap first as it can find after a move has been made whether or not it is in check
+                    if (board.checkNextMoveBitmap(piece, destCoords.y, destCoords.x) === true) {
+                        isLegal = true;
+                        socket.emit('moveAttempted', data);
+                    }
+                }
+            }
         }
+
+        if (isLegal){
+            socket.emit('legalMoveMade', ({"board": board, FEN: board.boardToFEN()}));
+            console.log('legal');
+            if (tempEnPassentTaken === true) {
+                board.enPassentTaken = false;
+            }
+
+            board.defendCheck();
+
+            if (piece.type !== PieceType.pawn) board.pawnMovedTwoSquares = false;
+            //is set to false here and in board.isLegalMove
+
+            if (piece.colour === PieceType.black) board.moveCounter++; //after blacks move -> the move counter always increases
+            
+            if (board.enPassentTaken){
+                board.updateEnPassentMove(piece, destCoords.y, destCoords.x);
+            }
+            else{
+                //if they didn't castle -> call the function which makes a normal move
+                if (!board.castled) board.updatePiecePos(piece, destCoords.y, destCoords.x); //castling changes position inside the castles function
+            }
+            //create a new bitmap for the current legal position for board.kingInCheck()
+            let bmap = board.findMaskSquares(board.whiteToMove, board.occSquares);
+            board.maskBitMap(bmap); 
+
+            if (board.kingInCheck()){
+                board.isInCheck = true;
+                numDefenses = board.defendCheck();
+
+            } else board.isInCheck = false;
+
+            board.changeTurn();
+
+            
+        }
+
+
     }
 
     p5.windowResized = () => {
