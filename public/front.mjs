@@ -70,7 +70,7 @@ export default class Front {
         }
     }
 
-    drawAllPieces(occSquares,pieceAtMouse){
+    drawAllPiecesWhitePerspective(occSquares,pieceAtMouse){
         for (let i = 0; i < 8; i++){
             for (let j = 0; j < 8; j++){
                 if (occSquares[i][j] !== 0){
@@ -79,6 +79,17 @@ export default class Front {
             }
         }
     }
+    
+    drawAllPiecesBlackPerspective(occSquares,pieceAtMouse){
+        for (let i = 0; i < 8; i++){
+            for (let j = 0; j < 8; j++){
+                if (occSquares[i][j] !== 0){
+                    if (pieceAtMouse !== occSquares[i][j]) this.draw_piece(occSquares[7-i][7-j].colourAndPiece(), j, i);
+                }
+            }
+        }
+    }
+    
 
     drawLegalSquares(squares){
         let row;

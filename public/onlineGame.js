@@ -95,7 +95,12 @@ new p5(function (p5) {
         p5.clear();
         p5.background(front.white);
         front.draw_grid();
-        front.drawAllPieces(board.occSquares, pieceAtMouse);
+        if (clientIsWhite) {
+            front.drawAllPiecesWhitePerspective(board.occSquares, pieceAtMouse);
+        }
+        else { 
+            front.drawAllPiecesBlackPerspective(board.occSquares, pieceAtMouse);
+        }
 
         if (MouseDown) {
             front.drawPieceAtMousepos(pieceAtMouse, p5.mouseX, p5.mouseY);

@@ -84,6 +84,7 @@ io.on('connection', (socket) => {
     const colours = {1: true, 0: false};
     socket.leave('waitingroom');
     socket.join(roomCode);
+
     //assign random colours to players
     if (gameRooms[roomCode].client.length === 0) {
       let decideColour = getRandomInt(0,1);
