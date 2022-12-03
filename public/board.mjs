@@ -50,7 +50,7 @@ export function FENToBoard(FEN){
     let finishedIterating = false;
     
     while(!finishedIterating){
-        if (!(/[A-Za-z]/).test(FEN[FENIterator]) && FEN[FENIterator] !== '/'){ // if its a number
+        if (!(/[A-Za-z]/).test(FEN[FENIterator]) && FEN[FENIterator] !== '/'){// if its a number
             col += FEN[FENIterator].charCodeAt(0) - 49;
         }
 

@@ -220,14 +220,16 @@ io.on('connection', (socket) => {
       board.maskBitMap(bmap); 
 
       if (board.kingInCheck()){
-          board.isInCheck = true;
-          numDefenses = board.defendCheck();
-
+        board.isInCheck = true;
+        numDefenses = board.defendCheck();
       } else board.isInCheck = false;
 
       board.changeTurn();
+      var newFEN = board.boardToFEN();
+      console.log(newFEN);
 
-      socket.emit('legalMoveMade', ({"board": board, FEN: board.boardToFEN()}));
+      socket.emit('legalMoveMade', ({"board": board, "FEN": newFEN}));
+      
     }
 
   });
