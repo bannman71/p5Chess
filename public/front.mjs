@@ -20,9 +20,14 @@ export default class Front {
     }
  
 
-    getMouseCoord(x,y){
+    getMouseCoord(isWhite, x,y){
         Coords.x = Math.floor(x / this.blockSize);
         Coords.y = Math.floor(y / this.blockSize);
+
+        if (!isWhite) {
+            Coords.x = 7 - Coords.x;
+            Coords.y = 7 - Coords.y;
+        }
 
         return Coords;
     }
@@ -75,13 +80,13 @@ export default class Front {
         let row;
         let col;
 
-        console.log(offset);
 
         for (let i = 0; i < 8; i++){
             for (let j = 0; j < 8; j++){
                 row = Math.abs(offset - i); //7 - 0
                 col = Math.abs(offset - j);
-                if (occSquares[row][col] !== 0){
+                if (occSquares[i][j] !== 0){
+                    console.log(i + ' ' + j);
                     if (pieceAtMouse !== occSquares[i][j]) this.drawPiece(occSquares[i][j].colourAndPiece(), col, row);
                 }
             }
@@ -89,15 +94,18 @@ export default class Front {
         
     }
 
-    drawLegalSquares(squares){
+    drawLegalSquares(isWhite, squares){
         let row;
         let col;
+        var offset = 0;
+
+        if (!isWhite) offset = 7;
 
         for (let i = 0; i < squares.length; i++){
-            row = (this.blockSize / 2) + squares[i][0] * this.blockSize;
-            col =  (this.blockSize/2) + squares[i][1] * this.blockSize;
+            row = (this.blockSize / 2) + (Math.abs(offset - squares[i][0])) * this.blockSize;
+            col =  (this.blockSize/2) + (Math.abs(offset - squares[i][1])) * this.blockSize;
             this.p5.fill(80,123,101, 175);
-            this.p5.ellipse(col,row,this.blockSize * 0.25);
+            this.p5.ellipse(col, row,this.blockSize * 0.25);
         }
         
     }

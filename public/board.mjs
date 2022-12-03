@@ -120,17 +120,17 @@ export function FENToBoard(FEN){
 
 export default class Board {
 
-    constructor(FEN, moveCounter, whiteToMove, whiteShort, whiteLong, blackShort, blackLong){
+    constructor(FEN){
         
         this.occSquares = FENToBoard(FEN);
         
-        this.moveCounter = moveCounter;
-        this.whiteToMove = whiteToMove;
+        this.moveCounter = 0;
+        this.whiteToMove = true;
 
-        this.blackShortCastlingRights = blackShort;
-        this.blackLongCastlingRights = blackLong;
-        this.whiteShortCastlingRights = whiteShort;
-        this.whiteLongCastlingRights = whiteLong;
+        this.blackShortCastlingRights = true;
+        this.blackLongCastlingRights = true;
+        this.whiteShortCastlingRights = true;
+        this.whiteLongCastlingRights = true;
 
         //make it possible to emit board with methods over network
         

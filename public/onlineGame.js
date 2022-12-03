@@ -6,7 +6,7 @@ import Timer from './timer.mjs';
 import Front from './front.mjs';
 
 new p5(function (p5) {
-    const socket = io('http://localhost:3000/');
+    const socket = io('https://bannman71-p5chess-674rjrqr9vxh4grq-3000.preview.app.github.dev');
 
     const queryString = window.location.search;
     const urlParameters = new URLSearchParams(queryString);
@@ -19,9 +19,13 @@ new p5(function (p5) {
 
     var roomCode;
     var clientIsWhite;
+    
     socket.on('gameColour', (isWhite) => {
+        console.log('yoooooooo');
+        console.log(isWhite);
         clientIsWhite = isWhite;
     });
+
 
     var canv;
     var canvasDiv;
@@ -55,6 +59,28 @@ new p5(function (p5) {
     var start = Date.now();
     var blackTime, whiteTime;
 
+    //SERVER SIDE LOGIC
+
+    socket.on('legalMoveMade', (data) => {
+        //must create a new board object as it doesn't keep it's methods when being sent over sockets
+        board = new Board(data.FEN);
+        board.moveCounter = data.board.moveCounter + 1;
+        board.whiteToMove = data.board.whiteToMove;
+        board.blackShortCastlingRights = data.board.blackShortCastlingRights;
+        board.blackLongCastlingRights = data.board.blackLongCastlingRights;
+        board.whiteShortCastlingRights = data.board.whiteShortCastlingRights;
+        board.whiteLongCastlingRights = data.board.whiteLongCastlingRights;
+
+        board.pawnMovedTwoSquares = data.board.pawnMovedTwoSquares;
+        board.pawnMovedTwoSquaresCol = data.board.pawnMovedTwoSquaresCol;
+        board.enPassentTaken = data.board.enPassentTaken;
+        board.isInCheck = data.board.isInCheck;
+        board.castled = data.board.castled;
+
+        console.log(board);
+
+    });
+
     p5.setup = () => {
         canvasDiv = document.getElementById('board-container');
         WIDTH = canvasDiv.offsetWidth;
@@ -67,6 +93,8 @@ new p5(function (p5) {
 
         BLOCK_SIZE = WIDTH / 8;
 
+        console.log('white or not');
+        console.log(clientIsWhite);
 
         blackTime = new Timer(time, increment);
         whiteTime = new Timer(time, increment);
@@ -96,10 +124,9 @@ new p5(function (p5) {
         p5.background(front.white);
         front.drawGrid();
         front.drawAllPieces(clientIsWhite, board.occSquares, pieceAtMouse); 
-
         if (MouseDown) {
             front.drawPieceAtMousepos(pieceAtMouse, p5.mouseX, p5.mouseY);
-            front.drawLegalSquares(legalCircles);
+            front.drawLegalSquares(clientIsWhite, legalCircles);
         } 
         else pieceAtMouse = 0;
         
@@ -113,9 +140,8 @@ new p5(function (p5) {
         //if move made:
         //  timer -= delta
 
-
         //console.log(Math.floor(delta / 1000)); // in seconds
-    }, 100);
+    }, 1000);
 
     p5.mousePressed = () => {
         let tempPieceAtMouse;
@@ -124,10 +150,13 @@ new p5(function (p5) {
         tempPieceAtMouse = pieceAtMouse;
 
         if (pieceAtMouse) {
-            selectedCoords = front.getMouseCoord(p5.mouseX, p5.mouseY);
+          
 
             // var start = performance.now();
-            if (board.whiteToMove === (pieceAtMouse.colour === PieceType.white && clientIsWhite)) {
+            if (board.whiteToMove && (pieceAtMouse.colour === PieceType.white) && clientIsWhite) {
+                legalCircles = board.allPiecesLegalSquares(pieceAtMouse);
+            }
+            else if (!board.whiteToMove && (pieceAtMouse.colour === PieceType.black) && !clientIsWhite){
                 legalCircles = board.allPiecesLegalSquares(pieceAtMouse);
             }
             // var end = performance.now();
@@ -141,23 +170,26 @@ new p5(function (p5) {
     p5.mouseReleased = () => {
         MouseDown = false;
         board.castled = false;
+        let legalSideAttemptedMove = false;
         let isLegal = false;
         let tempEnPassentTaken = false;
 
         let numDefenses = 0;
 
 
-        let destCoords = front.getMouseCoord(p5.mouseX, p5.mouseY); // returns coord for array [0,0] [1,1] etc     
+        if (clientIsWhite === (pieceAtMouse.colour === PieceType.white)) legalSideAttemptedMove = true;
+
+        let destCoords = front.getMouseCoord(clientIsWhite, p5.mouseX, p5.mouseY); // returns coord for array [0,0] [1,1] etc     
 
         console.log(pieceAtMouse);
 
-        if (board.isOnBoard(destCoords.y, destCoords.x) && pieceAtMouse) {
+        if (board.isOnBoard(destCoords.y, destCoords.x) && pieceAtMouse && legalSideAttemptedMove) {
 
             var data = { fCoordsX: destCoords.x, fCoordsY: destCoords.y, pieceMoved: pieceAtMouse, colourAndPiece: pieceAtMouse.colourAndPiece(), room: roomCode };
 
              if (pieceAtMouse.type === PieceType.king){
+                //king moves need the bitmap before due to castling through a check
                 if(board.checkNextMoveBitmap(pieceAtMouse, destCoords.y, destCoords.y) === true){  
-                    //king moves need the bitmap before due to castling through a check
                     if (board.isLegalKingMove(pieceAtMouse, destCoords.y, destCoords.x)){
                         isLegal = true;
                         socket.emit('moveAttempted', data);
@@ -177,17 +209,7 @@ new p5(function (p5) {
         if (isLegal){
 
             console.log('legal');
-            if (tempEnPassentTaken === true) {
-                board.enPassentTaken = false;
-            }
-
-            board.defendCheck();
-
-            if (pieceAtMouse.type !== PieceType.pawn) board.pawnMovedTwoSquares = false;
-            //is set to false here and in board.isLegalMove
-
-            if (pieceAtMouse.colour === PieceType.black) board.moveCounter++; //after blacks move -> the move counter always increases
-            
+          
             if (board.enPassentTaken){
                 board.updateEnPassentMove(pieceAtMouse, destCoords.y, destCoords.x);
             }
@@ -204,9 +226,6 @@ new p5(function (p5) {
                 numDefenses = board.defendCheck();
 
             } else board.isInCheck = false;
-
-            board.changeTurn();
-
             
         }
 
@@ -221,15 +240,4 @@ new p5(function (p5) {
         SPACING = Math.floor((BLOCK_SIZE * (1 - PIECE_SCALE)) / 2);
     }
 
-    socket.on('legalMoveMade', (data) => {
-        //must create a new board object as it doesn't keep it's methods when being sent over sockets
-        board = new Board(data.FEN, data.board.moveCounter, data.board.whiteToMove, data.board.whiteShort, data.board.whiteLong, data.board.blackShort, data.board.blackLong);
-        board.pawnMovedTwoSquares = data.board.pawnMovedTwoSquares;
-        board.pawnMovedTwoSquaresCol = data.board.pawnMovedTwoSquaresCol;
-        board.enPassentTaken = data.board.enPassentTaken;
-        board.isInCheck = data.board.isInCheck;
-        board.castled = data.board.castled;
-
     });
-
-});

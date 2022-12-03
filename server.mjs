@@ -89,11 +89,11 @@ io.on('connection', (socket) => {
     if (gameRooms[roomCode].client.length === 0) {
       let decideColour = getRandomInt(0,1);
       gameRooms[roomCode].client.push({"isWhite": colours[decideColour], id: socket.id});
-      io.to(socket.id).emit('gameColour', colours[decideColour]);
+      io.to(socket.id).emit('gameColour', (colours[decideColour]));
     }
     else {
       gameRooms[roomCode].client.push({"isWhite": !gameRooms[roomCode].client[0].isWhite, id: socket.id});
-      io.to(socket.id).emit('gameColour', !gameRooms[roomCode].client[0].isWhite);
+      io.to(socket.id).emit('gameColour', (!gameRooms[roomCode].client[0].isWhite));
     }
     
     console.log('hello! on room ' + roomCode);
@@ -216,7 +216,7 @@ io.on('connection', (socket) => {
       }
       else{
         //if they didn't castle -> call the function which makes a normal move
-        if (!board.castled) board.updatePiecePos(piece,data.fCoordsY,data.fCoordsX); //castling changes position inside the castles function
+        if (!board.castled) board.updatePiecePos(piece, data.fCoordsY, data.fCoordsX); //castling changes position inside the castles function
       }
       //create a new bitmap for the current legal position for board.kingInCheck()
       let bmap = board.findMaskSquares(board.whiteToMove, board.occSquares);
@@ -231,7 +231,7 @@ io.on('connection', (socket) => {
       var newFEN = board.boardToFEN();
       console.log(newFEN);
 
-      socket.emit('legalMoveMade', ({"board": board, "FEN": newFEN}));
+      io.to(data.room).emit('legalMoveMade', ({"board": board, "FEN": newFEN}));
       
     }
 
