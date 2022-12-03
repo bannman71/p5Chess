@@ -86,7 +86,6 @@ export default class Front {
                 row = Math.abs(offset - i); //7 - 0
                 col = Math.abs(offset - j);
                 if (occSquares[i][j] !== 0){
-                    console.log(i + ' ' + j);
                     if (pieceAtMouse !== occSquares[i][j]) this.drawPiece(occSquares[i][j].colourAndPiece(), col, row);
                 }
             }
@@ -105,7 +104,7 @@ export default class Front {
             row = (this.blockSize / 2) + (Math.abs(offset - squares[i][0])) * this.blockSize;
             col =  (this.blockSize/2) + (Math.abs(offset - squares[i][1])) * this.blockSize;
             this.p5.fill(80,123,101, 175);
-            this.p5.ellipse(col, row,this.blockSize * 0.25);
+            this.p5.ellipse(col, row, this.blockSize * 0.25);
         }
         
     }

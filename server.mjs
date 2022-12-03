@@ -212,7 +212,7 @@ io.on('connection', (socket) => {
       if (piece.colour === PieceType.black) board.moveCounter++; //after blacks move -> the move counter always increases
       
       if (board.enPassentTaken){
-          board.updateEnPassentMove(piece, destCoords.y, destCoords.x);
+          board.updateEnPassentMove(piece, data.fCoordsY, data.fCoordsX);
       }
       else{
         //if they didn't castle -> call the function which makes a normal move

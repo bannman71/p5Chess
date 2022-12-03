@@ -7,6 +7,7 @@ import Front from './front.mjs';
 
 new p5(function (p5) {
     const socket = io('https://bannman71-p5chess-674rjrqr9vxh4grq-3000.preview.app.github.dev');
+    // const socket = io('http://localhost:3000');
 
     const queryString = window.location.search;
     const urlParameters = new URLSearchParams(queryString);
@@ -21,8 +22,6 @@ new p5(function (p5) {
     var clientIsWhite;
     
     socket.on('gameColour', (isWhite) => {
-        console.log('yoooooooo');
-        console.log(isWhite);
         clientIsWhite = isWhite;
     });
 
@@ -128,9 +127,7 @@ new p5(function (p5) {
             front.drawPieceAtMousepos(pieceAtMouse, p5.mouseX, p5.mouseY);
             front.drawLegalSquares(clientIsWhite, legalCircles);
         } 
-        else pieceAtMouse = 0;
-        
-       
+        else pieceAtMouse = 0; 
     }
 
     //move this into draw function to make the check
@@ -172,17 +169,12 @@ new p5(function (p5) {
         board.castled = false;
         let legalSideAttemptedMove = false;
         let isLegal = false;
-        let tempEnPassentTaken = false;
-
-        let numDefenses = 0;
 
 
         if (clientIsWhite === (pieceAtMouse.colour === PieceType.white)) legalSideAttemptedMove = true;
 
-        let destCoords = front.getMouseCoord(clientIsWhite, p5.mouseX, p5.mouseY); // returns coord for array [0,0] [1,1] etc     
-
-        console.log(pieceAtMouse);
-
+        let destCoords = front.getMouseCoord(clientIsWhite, p5.mouseX, p5.mouseY); // returns coord for array         
+        
         if (board.isOnBoard(destCoords.y, destCoords.x) && pieceAtMouse && legalSideAttemptedMove) {
 
             var data = { fCoordsX: destCoords.x, fCoordsY: destCoords.y, pieceMoved: pieceAtMouse, colourAndPiece: pieceAtMouse.colourAndPiece(), room: roomCode };
@@ -240,4 +232,4 @@ new p5(function (p5) {
         SPACING = Math.floor((BLOCK_SIZE * (1 - PIECE_SCALE)) / 2);
     }
 
-    });
+});
