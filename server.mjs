@@ -79,8 +79,8 @@ io.on('connection', (socket) => {
   socket.join('waitingRoom');
   updateTableHTML();
 
-
-  socket.on('matchConnect', (roomCode) => { //when 2 players have queued through matchmaking they are paired through this
+  //when 2 players have queued through matchmaking they are paired through this
+  socket.on('matchConnect', (roomCode) => { 
     const colours = {1: true, 0: false};
     socket.leave('waitingroom');
     socket.join(roomCode);
@@ -88,9 +88,11 @@ io.on('connection', (socket) => {
     if (gameRooms[roomCode].client.length === 0) {
       let decideColour = getRandomInt(0,1);
       gameRooms[roomCode].client.push({"isWhite": colours[decideColour], id: socket.id});
+      io.to(socket.id).emit('gameColour', colours[decideColour]);
     }
     else {
       gameRooms[roomCode].client.push({"isWhite": !gameRooms[roomCode].client[0].isWhite, id: socket.id});
+      io.to(socket.id).emit('gameColour', !gameRooms[roomCode].client[0].isWhite);
     }
     
     console.log('hello! on room ' + roomCode);

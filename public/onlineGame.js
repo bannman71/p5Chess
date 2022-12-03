@@ -17,10 +17,16 @@ new p5(function (p5) {
 
     socket.emit('matchConnect', roomCode);
 
+    var roomCode;
+    var clientIsWhite;
+    socket.on('gameColour', (isWhite) => {
+        clientIsWhite = isWhite;
+    });
+
     var canv;
     var canvasDiv;
 
-    var roomCode;
+   
 
     var board;
     var front;
@@ -50,9 +56,6 @@ new p5(function (p5) {
     var blackTime, whiteTime;
 
     p5.setup = () => {
-
-
-
         canvasDiv = document.getElementById('board-container');
         WIDTH = canvasDiv.offsetWidth;
         HEIGHT = canvasDiv.offsetHeight;
@@ -123,7 +126,7 @@ new p5(function (p5) {
             selectedCoords = front.getMouseCoord(p5.mouseX, p5.mouseY);
 
             // var start = performance.now();
-            if (board.whiteToMove === (pieceAtMouse.colour === PieceType.white)) {
+            if (board.whiteToMove === (pieceAtMouse.colour === PieceType.white && clientIsWhite)) {
                 legalCircles = board.allPiecesLegalSquares(pieceAtMouse);
             }
             // var end = performance.now();
