@@ -97,7 +97,21 @@ new p5(function (p5) {
         if (MouseDown) {
             front.drawPieceAtMousepos(pieceAtMouse, p5.mouseX, p5.mouseY);
             front.drawLegalSquares(legalCircles);
-        }
+        } 
+        
+        socket.on('legalMoveMade', (data) => {
+            //must create a new board object as it doesn't keep it's methods when being sent over sockets
+            board = new Board(FENToBoard(data.FEN, board.moveCounter, board.whiteToMove, board.whiteShort, board.whiteLong, board.blackShort, board.blackLong));
+            board.pawnMovedTwoSquares = data.pawnMovedTwoSquares;
+            board.pawnMovedTwoSquaresCol = data.pawnMovedTwoSquaresCol;
+            board.enPassentTaken = data.enPassentTaken;
+            board.isInCheck = data.isInCheck;
+            board.castled = data.castled;
+
+
+
+            console.log(board);
+        });
     }
 
     //move this into draw function to make the check
@@ -129,11 +143,7 @@ new p5(function (p5) {
             MouseDown = true;
 
         } else legalCircles = [];
-        socket.on('legalMoveMade', (data) => {
-            board = data;
-            board = new Board(FENToBoard(data.FEN));
-            console.log(board);
-        });
+       
     }
 
     p5.mouseReleased = () => {

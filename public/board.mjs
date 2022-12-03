@@ -133,7 +133,7 @@ export default class Board {
         this.whiteLongCastlingRights = whiteLong;
 
         //make it possible to emit board with methods over network
-        11
+        
         this.maskMap = create2dArray(8,8);
 
         this.pawnMovedTwoSquares = false;
