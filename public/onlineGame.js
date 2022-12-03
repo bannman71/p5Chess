@@ -15,7 +15,7 @@ new p5(function (p5) {
     roomCode = urlParameters.get('roomCode');
 
 
-    socket.emit('roomConnect', roomCode);
+    socket.emit('matchConnect', roomCode);
 
     var canv;
     var canvasDiv;
@@ -129,7 +129,11 @@ new p5(function (p5) {
             MouseDown = true;
 
         } else legalCircles = [];
-
+        socket.on('legalMoveMade', (data) => {
+            board = data;
+            board = new Board(FENToBoard(data.FEN));
+            console.log(board);
+        });
     }
 
     p5.mouseReleased = () => {
@@ -160,10 +164,6 @@ new p5(function (p5) {
         SPACING = Math.floor((BLOCK_SIZE * (1 - PIECE_SCALE)) / 2);
     }
 
-    socket.on('legalMoveMade', (data) => {
-        board = data;
-        board.occSquares = FENToBoard(data.FEN);
-        console.log(board);
-    });
+   
 
 });
