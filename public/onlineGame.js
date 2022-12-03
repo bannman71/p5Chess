@@ -94,18 +94,14 @@ new p5(function (p5) {
     p5.draw = () => {
         p5.clear();
         p5.background(front.white);
-        front.draw_grid();
-        if (clientIsWhite) {
-            front.drawAllPiecesWhitePerspective(board.occSquares, pieceAtMouse);
-        }
-        else { 
-            front.drawAllPiecesBlackPerspective(board.occSquares, pieceAtMouse);
-        }
+        front.drawGrid();
+        front.drawAllPieces(clientIsWhite, board.occSquares, pieceAtMouse); 
 
         if (MouseDown) {
             front.drawPieceAtMousepos(pieceAtMouse, p5.mouseX, p5.mouseY);
             front.drawLegalSquares(legalCircles);
         } 
+        else pieceAtMouse = 0;
         
        
     }
@@ -123,7 +119,7 @@ new p5(function (p5) {
 
     p5.mousePressed = () => {
         let tempPieceAtMouse;
-        pieceAtMouse = front.getPieceAtMousepos(board.occSquares, p5.mouseX, p5.mouseY); //returns type Piece
+        pieceAtMouse = front.getPieceAtMousepos(clientIsWhite, board.occSquares, p5.mouseX, p5.mouseY); //returns type Piece
         if (pieceAtMouse !== tempPieceAtMouse) legalCircles = []; //empties legalcircles so that it doesn't show the squares when you click on another piece
         tempPieceAtMouse = pieceAtMouse;
 

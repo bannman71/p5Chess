@@ -19,8 +19,6 @@ export default class Front {
 
     }
  
-    
-
 
     getMouseCoord(x,y){
         Coords.x = Math.floor(x / this.blockSize);
@@ -29,13 +27,14 @@ export default class Front {
         return Coords;
     }
 
-    getPieceAtMousepos(occSquares,x,y){
+    getPieceAtMousepos(isWhite, occSquares,x,y){
         x = Math.floor(x / this.blockSize);
         y = Math.floor(y / this.blockSize);
-
-        if ((x < 8 && x >= 0) && (y < 8 && y >= 0))  return occSquares[y][x];
-        else return undefined;
-    }
+        var offset = 7; 
+        if (isWhite) offset = 0;
+        if ((x < 8 && x >= 0) && (y < 8 && y >= 0))  return occSquares[Math.abs(offset - y)][Math.abs(offset - x)];
+        return undefined;
+    }    
 
     drawPieceAtMousepos(piece, x, y){
 
@@ -44,15 +43,15 @@ export default class Front {
 
         if (piece !== 0){
             
-            let piece_number = piece.colourAndPiece();
+            let pieceNumber = piece.colourAndPiece();
 
-            this.p5.image(this.images[piece_number], 
+            this.p5.image(this.images[pieceNumber], 
             Math.min(this.p5.width - this.blockSize + this.spacing, Math.max(this.spacing, x)), 
             Math.min(this.p5.height - this.blockSize + this.spacing, Math.max(this.spacing, y)), this.blockSize * this.pieceScale, this.blockSize * this.pieceScale);
         }
     }
 
-    draw_piece(piece,coordX,coordY){
+    drawPiece(piece,coordX,coordY){
         coordX = this.spacing + coordX * this.blockSize;
         coordY = this.spacing + coordY * this.blockSize;
 
@@ -60,7 +59,7 @@ export default class Front {
         
     }
 
-    draw_grid(){
+    drawGrid(){
         for(let y = 0; y < 8; y++ ){
             for(let x = 0; x < 4; x++){
                 this.p5.fill(this.black);
@@ -70,26 +69,25 @@ export default class Front {
         }
     }
 
-    drawAllPiecesWhitePerspective(occSquares,pieceAtMouse){
+    drawAllPieces(isWhite, occSquares, pieceAtMouse){
+        var offset = 7;
+        if (isWhite) offset = 0;
+        let row;
+        let col;
+
+        console.log(offset);
+
         for (let i = 0; i < 8; i++){
             for (let j = 0; j < 8; j++){
-                if (occSquares[i][j] !== 0){
-                    if (pieceAtMouse !== occSquares[i][j]) this.draw_piece(occSquares[i][j].colourAndPiece(), j, i);
+                row = Math.abs(offset - i); //7 - 0
+                col = Math.abs(offset - j);
+                if (occSquares[row][col] !== 0){
+                    if (pieceAtMouse !== occSquares[i][j]) this.drawPiece(occSquares[i][j].colourAndPiece(), col, row);
                 }
             }
         }
+        
     }
-    
-    drawAllPiecesBlackPerspective(occSquares,pieceAtMouse){
-        for (let i = 0; i < 8; i++){
-            for (let j = 0; j < 8; j++){
-                if (occSquares[i][j] !== 0){
-                    if (pieceAtMouse !== occSquares[i][j]) this.draw_piece(occSquares[7-i][7-j].colourAndPiece(), j, i);
-                }
-            }
-        }
-    }
-    
 
     drawLegalSquares(squares){
         let row;
