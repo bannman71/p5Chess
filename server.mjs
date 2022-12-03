@@ -81,17 +81,16 @@ io.on('connection', (socket) => {
 
 
   socket.on('matchConnect', (roomCode) => { //when 2 players have queued through matchmaking they are paired through this
-    const colours = {1: 'white', 0: 'black'};
-    let decideColour;
+    const colours = {1: true, 0: false};
     socket.leave('waitingroom');
     socket.join(roomCode);
     //assign random colours to players
     if (gameRooms[roomCode].client.length === 0) {
-      decideColour = getRandomInt(0,1);
-      gameRooms[roomCode].client.push({"colour": colours[decideColour], id: socket.id});
+      let decideColour = getRandomInt(0,1);
+      gameRooms[roomCode].client.push({"isWhite": colours[decideColour], id: socket.id});
     }
     else {
-      gameRooms[roomCode].client.push({"colour": colours[!decideColour], id: socket.id});
+      gameRooms[roomCode].client.push({"isWhite": !gameRooms[roomCode].client[0].isWhite, id: socket.id});
     }
     
     console.log('hello! on room ' + roomCode);
@@ -132,7 +131,7 @@ io.on('connection', (socket) => {
 
           if (!gameRooms[roomCode]) gameRooms[roomCode] = {};
           gameRooms[roomCode].roomCode = roomCode;
-          gameRooms[roomCode].board = new Board('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR');
+          gameRooms[roomCode].board = new Board('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR', 0, true, true, true, true, true);
           gameRooms[roomCode].whiteTimer = new Timer(matchmaking[i].time, matchmaking[j].increment);
           gameRooms[roomCode].blackTimer = new Timer(matchmaking[i].time, matchmaking[j].increment);
           gameRooms[roomCode].PGN = '';
