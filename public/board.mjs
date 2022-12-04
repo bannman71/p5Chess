@@ -118,10 +118,30 @@ export function FENToBoard(FEN){
     return arr;
 }
 
+export function instantiateNewBoard(board, FEN){
+    var newBoard;
+    newBoard = new Board(FEN);
+    newBoard.moveCounter = board.moveCounter + 1;
+    newBoard.whiteToMove = board.whiteToMove;
+    newBoard.blackShortCastlingRights = board.blackShortCastlingRights;
+    newBoard.blackLongCastlingRights = board.blackLongCastlingRights;
+    newBoard.whiteShortCastlingRights = board.whiteShortCastlingRights;
+    newBoard.whiteLongCastlingRights = board.whiteLongCastlingRights;
+
+    newBoard.pawnMovedTwoSquares = board.pawnMovedTwoSquares;
+    newBoard.pawnMovedTwoSquaresCol = board.pawnMovedTwoSquaresCol;
+    newBoard.enPassentTaken = board.enPassentTaken;
+    newBoard.isInCheck = board.isInCheck;
+    newBoard.shortCastles = false
+    newBoard.longCastles = false;
+
+    return newBoard;
+}
+
+
 export default class Board {
 
     constructor(FEN){
-        
         this.occSquares = FENToBoard(FEN);
         
         this.moveCounter = 0;
@@ -141,6 +161,9 @@ export default class Board {
         this.enPassentTaken = false;
 
         this.isInCheck = false;
+
+        this.shortCastles = false;
+        this.longCastles = false;
 
         this.castled = false;
 
@@ -298,19 +321,13 @@ export default class Board {
 
         if (!this.isInCheck && (destCol - piece.col) >= 2 && piece.row === destRow && (this.checkKingRank(piece, 1))){ //if attempts to short castle
             if((this.whiteToMove && this.whiteShortCastlingRights) || (!this.whiteToMove && this.blackShortCastlingRights)){ //if white attempted
-                this.shortCastles(piece); //is a legal castle move
-                this.removeCastlingRights(true,true);
-                this.castled = true;
-
+                this.shortCastles = true; //is a legal castle move
                 return true;
             }
         }  
         else if(!this.isInCheck && destCol - piece.col <= -2 && piece.row === destRow && this.checkKingRank(piece, -1)){ //if attempts to long castle and checks if there are pieces in the way (dir 1 = right)
             if((this.whiteToMove && this.whiteLongCastlingRights) || (!this.whiteToMove && this.blackLongCastlingRights)){ //if white attempted
-                this.longCastles(piece);
-                this.removeCastlingRights(true,true);
-                this.castled = true;
-
+                this.longCastles = true;
                 return true;
             }
         }else{
@@ -330,10 +347,18 @@ export default class Board {
             this.checkRookCapture(newRow, newCol);   //has to remove castling rights so another rook cant be placed there and castle      
         }
       
-        this.occSquares[piece.row][piece.col] = 0;
-        this.occSquares[newRow][newCol] = piece;
-      
-        piece.updateSquare(newRow,newCol);
+        if (this.shortCastles){
+            this.shortCastlePiece(piece);
+            this.removeCastlingRights(true,true);
+        }
+        else if(this.longCastles){
+            this.longCastlePiece(piece);
+            this.removeCastlingRights(true,true);
+        }else {
+            this.occSquares[piece.row][piece.col] = 0;
+            this.occSquares[newRow][newCol] = piece;
+            piece.updateSquare(newRow,newCol);
+        }
     }
 
     updateEnPassentMove(piece,destRow,destCol){
@@ -346,7 +371,7 @@ export default class Board {
         
     }
 
-    shortCastles(king){
+    shortCastlePiece(king){
         let rook = this.occSquares[king.row][7];
                    
         rook.updateSquare(king.row, 5); //change rooks position in piece object
@@ -361,7 +386,7 @@ export default class Board {
        
     }
 
-    longCastles(king){
+    longCastlePiece(king){
         let rook = this.occSquares[king.row][0];
 
         rook.updateSquare(king.row, 3); //change rooks position in piece object

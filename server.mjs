@@ -19,6 +19,7 @@ import Board from './public/board.mjs';
 import Timer from './public/timer.mjs';
 import {PieceType} from './public/board.mjs';
 import {Piece} from './public/board.mjs';
+import { instantiateNewBoard } from './public/board.mjs';
 
 var matchmaking = [];
 var gameRooms = [];
@@ -184,10 +185,12 @@ io.on('connection', (socket) => {
     let numDefenses = 0;
 
     var piece = new Piece(data.pieceMoved.type, data.pieceMoved.row, data.pieceMoved.col, data.pieceMoved.colour);
-    var board = gameRooms[data.room].board;
+    var board;
 
+    board = instantiateNewBoard(data, data.FEN)
+    console.log(board);
 
-    if (data.pieceMoved.type === PieceType.king){
+    if (piece.type === PieceType.king){
       if(board.checkNextMoveBitmap(piece, data.fCoordsY, data.fCoordsX) === true){ //king moves need the bitmap before due to castling through a check
         if (board.isLegalKingMove(piece, data.fCoordsY, data.fCoordsX)) isLegal = true;
       }
@@ -204,7 +207,7 @@ io.on('connection', (socket) => {
         board.enPassentTaken = false;
       }
 
-      board.defendCheck();
+      // board.defendCheck();
 
       if (piece.type !== PieceType.pawn) board.pawnMovedTwoSquares = false;
       //is set to false here and in board.isLegalMove
@@ -212,11 +215,11 @@ io.on('connection', (socket) => {
       if (piece.colour === PieceType.black) board.moveCounter++; //after blacks move -> the move counter always increases
       
       if (board.enPassentTaken){
-          board.updateEnPassentMove(piece, data.fCoordsY, data.fCoordsX);
+        board.updateEnPassentMove(piece, data.fCoordsY, data.fCoordsX);
       }
       else{
         //if they didn't castle -> call the function which makes a normal move
-        if (!board.castled) board.updatePiecePos(piece, data.fCoordsY, data.fCoordsX); //castling changes position inside the castles function
+        board.updatePiecePos(piece, data.fCoordsY, data.fCoordsX); 
       }
       //create a new bitmap for the current legal position for board.kingInCheck()
       let bmap = board.findMaskSquares(board.whiteToMove, board.occSquares);
@@ -237,6 +240,7 @@ io.on('connection', (socket) => {
 
   });
 
+  
 
 });
 

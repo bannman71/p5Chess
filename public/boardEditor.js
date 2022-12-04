@@ -83,8 +83,8 @@ new p5(function(p5){
     p5.draw = () => {
         p5.clear();
         p5.background(front.white);
-        front.draw_grid();
-        front.drawAllPieces(board.occSquares, pieceAtMouse);
+        front.drawGrid();
+        front.drawAllPieces(true, board.occSquares, pieceAtMouse);
 
 
         let whitePieceToSelect;
@@ -191,9 +191,20 @@ new p5(function(p5){
         boardFEN = board.boardToFEN();
     }
 
+    p5.mousePressed = () => {
+        getClickedSquare = front.getMouseCoord(true, p5.mouseX,p5.mouseY);
+
+        if (board.isOnBoard(getClickedSquare.y,getClickedSquare.x)){
+            board.occSquares[getClickedSquare.y][getClickedSquare.x] = new Piece((selectedPiece & 7), getClickedSquare.y,getClickedSquare.x, (selectedPiece & 24));
+        }
+
+
+    }
+
+
     p5.mouseDragged = () => {
 
-        getClickedSquare = front.getMouseCoord(p5.mouseX,p5.mouseY);
+        getClickedSquare = front.getMouseCoord(true, p5.mouseX,p5.mouseY);
 
         if (board.isOnBoard(getClickedSquare.y,getClickedSquare.x)){
             board.occSquares[getClickedSquare.y][getClickedSquare.x] = new Piece((selectedPiece & 7), getClickedSquare.y,getClickedSquare.x, (selectedPiece & 24));

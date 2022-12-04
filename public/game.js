@@ -78,13 +78,14 @@ new p5(function(p5){
     p5.draw = () => {
         p5.clear();
         p5.background(front.white);
-        front.draw_grid();
-        front.drawAllPieces(board.occSquares, pieceAtMouse);
+        front.drawGrid();
+        front.drawAllPieces(board.whiteToMove, board.occSquares, pieceAtMouse);
         
         if (MouseDown){
-            front.drawPieceAtMousepos(pieceAtMouse,p5.mouseX,p5.mouseY);
-            front.drawLegalSquares(legalCircles);
+            front.drawPieceAtMousepos(pieceAtMouse, p5.mouseX, p5.mouseY);
+            front.drawLegalSquares(board.whiteToMove, legalCircles);
         }
+        else pieceAtMouse = 0;
     }
 
     //move this into draw function to make the check
@@ -100,12 +101,11 @@ new p5(function(p5){
 
     p5.mousePressed = () => {
         let tempPieceAtMouse;
-        pieceAtMouse = front.getPieceAtMousepos(board.occSquares,p5.mouseX,p5.mouseY); //returns type Piece
+        pieceAtMouse = front.getPieceAtMousepos(board.whiteToMove, board.occSquares,p5.mouseX,p5.mouseY); //returns type Piece
         if (pieceAtMouse !== tempPieceAtMouse) legalCircles = []; //empties legalcircles so that it doesn't show the squares when you click on another piece
         tempPieceAtMouse = pieceAtMouse;
         
         if (pieceAtMouse){
-            selectedCoords = front.getMouseCoord(p5.mouseX, p5.mouseY);
 
             // var start = performance.now();
             if (board.whiteToMove === (pieceAtMouse.colour === PieceType.white)){
@@ -128,7 +128,7 @@ new p5(function(p5){
         let numDefenses = 0;
 
 
-        let destCoords = front.getMouseCoord(p5.mouseX, p5.mouseY); // returns coord for array [0,0] [1,1] etc     
+        let destCoords = front.getMouseCoord(board.whiteToMove, p5.mouseX, p5.mouseY); // returns coord for array [0,0] [1,1] etc     
 
 
         if (board.isOnBoard(destCoords.y, destCoords.x) && pieceAtMouse){

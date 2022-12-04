@@ -2,12 +2,13 @@ import Board from './board.mjs';
 import { FENToBoard } from './board.mjs';
 import { PieceType } from './board.mjs';
 import { Piece } from './board.mjs';
+import { instantiateNewBoard } from './board.mjs';
 import Timer from './timer.mjs';
 import Front from './front.mjs';
 
 new p5(function (p5) {
-    const socket = io('https://bannman71-p5chess-674rjrqr9vxh4grq-3000.preview.app.github.dev');
-    // const socket = io('http://localhost:3000');
+    // const socket = io('https://bannman71-p5chess-674rjrqr9vxh4grq-3000.preview.app.github.dev');
+    const socket = io('http://localhost:3000');
 
     const queryString = window.location.search;
     const urlParameters = new URLSearchParams(queryString);
@@ -33,7 +34,6 @@ new p5(function (p5) {
 
     var board;
     var front;
-    var piece;
 
     var BLOCK_SIZE;
     var PIECE_SCALE;
@@ -62,19 +62,8 @@ new p5(function (p5) {
 
     socket.on('legalMoveMade', (data) => {
         //must create a new board object as it doesn't keep it's methods when being sent over sockets
-        board = new Board(data.FEN);
-        board.moveCounter = data.board.moveCounter + 1;
-        board.whiteToMove = data.board.whiteToMove;
-        board.blackShortCastlingRights = data.board.blackShortCastlingRights;
-        board.blackLongCastlingRights = data.board.blackLongCastlingRights;
-        board.whiteShortCastlingRights = data.board.whiteShortCastlingRights;
-        board.whiteLongCastlingRights = data.board.whiteLongCastlingRights;
 
-        board.pawnMovedTwoSquares = data.board.pawnMovedTwoSquares;
-        board.pawnMovedTwoSquaresCol = data.board.pawnMovedTwoSquaresCol;
-        board.enPassentTaken = data.board.enPassentTaken;
-        board.isInCheck = data.board.isInCheck;
-        board.castled = data.board.castled;
+        board = instantiateNewBoard(data.board, data.FEN)
 
         console.log(board);
 
@@ -166,7 +155,8 @@ new p5(function (p5) {
 
     p5.mouseReleased = () => {
         MouseDown = false;
-        board.castled = false;
+        board.shortCastles = false;
+        board.longCastles = false;
         let legalSideAttemptedMove = false;
         let isLegal = false;
 
@@ -177,7 +167,7 @@ new p5(function (p5) {
         
         if (board.isOnBoard(destCoords.y, destCoords.x) && pieceAtMouse && legalSideAttemptedMove) {
 
-            var data = { fCoordsX: destCoords.x, fCoordsY: destCoords.y, pieceMoved: pieceAtMouse, colourAndPiece: pieceAtMouse.colourAndPiece(), room: roomCode };
+            var data = { fCoordsX: destCoords.x, fCoordsY: destCoords.y, pieceMoved: pieceAtMouse, room: roomCode, "board": board, "FEN": board.boardToFEN()};
 
              if (pieceAtMouse.type === PieceType.king){
                 //king moves need the bitmap before due to castling through a check
@@ -207,7 +197,7 @@ new p5(function (p5) {
             }
             else{
                 //if they didn't castle -> call the function which makes a normal move
-                if (!board.castled) board.updatePiecePos(pieceAtMouse, destCoords.y, destCoords.x); //castling changes position inside the castles function
+                board.updatePiecePos(pieceAtMouse, destCoords.y, destCoords.x); //castling changes position inside the castles function
             }
             //create a new bitmap for the current legal position for board.kingInCheck()
             let bmap = board.findMaskSquares(board.whiteToMove, board.occSquares);
@@ -215,7 +205,6 @@ new p5(function (p5) {
 
             if (board.kingInCheck()){
                 board.isInCheck = true;
-                numDefenses = board.defendCheck();
 
             } else board.isInCheck = false;
             
