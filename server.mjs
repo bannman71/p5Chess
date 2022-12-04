@@ -187,7 +187,7 @@ io.on('connection', (socket) => {
     var piece = new Piece(data.pieceMoved.type, data.pieceMoved.row, data.pieceMoved.col, data.pieceMoved.colour);
     var board;
 
-    board = instantiateNewBoard(data, data.FEN)
+    board = instantiateNewBoard(data.board, data.FEN)
     console.log(board);
 
     if (piece.type === PieceType.king){
