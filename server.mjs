@@ -202,6 +202,7 @@ io.on('connection', (socket) => {
 
 
     if (isLegal){
+      
       if (data.whiteMoveMade) {
         whiteTimer -= data.timeTaken;
       }else blackTimer -= data.timeTaken;
