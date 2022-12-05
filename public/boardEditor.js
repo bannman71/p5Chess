@@ -51,12 +51,23 @@ new p5(function(p5){
     12: 'w_bishop', 9: 'w_king', 11: 'w_knight', 10: 'w_pawn', 14: 'w_queen', 13: 'w_rook'}
     
     function updateCSSFromBoardSize(){
-        let whiteSelectionContainerTop = p5.height + $('#black-piece-selection-container').height() + (p5.height * 0.1);
+        let whiteSelectionContainerTop = p5.height + $('#black-piece-selection-container').height() + (p5.height*0.08);
         let whiteSelectionContainerCSS = {
             'position': 'absolute',
             'top': (`%dpx`,whiteSelectionContainerTop)
         };
+
+        let FENFormTop = whiteSelectionContainerTop + $('#white-piece-selection-container').height()
+        let FENFormCSS = {
+            'position': 'absolute', 
+            'top': (`%dpx`,FENFormTop),
+            'width': ('%dpx', size),
+            'left': '0'
+        };
+
+
         $('#white-piece-selection-container').css(whiteSelectionContainerCSS);
+        $('#FEN-form').css(FENFormCSS);
     }
 
     p5.setup = () => {
