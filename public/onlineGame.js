@@ -55,7 +55,8 @@ new p5(function (p5) {
     let pieceAtMouse;
     let selectedCoords;
 
-    var start = Date.now();
+    var timeMoveStart = 0;
+    var timeMoveEnd = 0;
     var blackTime, whiteTime;
 
     //SERVER SIDE LOGIC
@@ -64,10 +65,11 @@ new p5(function (p5) {
         //must create a new board object as it doesn't keep it's methods when being sent over sockets
 
         board = instantiateNewBoard(data.board, data.FEN)
-
-        console.log(board);
+        timeMoveStart = Date.now();
 
     });
+
+    //
 
     p5.setup = () => {
         canvasDiv = document.getElementById('board-container');
@@ -119,16 +121,6 @@ new p5(function (p5) {
         else pieceAtMouse = 0; 
     }
 
-    //move this into draw function to make the check
-    setInterval(() => {
-        var delta = Date.now() - start; // milliseconds elapsed since start
-
-        //if move made:
-        //  timer -= delta
-
-        //console.log(Math.floor(delta / 1000)); // in seconds
-    }, 1000);
-
     p5.mousePressed = () => {
         let tempPieceAtMouse;
         pieceAtMouse = front.getPieceAtMousepos(clientIsWhite, board.occSquares, p5.mouseX, p5.mouseY); //returns type Piece
@@ -160,6 +152,7 @@ new p5(function (p5) {
         let legalSideAttemptedMove = false;
         let isLegal = false;
 
+       
 
         if (clientIsWhite === (pieceAtMouse.colour === PieceType.white)) legalSideAttemptedMove = true;
 
@@ -167,29 +160,25 @@ new p5(function (p5) {
         
         if (board.isOnBoard(destCoords.y, destCoords.x) && pieceAtMouse && legalSideAttemptedMove) {
 
-            var data = { fCoordsX: destCoords.x, fCoordsY: destCoords.y, pieceMoved: pieceAtMouse, room: roomCode, "board": board, "FEN": board.boardToFEN()};
-
              if (pieceAtMouse.type === PieceType.king){
                 //king moves need the bitmap before due to castling through a check
                 if(board.checkNextMoveBitmap(pieceAtMouse, destCoords.y, destCoords.y) === true){  
-                    if (board.isLegalKingMove(pieceAtMouse, destCoords.y, destCoords.x)){
-                        isLegal = true;
-                        socket.emit('moveAttempted', data);
-                    }
+                    if (board.isLegalKingMove(pieceAtMouse, destCoords.y, destCoords.x)) isLegal = true;
+                    
                 }
             } else {
                 if (board.isLegalMove(pieceAtMouse, destCoords.y, destCoords.x)){ 
                     //doesn't need the bitmap first as it can find after a move has been made whether or not it is in check
-                    if (board.checkNextMoveBitmap(pieceAtMouse, destCoords.y, destCoords.x) === true) {
-                        isLegal = true;
-                        socket.emit('moveAttempted', data);
-                    }
+                    if (board.checkNextMoveBitmap(pieceAtMouse, destCoords.y, destCoords.x) === true) isLegal = true;
                 }
             }
         }
 
         if (isLegal){
-
+            timeMoveEnd = Date.now();  
+            let timeTaken = timeMoveEnd - timeMoveStart;
+            var data = { fCoordsX: destCoords.x, fCoordsY: destCoords.y, pieceMoved: pieceAtMouse, room: roomCode, "board": board, "FEN": board.boardToFEN(), "timeTaken": timeTaken, "whiteMoveMade": clientIsWhite};
+            socket.emit('moveAttempted', data);
             console.log('legal');
           
             if (board.enPassentTaken){

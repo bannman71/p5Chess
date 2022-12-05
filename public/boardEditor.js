@@ -3,51 +3,61 @@ import Front from './front.mjs';
 import {PieceType} from './board.mjs'; 
 import { Piece } from './board.mjs';
 
-var canv;
-var canvasDiv;
-
-var WIDTH;
-var HEIGHT;
-
-var BLOCK_SIZE;
-var SPACING;
-var PIECE_SCALE;
-
-let IMAGES = {};
-
-var board;
-var front;
-
-var selectedPiece;
-
-var getClickedSquare;
-var pieceAtMouse;
-
-var boardFEN = '8/8/8/8/8/8/8/8';
-var endOfFen;
-
-
-const SELECTEDSTYLE = {
-    'background-color': 'white',
-    'border-radius': '70%', 
-    'height': '90%', 
-    'width': '90%'
-}
-
-const DEFSTYLE = {
-    'background-color': '#bababa',
-    'border-radius': '100%', 
-    'height': '100%', 
-    'width': '100%'
-}
-
-const pieces = ['pawn', 'king', 'knight', 'bishop', 'rook', 'queen'];
-
-const BIN_PIECES = {20: 'b_bishop', 17: 'b_king', 19: 'b_knight', 18: 'b_pawn', 22: 'b_queen', 21: 'b_rook',
-    12: 'w_bishop', 9: 'w_king', 11: 'w_knight', 10: 'w_pawn', 14: 'w_queen', 13: 'w_rook'}
-    
 
 new p5(function(p5){
+
+    var canv;
+    var canvasDiv;
+
+    var WIDTH;
+    var HEIGHT;
+    var size;
+
+    var BLOCK_SIZE;
+    var SPACING;
+    var PIECE_SCALE;
+
+    let IMAGES = {};
+
+    var board;
+    var front;
+
+    var selectedPiece;
+
+    var getClickedSquare;
+    var pieceAtMouse;
+
+    var boardFEN = '8/8/8/8/8/8/8/8';
+    var endOfFen;
+
+
+    const SELECTEDSTYLE = {
+        'background-color': 'white',
+        'border-radius': '70%', 
+        'height': '90%', 
+        'width': '90%'
+    }
+
+    const DEFSTYLE = {
+        'background-color': '#bababa',
+        'border-radius': '100%', 
+        'height': '100%', 
+        'width': '100%'
+    }
+
+    const pieces = ['pawn', 'king', 'knight', 'bishop', 'rook', 'queen'];
+
+    const BIN_PIECES = {20: 'b_bishop', 17: 'b_king', 19: 'b_knight', 18: 'b_pawn', 22: 'b_queen', 21: 'b_rook',
+    12: 'w_bishop', 9: 'w_king', 11: 'w_knight', 10: 'w_pawn', 14: 'w_queen', 13: 'w_rook'}
+    
+    function updateCSSFromBoardSize(){
+        let whiteSelectionContainerTop = p5.height + $('#black-piece-selection-container').height() + (p5.height * 0.1);
+        let whiteSelectionContainerCSS = {
+            'position': 'absolute',
+            'top': (`%dpx`,whiteSelectionContainerTop)
+        };
+        $('#white-piece-selection-container').css(whiteSelectionContainerCSS);
+    }
 
     p5.setup = () => {
         for (let im in BIN_PIECES){
@@ -58,7 +68,7 @@ new p5(function(p5){
         WIDTH = canvasDiv.offsetWidth;
         HEIGHT = canvasDiv.offsetHeight;
 
-        var size = Math.min(WIDTH,HEIGHT);
+        size = Math.min(WIDTH,HEIGHT);
         
         boardFEN = '8/8/8/8/8/8/8/8';
         $('#FEN-container').html('FEN: ' + boardFEN);
@@ -72,6 +82,8 @@ new p5(function(p5){
             $("#black-piece-selection-container").width(size);
             $("#white-piece-selection-container").width(size); 
         });
+
+        updateCSSFromBoardSize();  
         
         canv = p5.createCanvas(size, size);
         canv.parent("board-editor-container");
@@ -120,6 +132,11 @@ new p5(function(p5){
 
 
     }
+
+    setInterval(() => {
+        updateCSSFromBoardSize();
+    }, 2000);
+
 
     p5.mouseReleased = () => {
 
@@ -220,8 +237,11 @@ new p5(function(p5){
         $("#black-piece-selection-container").width(size);
         $("#white-piece-selection-container").width(size);
 
+        updateCSSFromBoardSize();
+
+        front.blockSize = (size) / 8; //can be width but it is a square
+        front.spacing = Math.floor((front.blockSize * (1 - front.pieceScale)) / 2);
         p5.resizeCanvas(size, size);
-        BLOCK_SIZE = (size) / 8; //can be width but it is a square
-        SPACING = Math.floor((BLOCK_SIZE * (1 - PIECE_SCALE)) / 2);
+        
     }
 });

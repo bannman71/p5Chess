@@ -217,7 +217,7 @@ a{
   width: 43%;
   height: 50%;
 
-  border-style: none;
+  border-style: double;
 
 }
 
@@ -246,10 +246,10 @@ a{
 }
 
 #white-piece-selection-container{
-  position: absolute;
+  position: relative;
   display: flex;
 
-  top: 65%;
+  bottom: 35%;
   left:0%;
 
   background-color:  #28282B;

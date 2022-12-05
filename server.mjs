@@ -202,6 +202,10 @@ io.on('connection', (socket) => {
 
 
     if (isLegal){
+      if (data.whiteMoveMade) {
+        whiteTimer -= data.timeTaken;
+      }else blackTimer -= data.timeTaken;
+
       console.log('legal');
       if (tempEnPassentTaken === true) {
         board.enPassentTaken = false;
@@ -217,10 +221,8 @@ io.on('connection', (socket) => {
       if (board.enPassentTaken){
         board.updateEnPassentMove(piece, data.fCoordsY, data.fCoordsX);
       }
-      else{
-        //if they didn't castle -> call the function which makes a normal move
-        board.updatePiecePos(piece, data.fCoordsY, data.fCoordsX); 
-      }
+      else board.updatePiecePos(piece, data.fCoordsY, data.fCoordsX); 
+      
       //create a new bitmap for the current legal position for board.kingInCheck()
       let bmap = board.findMaskSquares(board.whiteToMove, board.occSquares);
       board.maskBitMap(bmap); 
