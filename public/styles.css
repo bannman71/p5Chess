@@ -149,7 +149,7 @@ a{
   align-items: center;
 
   border-radius: 0px;
-  border-style: none;
+  border-style: double;
   border-color: grey;
 
   background-color: #28282B;
