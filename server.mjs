@@ -82,21 +82,9 @@ io.on('connection', (socket) => {
 
   //when 2 players have queued through matchmaking they are paired through this
   socket.on('matchConnect', (roomCode) => { 
-    const colours = {1: true, 0: false};
     socket.leave('waitingroom');
     socket.join(roomCode);
-
-    //assign appropriate variables to players
-    if (gameRooms[roomCode].client.length === 0) {
-      let decideColour = getRandomInt(0,1);
-      gameRooms[roomCode].client.push({"isWhite": colours[decideColour], id: socket.id});
-      io.to(socket.id).emit('gameColours', (colours[decideColour]));
-    }
-    else {
-      gameRooms[roomCode].client.push({"isWhite": !gameRooms[roomCode].client[0].isWhite, id: socket.id});
-      io.to(socket.id).emit('gameColours', (!gameRooms[roomCode].client[0].isWhite));
-    }
-    
+  
     console.log('hello! on room ' + roomCode);
   });
 
@@ -116,20 +104,25 @@ io.on('connection', (socket) => {
     for (let i = 0; i < matchmaking.length; i++){
       for (let j = i + 1; j < matchmaking.length; j++){
         //if game found
+        const colours = {1: true, 0: false};
+        
         if ((matchmaking[i].time === matchmaking[j].time) && (matchmaking[i].interval === matchmaking[j].interval)){
           //moves matched players to game room
          
           let clients = io.sockets.adapter.rooms.get('waitingRoom');
           let roomCode = generateRoomCode();
-        
+          let decideColour = getRandomInt(0,1);
+
           for (let clientID of clients){
             const clientSocket = io.sockets.sockets.get(clientID);
             
             if (clientID === matchmaking[i].id){
-              clientSocket.emit('redirect', ({client: matchmaking[i], page: '/onlineGame', "roomCode": roomCode})); //emits to index.html -> !!decideColour coerces 1/0 into true/false
+              let data = {client: matchmaking[i], page: '/onlineGame', "roomCode": roomCode, "isWhite": colours[decideColour]}; 
+              clientSocket.emit('redirect', (data)); //emits to index.html -> !!decideColour coerces 1/0 into true/false
             }
             else if(clientID === matchmaking[j].id){
-              clientSocket.emit('redirect', ({client: matchmaking[j], page: '/onlineGame', "roomCode": roomCode}));
+              let data = {client: matchmaking[j], page: '/onlineGame', "roomCode": roomCode, "isWhite": colours[!decideColour]};
+              clientSocket.emit('redirect', (data));
             }
           }
 

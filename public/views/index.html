@@ -74,7 +74,7 @@
     });
 
     socket.on('redirect', (data) => { //called in timeControlChosen
-      var url = data.page + '?time=' + data.client.time + '&increment=' + data.client.increment + '&roomCode=' + data.roomCode;
+      var url = data.page + '?time=' + data.client.time + '&increment=' + data.client.increment + '&roomCode=' + data.roomCode + '?isWhite=' + data.isWhite;
       window.location.href = url; //sends them to the page created above
     });
 

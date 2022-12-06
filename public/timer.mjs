@@ -38,20 +38,26 @@ export default class Timer{
             'background-color': 'white',
             'border-style': 'none'
         };
+
         let blackTimerCSS;
         let whiteTimerCSS;
+
         if (this.isWhite){
-            //place the timer containers in the correct place
+            //set black css
             blackTimerCSS = showTop;
             $('#black-timer-container').css(blackTimerCSS);
-            timerDistFromTop = $('#black-timer-container').height() + boardSize + (boardSize *0);
+
+            //calculate how far from top white's timer must be
+            timerDistFromTop = $('#black-timer-container').height() + boardSize;
             showBottom.top = ('%dpx', timerDistFromTop);
             whiteTimerCSS = showBottom;
         }else {
+            //set white css
             whiteTimerCSS = showTop;
             $('#white-timer-container').css(whiteTimerCSS);
-            
-            timerDistFromTop = $('#white-timer-container').height() + boardSize + (boardSize *0);
+
+            //calculate how far from top black's timer must be
+            timerDistFromTop = $('#white-timer-container').height() + boardSize;
             showBottom.top = ('%dpx', timerDistFromTop);
             blackTimerCSS = showBottom;
 

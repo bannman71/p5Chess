@@ -14,13 +14,14 @@ new p5(function (p5) {
     const urlParameters = new URLSearchParams(queryString);
     var time = urlParameters.get('time');
     var increment = urlParameters.get('increment');
+    var clientIsWhite = urlParameters.get('isWhite');
     roomCode = urlParameters.get('roomCode');
 
 
-    socket.emit('matchConnect', roomCode);
-    socket.on('gameColours', (isWhite) => { //assigns the colour to each client
-        clientIsWhite = isWhite;
-    });
+    // socket.emit('matchConnect', roomCode);
+    // socket.on('gameColours', (isWhite) => { //assigns the colour to each client
+    //     clientIsWhite = isWhite;
+    // });
     var blackTime, whiteTime;
     var initialisedTimers;
 
@@ -130,12 +131,13 @@ new p5(function (p5) {
         } 
         else pieceAtMouse = 0; 
 
+        // whiteTime.displayTime();
+
         if (!initialisedTimers){
             whiteTime = new Timer(clientIsWhite, time, increment);
             blackTime = new Timer(clientIsWhite, time, increment);
             blackTime.showContainer(size);
             whiteTime.showContainer(size);
-            whiteTime.displayTime();
             initialisedTimers = true;
         }
 
