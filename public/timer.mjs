@@ -11,13 +11,18 @@ function test(){
 
 export default class Timer{
 
-    constructor(time, increment){
-        this.time = time;
+    constructor(time, increment){ //time in minutes
+        this.time = time * 60;
         this.increment = increment;
+        this.timeMinuteDisplayed;
+        this.timeSecondDisplayed;
     }
 
-    update(start, delta){
-        
+    update(timeTaken){
+        this.time -= timeTaken;
+        this.time.addIncrement();
+        this.timeMinuteDisplayed = Math.floor(this.time / 60);
+        this.timeSecondDisplayed = this.time % 60;
     }   
 
     addIncrement(){

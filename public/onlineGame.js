@@ -30,8 +30,6 @@ new p5(function (p5) {
     var canv;
     var canvasDiv;
 
-   
-
     var board;
     var front;
 
@@ -63,13 +61,12 @@ new p5(function (p5) {
 
     socket.on('legalMoveMade', (data) => {
         //must create a new board object as it doesn't keep it's methods when being sent over sockets
+        //is called when the opponent makes a legal move
 
         board = instantiateNewBoard(data.board, data.FEN)
         timeMoveStart = Date.now();
 
     });
-
-    //
 
     p5.setup = () => {
         canvasDiv = document.getElementById('board-container');

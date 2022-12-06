@@ -179,10 +179,10 @@ io.on('connection', (socket) => {
 
   //GAME LOGIC
 
-  socket.on('moveAttempted', function(data) { //data = fCoords, gameRoom and pieceMoved
+  socket.on('moveAttempted', function(data) { 
+    //data = fCoordsX fCoordsY pieceMoved room board FEN timeTaken whiteMoveMade
     let isLegal = false;
     let tempEnPassentTaken = false;
-    let numDefenses = 0;
 
     var piece = new Piece(data.pieceMoved.type, data.pieceMoved.row, data.pieceMoved.col, data.pieceMoved.colour);
     var board;
@@ -204,8 +204,8 @@ io.on('connection', (socket) => {
     if (isLegal){
       
       if (data.whiteMoveMade) {
-        whiteTimer -= data.timeTaken;
-      }else blackTimer -= data.timeTaken;
+        whiteTimer.update(timeTaken);
+      }else blackTimer.update(timeTaken);
 
       console.log('legal');
       if (tempEnPassentTaken === true) {
