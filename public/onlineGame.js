@@ -22,16 +22,16 @@ new p5(function (p5) {
     var roomCode;
     var clientIsWhite;
     
-    socket.on('gameColour', (isWhite) => {
+    socket.on('gameColour', (isWhite) => { //assigns the colour to each client
         clientIsWhite = isWhite;
     });
-
 
     var canv;
     var canvasDiv;
 
     var board;
     var front;
+    var size;
 
     var BLOCK_SIZE;
     var PIECE_SCALE;
@@ -68,17 +68,29 @@ new p5(function (p5) {
 
     });
 
+    function updateCSSFromBoardSize(){
+        let boardWidth = $('#online-board-container').width();
+        let gameInfoCSS = {
+            'position': 'absolute',
+            'left': ('%d', boardWidth),
+            'top': '10%'
+        };
+
+        $('#online-game-info').css(gameInfoCSS);
+    }
+
     p5.setup = () => {
-        canvasDiv = document.getElementById('board-container');
+        canvasDiv = document.getElementById('online-board-container');
         WIDTH = canvasDiv.offsetWidth;
         HEIGHT = canvasDiv.offsetHeight;
+        size = Math.min(WIDTH,HEIGHT);
 
-        canv = p5.createCanvas(WIDTH, HEIGHT);
-        canv.parent("board-container");
+        canv = p5.createCanvas(size, size);
+        canv.parent("online-board-container");
 
         PIECE_SCALE = 1;
 
-        BLOCK_SIZE = WIDTH / 8;
+        BLOCK_SIZE = size / 8;
 
         console.log('white or not');
         console.log(clientIsWhite);
@@ -86,6 +98,7 @@ new p5(function (p5) {
         blackTime = new Timer(time, increment);
         whiteTime = new Timer(time, increment);
 
+        blackTime.show(clientIsWhite);
 
         SPACING = Math.floor((BLOCK_SIZE * (1 - PIECE_SCALE)) / 2);
 
@@ -104,6 +117,9 @@ new p5(function (p5) {
         //'rnbqkbnr/1ppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR'
         //rnbqkbnr/p1pppppp/1p6/4P3/8/5NP1/PPPP1PBP/RNBQK2R
         //'rnbqk1nr/p4ppp/1p1b4/8/8/5NP1/P2K1PBP/RNBQ3R'
+
+        updateCSSFromBoardSize();
+
     }
 
     p5.draw = () => {
@@ -172,9 +188,15 @@ new p5(function (p5) {
         }
 
         if (isLegal){
-            timeMoveEnd = Date.now();  
-            let timeTaken = timeMoveEnd - timeMoveStart;
-            var data = { fCoordsX: destCoords.x, fCoordsY: destCoords.y, pieceMoved: pieceAtMouse, room: roomCode, "board": board, "FEN": board.boardToFEN(), "timeTaken": timeTaken, "whiteMoveMade": clientIsWhite};
+            let timeTaken;
+            if (board.moveCounter > 0){ 
+                timeMoveEnd = Date.now();  
+                timeTaken = (timeMoveEnd - timeMoveStart) / 1000;
+            } else timeTaken = 0;
+           
+            var data = 
+            { fCoordsX: destCoords.x, fCoordsY: destCoords.y, pieceMoved: pieceAtMouse, room: roomCode, "board": board, "FEN": board.boardToFEN(), "timeTaken": timeTaken, "whiteMoveMade": clientIsWhite
+            };
             socket.emit('moveAttempted', data);
             console.log('legal');
           
@@ -202,9 +224,13 @@ new p5(function (p5) {
     p5.windowResized = () => {
         WIDTH = canvasDiv.offsetWidth;
         HEIGHT = canvasDiv.offsetHeight;
-        p5.resizeCanvas(WIDTH, HEIGHT);
-        BLOCK_SIZE = (WIDTH) / 8; //can be width but it is a square
-        SPACING = Math.floor((BLOCK_SIZE * (1 - PIECE_SCALE)) / 2);
+
+        size = Math.min(WIDTH,HEIGHT);
+        front.blockSize = (size) / 8; //can be width but it is a square
+        front.spacing = Math.floor((front.blockSize * (1 - front.pieceScale)) / 2);
+        p5.resizeCanvas(size, size);
+
+        updateCSSFromBoardSize();
     }
 
 });

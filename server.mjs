@@ -204,8 +204,10 @@ io.on('connection', (socket) => {
     if (isLegal){
       
       if (data.whiteMoveMade) {
-        whiteTimer.update(timeTaken);
-      }else blackTimer.update(timeTaken);
+        gameRooms[data.room].whiteTimer.update(data.timeTaken);
+      }else gameRooms[data.room].blackTimer.update(data.timeTaken);
+
+      console.log(gameRooms[data.room]);
 
       console.log('legal');
       if (tempEnPassentTaken === true) {

@@ -1,14 +1,3 @@
-function chooseTimeControl(time,increment){
-    blackTime = new Timer(time, increment);
-    whiteTime = new Timer(time, increment);
-}
-
-
-function test(){
-    console.log(blackTime);
-}
-
-
 export default class Timer{
 
     constructor(time, increment){ //time in minutes
@@ -19,8 +8,9 @@ export default class Timer{
     }
 
     update(timeTaken){
+        console.log(timeTaken + ' TimeTaken');
         this.time -= timeTaken;
-        this.time.addIncrement();
+        this.time += this.increment;
         this.timeMinuteDisplayed = Math.floor(this.time / 60);
         this.timeSecondDisplayed = this.time % 60;
     }   
@@ -28,6 +18,28 @@ export default class Timer{
     addIncrement(){
         this.time += this.increment;
     }
-    
 
+    show(clientIsWhite){
+        //get id for both black and white timers
+        //update html for their positions based on what side client is
+        //css to make it look nice
+
+        // if (clientIsWhite){
+        let blackTimerCSS = {
+            'position': 'absolute',
+            'top': '0px',
+            'width': '25%',
+            'height': '7%',
+            'background-color': 'white',
+            'border-style': 'dashed'
+        };
+
+
+        $('#black-timer-container').css(blackTimerCSS);
+
+
+
+        // }
+    }
+    
 }

@@ -36,7 +36,7 @@ body{
   flex-wrap: wrap;
   flex-direction: row;
 
-  border-style: none;
+  border-style: dashed;
 
   font-size: 0px;
 
@@ -367,13 +367,13 @@ a{
   color:#FFFFFF;
 }
 
-#white-timer{
+/* ONLINE GAME */
+
+#online-board-container{
   position: absolute;
-
-  top:0%;
-
-  z-index: 99;
-
-  background-color: #73AD21;
-
+  top: 10%;
+  border-style: none;
+  width: 60%; 
+  height: 0;
+  padding-bottom:60%;
 }
