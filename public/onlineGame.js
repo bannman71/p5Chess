@@ -16,11 +16,13 @@ new p5(function (p5) {
     var increment = urlParameters.get('increment');
     roomCode = urlParameters.get('roomCode');
 
+
     socket.emit('matchConnect', roomCode);
-    socket.on('gameVariables', (isWhite) => { //assigns the colour to each client
+    socket.on('gameColours', (isWhite) => { //assigns the colour to each client
         clientIsWhite = isWhite;
     });
-
+    var blackTime, whiteTime;
+    var initialisedTimers;
 
     var roomCode;
     var clientIsWhite;
@@ -52,7 +54,7 @@ new p5(function (p5) {
 
     var timeMoveStart = 0;
     var timeMoveEnd = 0;
-    var blackTime, whiteTime;
+   
 
     //SERVER SIDE LOGIC
 
@@ -92,9 +94,6 @@ new p5(function (p5) {
         console.log('white or not');
         console.log(clientIsWhite);
 
-        whiteTime = new Timer(time, increment);
-        blackTime = new Timer(time, increment);
-
         SPACING = Math.floor((BLOCK_SIZE * (1 - PIECE_SCALE)) / 2);
 
         board = new Board('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR', 0, true,true,true,true,true);
@@ -112,7 +111,10 @@ new p5(function (p5) {
         //'rnbqkbnr/1ppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR'
         //rnbqkbnr/p1pppppp/1p6/4P3/8/5NP1/PPPP1PBP/RNBQK2R
         //'rnbqk1nr/p4ppp/1p1b4/8/8/5NP1/P2K1PBP/RNBQ3R'
+        
 
+
+    
         updateCSSFromBoardSize();
 
     }
@@ -128,8 +130,15 @@ new p5(function (p5) {
         } 
         else pieceAtMouse = 0; 
 
-        blackTime.showContainer(clientIsWhite, size);
-        whiteTime.showContainer(clientIsWhite, size);
+        if (!initialisedTimers){
+            whiteTime = new Timer(clientIsWhite, time, increment);
+            blackTime = new Timer(clientIsWhite, time, increment);
+            blackTime.showContainer(size);
+            whiteTime.showContainer(size);
+            whiteTime.displayTime();
+            initialisedTimers = true;
+        }
+
 
     }
 
@@ -230,6 +239,8 @@ new p5(function (p5) {
         p5.resizeCanvas(size, size);
 
         updateCSSFromBoardSize();
+        blackTime.showContainer(size);
+        whiteTime.showContainer(size);
     }
 
 });

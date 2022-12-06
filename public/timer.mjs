@@ -1,8 +1,9 @@
 export default class Timer{
 
-    constructor(time, increment){ //time in minutes
+    constructor(isWhite, time, increment){ //time in minutes
         this.time = time * 60;
         this.increment = increment;
+        this.isWhite = isWhite;
         this.timeMinuteDisplayed;
         this.timeSecondDisplayed;
     }
@@ -19,37 +20,41 @@ export default class Timer{
         this.time += this.increment;
     }
 
-    showContainer(clientIsWhite, boardSize){
-        //get id for both black and white timers
-        //update html for their positions based on what side client is
-        //css to make it look nice
-        let timerDistFromTop = (boardSize * 0.06) + boardSize + (boardSize * 0.01);
+    showContainer(boardSize){
+        let timerDistFromTop;
         let showTop = {
             'position': 'absolute',
             'top': '0px',
             'width': '25%',
             'height': '6%',
             'background-color': 'white',
-            'border-style': 'dashed'
+            'border-style': 'none'
         }; 
-
         let showBottom = {
             'position': 'absolute',
-            'top': ('%dpx', timerDistFromTop),
+            'top': 'ToBeDecided',
             'width': '25%',
             'height': '6%',
             'background-color': 'white',
-            'border-style': 'dashed'
+            'border-style': 'none'
         };
         let blackTimerCSS;
         let whiteTimerCSS;
-        if (clientIsWhite){
+        if (this.isWhite){
             //place the timer containers in the correct place
             blackTimerCSS = showTop;
+            $('#black-timer-container').css(blackTimerCSS);
+            timerDistFromTop = $('#black-timer-container').height() + boardSize + (boardSize *0);
+            showBottom.top = ('%dpx', timerDistFromTop);
             whiteTimerCSS = showBottom;
         }else {
-            blackTimerCSS = showBottom;
             whiteTimerCSS = showTop;
+            $('#white-timer-container').css(whiteTimerCSS);
+            
+            timerDistFromTop = $('#white-timer-container').height() + boardSize + (boardSize *0);
+            showBottom.top = ('%dpx', timerDistFromTop);
+            blackTimerCSS = showBottom;
+
         }
 
         $('#black-timer-container').css(blackTimerCSS);
@@ -57,4 +62,14 @@ export default class Timer{
 
     }
     
+    displayTime(){
+        if (this.isWhite){
+            let whiteTimer = document.getElementById('white-timer');
+            let whiteTimerHTML = `
+                <h4>hello</h4>
+            `;
+            whiteTimer.innerHTML = whiteTimerHTML;
+        }
+    }
+
 }

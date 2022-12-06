@@ -90,11 +90,11 @@ io.on('connection', (socket) => {
     if (gameRooms[roomCode].client.length === 0) {
       let decideColour = getRandomInt(0,1);
       gameRooms[roomCode].client.push({"isWhite": colours[decideColour], id: socket.id});
-      io.to(socket.id).emit('gameVariables', (colours[decideColour]));
+      io.to(socket.id).emit('gameColours', (colours[decideColour]));
     }
     else {
       gameRooms[roomCode].client.push({"isWhite": !gameRooms[roomCode].client[0].isWhite, id: socket.id});
-      io.to(socket.id).emit('gameVariables', (!gameRooms[roomCode].client[0].isWhite));
+      io.to(socket.id).emit('gameColours', (!gameRooms[roomCode].client[0].isWhite));
     }
     
     console.log('hello! on room ' + roomCode);
