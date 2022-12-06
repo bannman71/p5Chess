@@ -86,15 +86,15 @@ io.on('connection', (socket) => {
     socket.leave('waitingroom');
     socket.join(roomCode);
 
-    //assign random colours to players
+    //assign appropriate variables to players
     if (gameRooms[roomCode].client.length === 0) {
       let decideColour = getRandomInt(0,1);
       gameRooms[roomCode].client.push({"isWhite": colours[decideColour], id: socket.id});
-      io.to(socket.id).emit('gameColour', (colours[decideColour]));
+      io.to(socket.id).emit('gameVariables', (colours[decideColour]));
     }
     else {
       gameRooms[roomCode].client.push({"isWhite": !gameRooms[roomCode].client[0].isWhite, id: socket.id});
-      io.to(socket.id).emit('gameColour', (!gameRooms[roomCode].client[0].isWhite));
+      io.to(socket.id).emit('gameVariables', (!gameRooms[roomCode].client[0].isWhite));
     }
     
     console.log('hello! on room ' + roomCode);

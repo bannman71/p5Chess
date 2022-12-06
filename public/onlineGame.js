@@ -16,15 +16,14 @@ new p5(function (p5) {
     var increment = urlParameters.get('increment');
     roomCode = urlParameters.get('roomCode');
 
-
     socket.emit('matchConnect', roomCode);
+    socket.on('gameVariables', (isWhite) => { //assigns the colour to each client
+        clientIsWhite = isWhite;
+    });
+
 
     var roomCode;
     var clientIsWhite;
-    
-    socket.on('gameColour', (isWhite) => { //assigns the colour to each client
-        clientIsWhite = isWhite;
-    });
 
     var canv;
     var canvasDiv;
@@ -43,8 +42,6 @@ new p5(function (p5) {
 
     let IMAGES = {};
 
-
-    // let board;
     let bitmap;
 
     let legalCircles = [];
@@ -73,7 +70,7 @@ new p5(function (p5) {
         let gameInfoCSS = {
             'position': 'absolute',
             'left': ('%d', boardWidth),
-            'top': '10%'
+            'top': '6%'
         };
 
         $('#online-game-info').css(gameInfoCSS);
@@ -91,14 +88,12 @@ new p5(function (p5) {
         PIECE_SCALE = 1;
 
         BLOCK_SIZE = size / 8;
-
+        
         console.log('white or not');
         console.log(clientIsWhite);
 
-        blackTime = new Timer(time, increment);
         whiteTime = new Timer(time, increment);
-
-        blackTime.show(clientIsWhite);
+        blackTime = new Timer(time, increment);
 
         SPACING = Math.floor((BLOCK_SIZE * (1 - PIECE_SCALE)) / 2);
 
@@ -132,6 +127,10 @@ new p5(function (p5) {
             front.drawLegalSquares(clientIsWhite, legalCircles);
         } 
         else pieceAtMouse = 0; 
+
+        blackTime.showContainer(clientIsWhite, size);
+        whiteTime.showContainer(clientIsWhite, size);
+
     }
 
     p5.mousePressed = () => {

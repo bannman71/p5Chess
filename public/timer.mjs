@@ -19,27 +19,42 @@ export default class Timer{
         this.time += this.increment;
     }
 
-    show(clientIsWhite){
+    showContainer(clientIsWhite, boardSize){
         //get id for both black and white timers
         //update html for their positions based on what side client is
         //css to make it look nice
-
-        // if (clientIsWhite){
-        let blackTimerCSS = {
+        let timerDistFromTop = (boardSize * 0.06) + boardSize + (boardSize * 0.01);
+        let showTop = {
             'position': 'absolute',
             'top': '0px',
             'width': '25%',
-            'height': '7%',
+            'height': '6%',
+            'background-color': 'white',
+            'border-style': 'dashed'
+        }; 
+
+        let showBottom = {
+            'position': 'absolute',
+            'top': ('%dpx', timerDistFromTop),
+            'width': '25%',
+            'height': '6%',
             'background-color': 'white',
             'border-style': 'dashed'
         };
-
+        let blackTimerCSS;
+        let whiteTimerCSS;
+        if (clientIsWhite){
+            //place the timer containers in the correct place
+            blackTimerCSS = showTop;
+            whiteTimerCSS = showBottom;
+        }else {
+            blackTimerCSS = showBottom;
+            whiteTimerCSS = showTop;
+        }
 
         $('#black-timer-container').css(blackTimerCSS);
+        $('#white-timer-container').css(whiteTimerCSS);
 
-
-
-        // }
     }
     
 }
