@@ -11,7 +11,6 @@ export default class Front {
         this.black = 'rgb(140,162,173)';
         this.white = 'rgb(222,237,230)';
         
-
         this.spacing = spacing;
         this.blockSize = blockSize;
         this.pieceScale = pieceScale;

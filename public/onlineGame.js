@@ -122,6 +122,7 @@ new p5(function (p5) {
         whiteTime.showContainer(size);
         updateCSSFromBoardSize();
         whiteTime.displayTime();
+        blackTime.displayTime();
 
 
     }
@@ -136,6 +137,16 @@ new p5(function (p5) {
             front.drawLegalSquares(clientIsWhite, legalCircles);
         }
         else pieceAtMouse = 0;
+
+        if (board.whiteToMove){
+            whiteTime.displayTime();
+        }
+
+        //when blacks turn
+        //white timer must be displayed through client side
+        //
+
+
 
     }
 

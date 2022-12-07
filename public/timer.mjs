@@ -5,14 +5,13 @@ export default class Timer{
         this.increment = increment;
         this.isWhite = isWhite;
         this.timeDisplayed;
+        this.tempTimeToDisplay;
     }
 
     update(timeTaken){
         console.log(timeTaken + ' TimeTaken');
         this.time -= timeTaken;
         this.time += this.increment;
-        this.timeMinutesDisplayed;
-        this.timeSecondsDisplayed;
     }   
 
     addIncrement(){
@@ -67,9 +66,9 @@ export default class Timer{
 
     }
 
-    toTimeFormatMMSS(){
+    toTimeFormatMMSS(time){
         this.timeMinutesDisplayed = Math.floor(this.time / 60);
-        this.timeSecondsDisplayed = this.time % 60;
+        this.timeSecondsDisplayed = time % 60;
 
         if (this.timeMinutesDisplayed < 10) this.timeMinutesDisplayed = "0"+this.timeMinutesDisplayed;
         if (this.timeSecondsDisplayed < 10) this.timeSecondsDisplayed = "0"+this.timeSecondsDisplayed; 
