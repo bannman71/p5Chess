@@ -16,23 +16,16 @@ new p5(function (p5) {
     var increment = urlParameters.get('increment');
     var clientIsWhite = urlParameters.get('isWhite');
 
-    console.log(clientIsWhite);
-
     if (clientIsWhite === '0') {
         clientIsWhite = false;
     }else clientIsWhite = true;
 
-
     var roomCode = urlParameters.get('roomCode');
 
-    console.log('iswhite ' + clientIsWhite);
 
     socket.emit('matchConnect', roomCode);
-    // socket.on('gameColours', (isWhite) => { //assigns the colour to each client
-    //     clientIsWhite = isWhite;
-    // });
+
     var blackTime, whiteTime;
-    var initialisedTimers;
 
     var canv;
     var canvasDiv;
@@ -122,8 +115,11 @@ new p5(function (p5) {
         //'rnbqk1nr/p4ppp/1p1b4/8/8/5NP1/P2K1PBP/RNBQ3R'
 
 
+        whiteTime = new Timer(clientIsWhite, time, increment);
+        blackTime = new Timer(clientIsWhite, time, increment);
 
-
+        blackTime.showContainer(size);
+        whiteTime.showContainer(size);
         updateCSSFromBoardSize();
 
     }
@@ -138,17 +134,6 @@ new p5(function (p5) {
             front.drawLegalSquares(clientIsWhite, legalCircles);
         }
         else pieceAtMouse = 0;
-
-        // whiteTime.displayTime();
-
-        if (!initialisedTimers) {
-            whiteTime = new Timer(clientIsWhite, time, increment);
-            blackTime = new Timer(clientIsWhite, time, increment);
-            blackTime.showContainer(size);
-            whiteTime.showContainer(size);
-            initialisedTimers = true;
-        }
-
 
     }
 
