@@ -4,16 +4,15 @@ export default class Timer{
         this.time = time * 60;
         this.increment = increment;
         this.isWhite = isWhite;
-        this.timeMinuteDisplayed;
-        this.timeSecondDisplayed;
+        this.timeDisplayed;
     }
 
     update(timeTaken){
         console.log(timeTaken + ' TimeTaken');
         this.time -= timeTaken;
         this.time += this.increment;
-        this.timeMinuteDisplayed = Math.floor(this.time / 60);
-        this.timeSecondDisplayed = this.time % 60;
+        this.timeMinutesDisplayed;
+        this.timeSecondsDisplayed;
     }   
 
     addIncrement(){
@@ -67,12 +66,22 @@ export default class Timer{
         $('#white-timer-container').css(whiteTimerCSS);
 
     }
-    
+
+    toTimeFormatMMSS(){
+        this.timeMinutesDisplayed = Math.floor(this.time / 60);
+        this.timeSecondsDisplayed = this.time % 60;
+
+        if (this.timeMinutesDisplayed < 10) this.timeMinutesDisplayed = "0"+this.timeMinutesDisplayed;
+        if (this.timeSecondsDisplayed < 10) this.timeSecondsDisplayed = "0"+this.timeSecondsDisplayed; 
+
+        return this.timeMinutesDisplayed+':'+this.timeSecondsDisplayed;
+    }
+
     displayTime(){
         if (this.isWhite){
             let whiteTimer = document.getElementById('white-timer');
             let whiteTimerHTML = `
-                <h4>hello</h4>
+                <h4>${this.toTimeFormatMMSS()}</h4>
             `;
             whiteTimer.innerHTML = whiteTimerHTML;
         }

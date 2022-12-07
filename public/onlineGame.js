@@ -121,6 +121,8 @@ new p5(function (p5) {
         blackTime.showContainer(size);
         whiteTime.showContainer(size);
         updateCSSFromBoardSize();
+        whiteTime.displayTime();
+
 
     }
 
@@ -144,7 +146,6 @@ new p5(function (p5) {
         tempPieceAtMouse = pieceAtMouse;
 
         if (pieceAtMouse) {
-
 
             // var start = performance.now();
             if (board.whiteToMove && (pieceAtMouse.colour === PieceType.white) && clientIsWhite) {

@@ -18,7 +18,6 @@ export default class Front {
         this.images = images;
 
     }
- 
 
     getMouseCoord(isWhite, x,y){
         Coords.x = Math.floor(x / this.blockSize);
