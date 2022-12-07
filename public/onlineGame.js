@@ -14,9 +14,10 @@ new p5(function (p5) {
     const urlParameters = new URLSearchParams(queryString);
     var time = urlParameters.get('time');
     var increment = urlParameters.get('increment');
-    var clientIsWhite = urlParameters.get('isWhite');
+    var clientIsWhite = (urlParameters.get('isWhite') === true);
     roomCode = urlParameters.get('roomCode');
 
+    console.log('iswhite ' + clientIsWhite);
 
     // socket.emit('matchConnect', roomCode);
     // socket.on('gameColours', (isWhite) => { //assigns the colour to each client
@@ -26,7 +27,6 @@ new p5(function (p5) {
     var initialisedTimers;
 
     var roomCode;
-    var clientIsWhite;
 
     var canv;
     var canvasDiv;
@@ -55,7 +55,7 @@ new p5(function (p5) {
 
     var timeMoveStart = 0;
     var timeMoveEnd = 0;
-   
+
 
     //SERVER SIDE LOGIC
 
@@ -68,7 +68,7 @@ new p5(function (p5) {
 
     });
 
-    function updateCSSFromBoardSize(){
+    function updateCSSFromBoardSize() {
         let boardWidth = $('#online-board-container').width();
         let gameInfoCSS = {
             'position': 'absolute',
@@ -83,7 +83,7 @@ new p5(function (p5) {
         canvasDiv = document.getElementById('online-board-container');
         WIDTH = canvasDiv.offsetWidth;
         HEIGHT = canvasDiv.offsetHeight;
-        size = Math.min(WIDTH,HEIGHT);
+        size = Math.min(WIDTH, HEIGHT);
 
         canv = p5.createCanvas(size, size);
         canv.parent("online-board-container");
@@ -91,13 +91,13 @@ new p5(function (p5) {
         PIECE_SCALE = 1;
 
         BLOCK_SIZE = size / 8;
-        
+
         console.log('white or not');
         console.log(clientIsWhite);
 
         SPACING = Math.floor((BLOCK_SIZE * (1 - PIECE_SCALE)) / 2);
 
-        board = new Board('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR', 0, true,true,true,true,true);
+        board = new Board('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR', 0, true, true, true, true, true);
 
         board.maskBitMap(board.findMaskSquares(!board.whiteToMove, board.occSquares));
 
@@ -112,10 +112,10 @@ new p5(function (p5) {
         //'rnbqkbnr/1ppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR'
         //rnbqkbnr/p1pppppp/1p6/4P3/8/5NP1/PPPP1PBP/RNBQK2R
         //'rnbqk1nr/p4ppp/1p1b4/8/8/5NP1/P2K1PBP/RNBQ3R'
-        
 
 
-    
+
+
         updateCSSFromBoardSize();
 
     }
@@ -124,16 +124,16 @@ new p5(function (p5) {
         p5.clear();
         p5.background(front.white);
         front.drawGrid();
-        front.drawAllPieces(clientIsWhite, board.occSquares, pieceAtMouse); 
+        front.drawAllPieces(clientIsWhite, board.occSquares, pieceAtMouse);
         if (MouseDown) {
             front.drawPieceAtMousepos(pieceAtMouse, p5.mouseX, p5.mouseY);
             front.drawLegalSquares(clientIsWhite, legalCircles);
-        } 
-        else pieceAtMouse = 0; 
+        }
+        else pieceAtMouse = 0;
 
         // whiteTime.displayTime();
 
-        if (!initialisedTimers){
+        if (!initialisedTimers) {
             whiteTime = new Timer(clientIsWhite, time, increment);
             blackTime = new Timer(clientIsWhite, time, increment);
             blackTime.showContainer(size);
@@ -151,13 +151,13 @@ new p5(function (p5) {
         tempPieceAtMouse = pieceAtMouse;
 
         if (pieceAtMouse) {
-          
+
 
             // var start = performance.now();
             if (board.whiteToMove && (pieceAtMouse.colour === PieceType.white) && clientIsWhite) {
                 legalCircles = board.allPiecesLegalSquares(pieceAtMouse);
             }
-            else if (!board.whiteToMove && (pieceAtMouse.colour === PieceType.black) && !clientIsWhite){
+            else if (!board.whiteToMove && (pieceAtMouse.colour === PieceType.black) && !clientIsWhite) {
                 legalCircles = board.allPiecesLegalSquares(pieceAtMouse);
             }
             // var end = performance.now();
@@ -165,7 +165,7 @@ new p5(function (p5) {
             MouseDown = true;
 
         } else legalCircles = [];
-       
+
     }
 
     p5.mouseReleased = () => {
@@ -175,57 +175,58 @@ new p5(function (p5) {
         let legalSideAttemptedMove = false;
         let isLegal = false;
 
-       
+
 
         if (clientIsWhite === (pieceAtMouse.colour === PieceType.white)) legalSideAttemptedMove = true;
 
         let destCoords = front.getMouseCoord(clientIsWhite, p5.mouseX, p5.mouseY); // returns coord for array         
-        
+
         if (board.isOnBoard(destCoords.y, destCoords.x) && pieceAtMouse && legalSideAttemptedMove) {
 
-             if (pieceAtMouse.type === PieceType.king){
+            if (pieceAtMouse.type === PieceType.king) {
                 //king moves need the bitmap before due to castling through a check
-                if(board.checkNextMoveBitmap(pieceAtMouse, destCoords.y, destCoords.y) === true){  
+                if (board.checkNextMoveBitmap(pieceAtMouse, destCoords.y, destCoords.y) === true) {
                     if (board.isLegalKingMove(pieceAtMouse, destCoords.y, destCoords.x)) isLegal = true;
-                    
+
                 }
             } else {
-                if (board.isLegalMove(pieceAtMouse, destCoords.y, destCoords.x)){ 
+                if (board.isLegalMove(pieceAtMouse, destCoords.y, destCoords.x)) {
                     //doesn't need the bitmap first as it can find after a move has been made whether or not it is in check
                     if (board.checkNextMoveBitmap(pieceAtMouse, destCoords.y, destCoords.x) === true) isLegal = true;
                 }
             }
         }
 
-        if (isLegal){
+        if (isLegal) {
             let timeTaken;
-            if (board.moveCounter > 0){ 
-                timeMoveEnd = Date.now();  
+            if (board.moveCounter > 0) {
+                timeMoveEnd = Date.now();
                 timeTaken = (timeMoveEnd - timeMoveStart) / 1000;
             } else timeTaken = 0;
-           
-            var data = 
-            { fCoordsX: destCoords.x, fCoordsY: destCoords.y, pieceMoved: pieceAtMouse, room: roomCode, "board": board, "FEN": board.boardToFEN(), "timeTaken": timeTaken, "whiteMoveMade": clientIsWhite
+
+            var data =
+            {
+                fCoordsX: destCoords.x, fCoordsY: destCoords.y, pieceMoved: pieceAtMouse, room: roomCode, "board": board, "FEN": board.boardToFEN(), "timeTaken": timeTaken, "whiteMoveMade": clientIsWhite
             };
             socket.emit('moveAttempted', data);
             console.log('legal');
-          
-            if (board.enPassentTaken){
+
+            if (board.enPassentTaken) {
                 board.updateEnPassentMove(pieceAtMouse, destCoords.y, destCoords.x);
             }
-            else{
+            else {
                 //if they didn't castle -> call the function which makes a normal move
                 board.updatePiecePos(pieceAtMouse, destCoords.y, destCoords.x); //castling changes position inside the castles function
             }
             //create a new bitmap for the current legal position for board.kingInCheck()
             let bmap = board.findMaskSquares(board.whiteToMove, board.occSquares);
-            board.maskBitMap(bmap); 
+            board.maskBitMap(bmap);
 
-            if (board.kingInCheck()){
+            if (board.kingInCheck()) {
                 board.isInCheck = true;
 
             } else board.isInCheck = false;
-            
+
         }
 
 
@@ -235,7 +236,7 @@ new p5(function (p5) {
         WIDTH = canvasDiv.offsetWidth;
         HEIGHT = canvasDiv.offsetHeight;
 
-        size = Math.min(WIDTH,HEIGHT);
+        size = Math.min(WIDTH, HEIGHT);
         front.blockSize = (size) / 8; //can be width but it is a square
         front.spacing = Math.floor((front.blockSize * (1 - front.pieceScale)) / 2);
         p5.resizeCanvas(size, size);

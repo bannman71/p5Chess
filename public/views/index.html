@@ -1,25 +1,28 @@
 <!DOCTYPE html>
 
 
-<head> 
+<head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
-  <link rel="stylesheet" href="styles.css"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+  <link rel="stylesheet" href="styles.css" />
   <script language="javascript" type="module" src="timer.mjs"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-  <script src="https://cdn.socket.io/4.5.4/socket.io.min.js" integrity="sha384-/KNQL8Nu5gCHLqwqfQjA689Hhoqgi2S84SNUxC3roTe4EhJ9AfLkp8QiQcU8AMzI" crossorigin="anonymous"></script> 
+  <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"
+    integrity="sha384-/KNQL8Nu5gCHLqwqfQjA689Hhoqgi2S84SNUxC3roTe4EhJ9AfLkp8QiQcU8AMzI"
+    crossorigin="anonymous"></script>
 </head>
 
 <body>
 
   <div class="header-container">
     <ul class="nav-list">
-        <li><a href="/">Home</a></li>
-        <li><a href="/PlayLocally">Play Locally</a></li>
-        <li><a href="/Puzzles">Puzzles</a></li>
-        <li><a href="/BoardEditor">Board Editor</a></li>
-        <li><a href="/PlayAI">Play AI</a></li>
+      <li><a href="/">Home</a></li>
+      <li><a href="/PlayLocally">Play Locally</a></li>
+      <li><a href="/Puzzles">Puzzles</a></li>
+      <li><a href="/BoardEditor">Board Editor</a></li>
+      <li><a href="/PlayAI">Play AI</a></li>
     </ul>
   </div>
 
@@ -30,35 +33,35 @@
     </button>
 
     <button class="btn" id="three-zero">
-        <p>Blitz<br />3|0</p>
-    </a>
+      <p>Blitz<br />3|0</p>
+      </a>
 
-    <button class="btn" id="three-two">
+      <button class="btn" id="three-two">
         <p>Blitz<br />3|2</p>
-    </button>
+      </button>
 
-    <button class="btn" id="five-zero">
+      <button class="btn" id="five-zero">
         <p>Blitz<br />5|0</p>
-    </button>
+      </button>
 
-    <button class="btn" id="five-three">
-      <p>Blitz<br />5|3</p>
-    </button>
-    
-    <button class="btn" id="ten-zero">
+      <button class="btn" id="five-three">
+        <p>Blitz<br />5|3</p>
+      </button>
+
+      <button class="btn" id="ten-zero">
         <p>Rapid<br />10|0</p>
-    </button>
+      </button>
 
-    <button class="btn" id="thirty-zero"> 
+      <button class="btn" id="thirty-zero">
         <p>Classical<br />30|0</p>
-    </button>
-    
-    <button class="btn" id="custom">
+      </button>
+
+      <button class="btn" id="custom">
         <p>Custom</p>
-    </button>
+      </button>
 
   </div>
-  
+
   <div id="matchmaking-table"></div>
 
   <script type="text/javascript">
@@ -74,42 +77,43 @@
     });
 
     socket.on('redirect', (data) => { //called in timeControlChosen
-      var url = data.page + '?time=' + data.client.time + '&increment=' + data.client.increment + '&roomCode=' + data.roomCode + '?isWhite=' + data.isWhite;
+      var url = data.page + '?time=' + data.client.time + '&increment=' + data.client.increment + '&roomCode=' + data.roomCode + '&isWhite=' + data.isWhite;
+      console.log(data.isWhite);
       window.location.href = url; //sends them to the page created above
     });
 
 
-    function chooseTimeControl(cTime, cIncrement){
-      var data = {time: cTime, increment: cIncrement, id: socket.id};
+    function chooseTimeControl(cTime, cIncrement) {
+      var data = { time: cTime, increment: cIncrement, id: socket.id };
 
       socket.emit('timeControlChosen', data);
     }
 
     $('#one-zero').click(() => {
-      chooseTimeControl(1,0);
+      chooseTimeControl(1, 0);
     });
 
     $('#three-zero').click(() => {
-      chooseTimeControl(3,0);
+      chooseTimeControl(3, 0);
     });
 
     $('#three-two').click(() => {
-      chooseTimeControl(3,2);
+      chooseTimeControl(3, 2);
     });
 
     $('#five-zero').click(() => {
-      chooseTimeControl(5,0);
+      chooseTimeControl(5, 0);
     });
     $('#five-three').click(() => {
-      chooseTimeControl(5,3);
+      chooseTimeControl(5, 3);
     });
 
     $('#ten-zero').click(() => {
-      chooseTimeControl(10,0);
+      chooseTimeControl(10, 0);
     });
 
     $('#thirty-zero').click(() => {
-      chooseTimeControl(30,0);
+      chooseTimeControl(30, 0);
     });
 
     $('#custom').click(() => {
@@ -117,10 +121,12 @@
       //have some sorta menu which chooses these numbers
       // chooseTimeControl();
     });
-    
+
   </script>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4"
+    crossorigin="anonymous"></script>
 </body>
 
 

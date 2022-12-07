@@ -117,11 +117,17 @@ io.on('connection', (socket) => {
             const clientSocket = io.sockets.sockets.get(clientID);
             
             if (clientID === matchmaking[i].id){
-              let data = {client: matchmaking[i], page: '/onlineGame', "roomCode": roomCode, "isWhite": colours[decideColour]}; 
+              let data = {client: matchmaking[i], page: '/onlineGame', "roomCode": roomCode, 
+              isWhite: !!decideColour}; 
+              console.log('colour decided');
+              console.log(data.isWhite);
+              console.log(decideColour);
+              console.log(colours[decideColour]);
               clientSocket.emit('redirect', (data)); //emits to index.html -> !!decideColour coerces 1/0 into true/false
             }
             else if(clientID === matchmaking[j].id){
-              let data = {client: matchmaking[j], page: '/onlineGame', "roomCode": roomCode, "isWhite": colours[!decideColour]};
+              let data = {client: matchmaking[j], page: '/onlineGame', "roomCode": roomCode, 
+              isWhite: !decideColour};
               clientSocket.emit('redirect', (data));
             }
           }
