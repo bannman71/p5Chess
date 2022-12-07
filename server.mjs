@@ -111,23 +111,20 @@ io.on('connection', (socket) => {
          
           let clients = io.sockets.adapter.rooms.get('waitingRoom');
           let roomCode = generateRoomCode();
-          let decideColour = getRandomInt(0,1);
+          let colour1 = getRandomInt(0,1);
+          let colour2 = Math.abs(colour1 - 1);
 
           for (let clientID of clients){
             const clientSocket = io.sockets.sockets.get(clientID);
             
             if (clientID === matchmaking[i].id){
               let data = {client: matchmaking[i], page: '/onlineGame', "roomCode": roomCode, 
-              isWhite: !!decideColour}; 
-              console.log('colour decided');
-              console.log(data.isWhite);
-              console.log(decideColour);
-              console.log(colours[decideColour]);
+              isWhite: colour1}; 
               clientSocket.emit('redirect', (data)); //emits to index.html -> !!decideColour coerces 1/0 into true/false
             }
             else if(clientID === matchmaking[j].id){
               let data = {client: matchmaking[j], page: '/onlineGame', "roomCode": roomCode, 
-              isWhite: !decideColour};
+              isWhite: colour2};
               clientSocket.emit('redirect', (data));
             }
           }
@@ -201,6 +198,7 @@ io.on('connection', (socket) => {
 
 
     if (isLegal){
+      console.log('LEGAl');
       
       if (data.whiteMoveMade) {
         gameRooms[data.room].whiteTimer.update(data.timeTaken);

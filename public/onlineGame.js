@@ -14,19 +14,25 @@ new p5(function (p5) {
     const urlParameters = new URLSearchParams(queryString);
     var time = urlParameters.get('time');
     var increment = urlParameters.get('increment');
-    var clientIsWhite = (urlParameters.get('isWhite') === true);
-    roomCode = urlParameters.get('roomCode');
+    var clientIsWhite = urlParameters.get('isWhite');
+
+    console.log(clientIsWhite);
+
+    if (clientIsWhite === '0') {
+        clientIsWhite = false;
+    }else clientIsWhite = true;
+
+
+    var roomCode = urlParameters.get('roomCode');
 
     console.log('iswhite ' + clientIsWhite);
 
-    // socket.emit('matchConnect', roomCode);
+    socket.emit('matchConnect', roomCode);
     // socket.on('gameColours', (isWhite) => { //assigns the colour to each client
     //     clientIsWhite = isWhite;
     // });
     var blackTime, whiteTime;
     var initialisedTimers;
-
-    var roomCode;
 
     var canv;
     var canvasDiv;
@@ -62,6 +68,8 @@ new p5(function (p5) {
     socket.on('legalMoveMade', (data) => {
         //must create a new board object as it doesn't keep it's methods when being sent over sockets
         //is called when the opponent makes a legal move
+
+        console.log('in here');
 
         board = instantiateNewBoard(data.board, data.FEN)
         timeMoveStart = Date.now();
@@ -175,7 +183,8 @@ new p5(function (p5) {
         let legalSideAttemptedMove = false;
         let isLegal = false;
 
-
+        console.log('client');
+        console.log(clientIsWhite == true);
 
         if (clientIsWhite === (pieceAtMouse.colour === PieceType.white)) legalSideAttemptedMove = true;
 
