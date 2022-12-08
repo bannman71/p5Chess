@@ -132,7 +132,16 @@ new p5(function(p5){
         }
 
 
-     
+        endOfFen = '';
+        if ($('#white-to-move').is(':checked')) endOfFen += ' w '; else endOfFen += ' b ';
+        if ($('#white-castling-short').is(':checked')) endOfFen += 'K';
+        if ($('#white-castling-long').is(':checked')) endOfFen += 'Q';
+        if ($('#black-castling-short').is(':checked')) endOfFen += 'k';
+        if ($('#black-castling-long').is(':checked')) endOfFen += 'q';
+
+        $('#FEN-container').html(boardFEN + endOfFen + ' - 0 1');
+
+
     }
 
     setInterval(() => {
@@ -207,6 +216,7 @@ new p5(function(p5){
 
     
 
+        boardFEN = board.boardToFEN();
     }
 
     p5.mousePressed = () => {
@@ -226,20 +236,7 @@ new p5(function(p5){
 
         if (board.isOnBoard(getClickedSquare.y,getClickedSquare.x)){
             board.occSquares[getClickedSquare.y][getClickedSquare.x] = new Piece((selectedPiece & 7), getClickedSquare.y,getClickedSquare.x, (selectedPiece & 24));
-        }   
-
-        if (board.isOnBoard(getClickedSquare.y, getClickedSquare.x)){
-            boardFEN = board.boardToFEN();
-            endOfFen = '';
-            if ($('#white-to-move').is(':checked')) endOfFen += ' w '; else endOfFen += ' b ';
-            if ($('#white-castling-short').is(':checked')) endOfFen += 'K';
-            if ($('#white-castling-long').is(':checked')) endOfFen += 'Q';
-            if ($('#black-castling-short').is(':checked')) endOfFen += 'k';
-            if ($('#black-castling-long').is(':checked')) endOfFen += 'q';
-
-            $('#FEN-container').html(boardFEN + endOfFen + ' - 0 1');//ASDHJEAGSHJDGAHJSDGHAJSD
         }
-
 
     }
 
