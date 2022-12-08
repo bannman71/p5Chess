@@ -350,6 +350,17 @@ a{
 
 }
 
+#white-to-move-container{
+  position: absolute;
+  width: 80%;
+  left: 10%;
+
+  border-style: dashed;
+
+
+  bottom: 10%;
+}
+
 .scroll{
   overflow-x: scroll;
   white-space: nowrap;
@@ -360,6 +371,13 @@ a{
 
 #FEN-text{
   color:#FFFFFF;
+}
+
+
+#FEN-form{
+  position: absolute;
+
+  left:100px;
 }
 
 /* ONLINE GAME */
