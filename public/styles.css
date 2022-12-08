@@ -230,7 +230,7 @@ a{
   top:0%;
   left: 0%;
 
-  background-color:#28282B;
+  background-color:#bababa;
 
   border-style: none; 
   width: 100%;
@@ -252,7 +252,7 @@ a{
   bottom: 35%;
   left:0%;
 
-  background-color:  #28282B;
+  background-color:  #bababa;
 
   justify-content: center;
   align-items: center;
@@ -270,7 +270,7 @@ a{
   float:right;
 
   /* right:5%; */
-  top: 10px;
+  top: 5%;
 
 
 
@@ -280,18 +280,13 @@ a{
 }
 
 .selection-square{
-  width: 100%;
-  height:100%;
-
-  background-color: #bababa;
+  width: 80%;
+  height: 80%;
 }
 
 .selection-square:hover{
-  background-color:white;
-  border-radius: 70%;
-  width: 90%;
-  height: 90%
-  
+  width: 100%;
+  height: 100%
 }
 
 #FEN-container{

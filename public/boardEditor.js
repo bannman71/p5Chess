@@ -34,8 +34,8 @@ new p5(function(p5){
     const SELECTEDSTYLE = {
         'background-color': 'white',
         'border-radius': '70%', 
-        'height': '90%', 
-        'width': '90%'
+        'height': '100%', 
+        'width': '100%'
     }
 
     const DEFSTYLE = {
@@ -117,7 +117,7 @@ new p5(function(p5){
             whitePieceToSelect = '#w-' + piece + '-square';
             blackPieceToSelect = '#b-' + piece + '-square'; 
 
-            $(blackPieceToSelect).css(DEFSTYLE);
+            if (!$(blackPieceToSelect).is(':hover')) $(blackPieceToSelect).css(DEFSTYLE);
             $(whitePieceToSelect).css(DEFSTYLE);
 
             if ((selectedPiece & 24) === PieceType.black){
