@@ -117,7 +117,6 @@ new p5(function(p5){
             whitePieceToSelect = '#w-' + piece + '-square';
             blackPieceToSelect = '#b-' + piece + '-square'; 
 
-            if (!$(blackPieceToSelect).is(':hover')) $(blackPieceToSelect).css(DEFSTYLE);
             $(whitePieceToSelect).css(DEFSTYLE);
 
             if ((selectedPiece & 24) === PieceType.black){
@@ -132,14 +131,18 @@ new p5(function(p5){
         }
 
 
-        endOfFen = '';
-        if ($('#white-to-move').is(':checked')) endOfFen += ' w '; else endOfFen += ' b ';
-        if ($('#white-castling-short').is(':checked')) endOfFen += 'K';
-        if ($('#white-castling-long').is(':checked')) endOfFen += 'Q';
-        if ($('#black-castling-short').is(':checked')) endOfFen += 'k';
-        if ($('#black-castling-long').is(':checked')) endOfFen += 'q';
-
-        $('#FEN-container').html(boardFEN + endOfFen + ' - 0 1');
+        if (!($('#FEN-container').is(':hover'))){
+            endOfFen = '';
+            boardFEN = board.boardToFEN();
+            if ($('#white-to-move').is(':checked')) endOfFen += ' w '; else endOfFen += ' b ';
+            if ($('#white-castling-short').is(':checked')) endOfFen += 'K';
+            if ($('#white-castling-long').is(':checked')) endOfFen += 'Q';
+            if ($('#black-castling-short').is(':checked')) endOfFen += 'k';
+            if ($('#black-castling-long').is(':checked')) endOfFen += 'q';
+    
+            $('#FEN-container').html(boardFEN + endOfFen + ' - 0 1');
+        } 
+      
 
 
     }
@@ -216,7 +219,6 @@ new p5(function(p5){
 
     
 
-        boardFEN = board.boardToFEN();
     }
 
     p5.mousePressed = () => {
