@@ -14,6 +14,10 @@ export default class Timer{
         this.time += this.increment;
     }   
 
+    tempUpdateBySecond(){
+        this.time -= 1;
+    }
+
     addIncrement(){
         this.time += this.increment;
     }
@@ -80,7 +84,7 @@ export default class Timer{
         if (this.isWhite){
             let whiteTimer = document.getElementById('white-timer');
             let whiteTimerHTML = `
-                <h4>${this.toTimeFormatMMSS()}</h4>
+                <h4>${this.toTimeFormatMMSS(this.time)}</h4>
             `;
             whiteTimer.innerHTML = whiteTimerHTML;
         }

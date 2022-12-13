@@ -52,8 +52,8 @@ new p5(function (p5) {
     let pieceAtMouse;
     let selectedCoords;
 
-    var timeMoveStart = 0;
-    var timeMoveEnd = 0;
+    var timeMoveStart = Date.now();
+    var start;
 
 
     //SERVER SIDE LOGIC
@@ -138,9 +138,8 @@ new p5(function (p5) {
         }
         else pieceAtMouse = 0;
 
-        if (board.whiteToMove){
-            whiteTime.displayTime();
-        }
+        whiteTime.displayTime();
+        blackTime.displayTime();
 
         //when blacks turn
         //white timer must be displayed through client side
@@ -149,6 +148,33 @@ new p5(function (p5) {
 
 
     }
+
+    
+var interval = 1000; // ms
+var expected = Date.now() + interval;
+setTimeout(step, interval);
+function step() {
+    var dt = Date.now() - expected; // the drift (positive for overshooting)
+    if (dt > interval) {
+        // something really bad happened. Maybe the browser (tab) was inactive?
+        // possibly special handling to avoid futile "catch up" run
+    }
+    // do what is to be done
+
+    whiteTime.tempUpdateBySecond();
+
+    expected += interval;
+    setTimeout(step, Math.max(0, interval - dt)); // take into account drift
+}
+// setInterval(() => {
+//     var delta = Date.now()
+//     let timeTaken = delta - start;
+
+//     if (board.whiteToMove) whiteTime.tempUpdateBySecond();
+//     else blackTime.tempUpdateBySecond();
+// }, 1000);
+
+    
 
     p5.mousePressed = () => {
         let tempPieceAtMouse;
