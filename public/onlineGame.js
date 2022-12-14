@@ -53,6 +53,8 @@ new p5(function (p5) {
     let selectedCoords;
 
     var timeMoveStart = Date.now();
+    var timeMoveEnd;
+
     var start;
 
 

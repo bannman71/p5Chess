@@ -14,12 +14,15 @@ import {fileURLToPath} from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+//IMPORTS FROM LOCAL MODULES
 const dir = path.join(__dirname, '/public/views/');
 import Board from './public/board.mjs';
 import Timer from './public/timer.mjs';
 import {PieceType} from './public/board.mjs';
 import {Piece} from './public/board.mjs';
 import { instantiateNewBoard } from './public/board.mjs';
+import GameRoom from './public/gameRoom.mjs';
+//
 
 var matchmaking = [];
 var gameRooms = [];
@@ -129,13 +132,14 @@ io.on('connection', (socket) => {
             }
           }
 
-          if (!gameRooms[roomCode]) gameRooms[roomCode] = {};
-          gameRooms[roomCode].roomCode = roomCode;
-          gameRooms[roomCode].board = new Board('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR', 0, true, true, true, true, true);
-          gameRooms[roomCode].whiteTimer = new Timer(matchmaking[i].time, matchmaking[j].increment);
-          gameRooms[roomCode].blackTimer = new Timer(matchmaking[i].time, matchmaking[j].increment);
-          gameRooms[roomCode].PGN = '';
-          gameRooms[roomCode].client = [];
+          if (!gameRooms[roomCode]){
+            let board = new Board('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR', 0, true, true, true, true, true)
+            let whiteTimer = new Timer(colour1, matchmaking[i].time, matchmaking[j].increment);
+            let blackTimer = new Timer(colour2, matchmaking[i].time, matchmaking[j].increment); 
+            gameRooms[roomCode] = new GameRoom(
+              roomCode, board, whiteTimer, blackTimer, '', []
+            );
+          }
 
           gameFound = true;
 

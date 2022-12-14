@@ -70,21 +70,21 @@ export default class Timer{
 
     }
 
-    toTimeFormatMMSS(time){
-        this.timeMinutesDisplayed = Math.floor(this.time / 60);
-        this.timeSecondsDisplayed = time % 60;
+    toTimeFormatMMSS(){
+        var timeMinutesDisplayed = Math.floor(this.time / 60);
+        var timeSecondsDisplayed = this.time % 60;
 
-        if (this.timeMinutesDisplayed < 10) this.timeMinutesDisplayed = "0"+this.timeMinutesDisplayed;
-        if (this.timeSecondsDisplayed < 10) this.timeSecondsDisplayed = "0"+this.timeSecondsDisplayed; 
+        if (timeMinutesDisplayed < 10) timeMinutesDisplayed = "0"+timeMinutesDisplayed;
+        if (timeSecondsDisplayed < 10) timeSecondsDisplayed = "0"+timeSecondsDisplayed; 
 
-        return this.timeMinutesDisplayed+':'+this.timeSecondsDisplayed;
+        return timeMinutesDisplayed+':'+timeSecondsDisplayed;
     }
 
     displayTime(){
         if (this.isWhite){
             let whiteTimer = document.getElementById('white-timer');
             let whiteTimerHTML = `
-                <h4>${this.toTimeFormatMMSS(this.time)}</h4>
+                <h4>${this.toTimeFormatMMSS()}</h4>
             `;
             whiteTimer.innerHTML = whiteTimerHTML;
         }
