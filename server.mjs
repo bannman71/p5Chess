@@ -233,7 +233,7 @@ io.on('connection', (socket) => {
 
       if (board.kingInCheck()){
         board.isInCheck = true;
-        numDefenses = board.defendCheck();
+        // numDefenses = board.defendCheck();
       } else board.isInCheck = false;
 
       board.changeTurn();

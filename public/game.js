@@ -14,6 +14,7 @@ new p5(function(p5){
     var BLOCK_SIZE;
     var PIECE_SCALE;
     var WIDTH, HEIGHT, SPACING;
+    var size;
     const BIN_PIECES = {20: 'b_bishop', 17: 'b_king', 19: 'b_knight', 18: 'b_pawn', 22: 'b_queen', 21: 'b_rook',
     12: 'w_bishop', 9: 'w_king', 11: 'w_knight', 10: 'w_pawn', 14: 'w_queen', 13: 'w_rook'}
     
@@ -29,9 +30,6 @@ new p5(function(p5){
     let pieceAtMouse;
     let selectedCoords;
     
-    var start = Date.now();
-    var blackTime, whiteTime;
-
     p5.setup = () =>{
         canvasDiv = document.getElementById('board-container');
         WIDTH = canvasDiv.offsetWidth;
@@ -49,8 +47,8 @@ new p5(function(p5){
         var time = urlParameters.get('time');
         var increment = urlParameters.get('increment');
 
-        blackTime = new Timer(time, increment);
-        whiteTime = new Timer(time, increment);
+        // blackTime = new Timer(time, increment);
+        // whiteTime = new Timer(time, increment);
 
 
         SPACING = Math.floor((BLOCK_SIZE * (1 - PIECE_SCALE)) / 2);
@@ -87,17 +85,6 @@ new p5(function(p5){
         }
         else pieceAtMouse = 0;
     }
-
-    //move this into draw function to make the check
-    setInterval(() => {
-        var delta = Date.now() - start; // milliseconds elapsed since start
-        
-        //if move made:
-        //  timer -= delta
-
-
-        //console.log(Math.floor(delta / 1000)); // in seconds
-    }, 100);
 
     p5.mousePressed = () => {
         let tempPieceAtMouse;
@@ -198,9 +185,23 @@ new p5(function(p5){
     p5.windowResized = () => {
         WIDTH = canvasDiv.offsetWidth;
         HEIGHT = canvasDiv.offsetHeight;
-        p5.resizeCanvas(WIDTH, HEIGHT);
-        BLOCK_SIZE = (WIDTH) / 8; //can be width but it is a square
-        SPACING = Math.floor((BLOCK_SIZE * (1 - PIECE_SCALE)) / 2);
+
+        
+        
+
+        size = Math.min(WIDTH, HEIGHT);
+        front.blockSize = (size) / 8; //can be width but it is a square
+        front.spacing = Math.floor((front.blockSize * (1 - front.pieceScale)) / 2);
+        p5.resizeCanvas(size, size);
+
+        let boardWidth = $('#board-container').width();
+        let gameInfoCSS = {
+            'position': 'absolute',
+            'left': ('%dpx', boardWidth),
+            'top': '6%'
+        };
+
+        $('#local-game-info').css(gameInfoCSS);
     }
 
 });
