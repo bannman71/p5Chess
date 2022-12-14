@@ -1,11 +1,12 @@
 export default class Timer{
 
-    constructor(isWhite, time, increment){ //time in minutes
+    constructor(clientIsWhite, isWhiteTimer, time, increment){ //time in minutes
+        this.clientIsWhite = clientIsWhite;
         this.time = time * 60;
         this.increment = increment;
-        this.isWhite = isWhite;
-        this.timeDisplayed;
-        this.tempTimeToDisplay;
+        this.isWhiteTimer = isWhiteTimer;
+        this.timeDisplayed = 0;
+        this.tempTimeToDisplay = 0;
     }
 
     update(timeTaken){
@@ -24,7 +25,7 @@ export default class Timer{
 
     showContainer(boardSize){
         let timerDistFromTop;
-        let showTop = {
+        let showTop = { //display the timer at top of the board
             'position': 'absolute',
             'top': '0px',
             'width': '25%',
@@ -32,7 +33,7 @@ export default class Timer{
             'background-color': 'white',
             'border-style': 'none'
         }; 
-        let showBottom = {
+        let showBottom = { //display timer at the bottom of the board
             'position': 'absolute',
             'top': 'ToBeDecided',
             'width': '25%',
@@ -44,7 +45,7 @@ export default class Timer{
         let blackTimerCSS;
         let whiteTimerCSS;
 
-        if (this.isWhite){
+        if (this.clientIsWhite){
             //set black css
             blackTimerCSS = showTop;
             $('#black-timer-container').css(blackTimerCSS);
@@ -81,13 +82,15 @@ export default class Timer{
     }
 
     displayTime(){
-        if (this.isWhite){
-            let whiteTimer = document.getElementById('white-timer');
-            let whiteTimerHTML = `
-                <h4>${this.toTimeFormatMMSS()}</h4>
-            `;
-            whiteTimer.innerHTML = whiteTimerHTML;
-        }
+        let colour;
+        if (this.isWhiteTimer) {colour = "white"} 
+        else {colour = "black"}
+
+        let Timer = document.getElementById(`${colour}-timer`);
+        let TimerHTML = `
+            <h4>${this.toTimeFormatMMSS()}</h4>
+        `;
+        Timer.innerHTML = TimerHTML;
     }
 
 }

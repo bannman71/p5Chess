@@ -116,10 +116,13 @@ new p5(function (p5) {
         //rnbqkbnr/p1pppppp/1p6/4P3/8/5NP1/PPPP1PBP/RNBQK2R
         //'rnbqk1nr/p4ppp/1p1b4/8/8/5NP1/P2K1PBP/RNBQ3R'
 
+        //white = false
+        //timer at top = white
+        //timer at bottom = black
 
-        whiteTime = new Timer(clientIsWhite, time, increment);
-        blackTime = new Timer(clientIsWhite, time, increment);
-
+        whiteTime = new Timer(clientIsWhite, true, time, increment);
+        blackTime = new Timer(clientIsWhite, false, time, increment);
+        
         blackTime.showContainer(size);
         whiteTime.showContainer(size);
         updateCSSFromBoardSize();
