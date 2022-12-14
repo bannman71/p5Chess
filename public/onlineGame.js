@@ -165,8 +165,9 @@ function step() {
         // possibly special handling to avoid futile "catch up" run
     }
     // do what is to be done
-
-    whiteTime.tempUpdateBySecond();
+    if (board.whiteToMove){
+        whiteTime.tempUpdateBySecond();
+    }else blackTime.tempUpdateBySecond();
 
     expected += interval;
     setTimeout(step, Math.max(0, interval - dt)); // take into account drift
