@@ -52,12 +52,6 @@ new p5(function (p5) {
     let pieceAtMouse;
     let selectedCoords;
 
-    var timeMoveStart = Date.now();
-    var timeMoveEnd;
-
-    var start;
-
-
     //SERVER SIDE LOGIC
 
     socket.on('legalMoveMade', (data) => {
