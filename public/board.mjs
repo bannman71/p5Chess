@@ -665,14 +665,9 @@ export default class Board {
                             }
                             break; 
                     }
-                }
-                
-        
+                } 
             }
-            
-        }
-
-        
+        }        
         return bitmap;
     }
 
@@ -768,7 +763,7 @@ export default class Board {
 
     isOnBoard(Row,Col){ //is used in legal squares so that it doent iterate outside the board
         if (Row >= 0 && Row < 8 && Col >= 0 && Col < 8){
-            return true;;
+            return true;
         }
         return false;
     }

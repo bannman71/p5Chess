@@ -158,63 +158,51 @@ new p5(function(p5){
 
         $("#black-rook").off('click').on("click", function() {
             selectedPiece = PieceType.rook ^ PieceType.black;
-            // alert( "Handler for black rook called." );
         });
 
         $("#black-knight").off('click').on("click", function() {
             selectedPiece = PieceType.knight ^ PieceType.black; 
-            // alert( "Handler for black knight called." );
         });
 
         $("#black-bishop").off('click').on("click",function() {
             selectedPiece = PieceType.bishop ^ PieceType.black;
-            // alert( "Handler for bishop called." );
         });
 
         $("#black-queen").off('click').on("click",function() {
             selectedPiece = PieceType.queen ^ PieceType.black;
-            // alert( "Handler for black queen called." );
         });
 
         $("#black-king").off('click').on("click",function() {
             selectedPiece = PieceType.king ^ PieceType.black;
-            // alert( "Handler for black king called." );
         });
 
         $("#black-pawn").off('click').on("click",function() {
             selectedPiece = PieceType.pawn ^ PieceType.black;
-            // alert( "Handler for black pawn called." );
         });
 
         $("#white-rook").off('click').on("click",function() {
             selectedPiece = PieceType.rook ^ PieceType.white;
-            // alert( "Handler for white rook called." );
         });
 
         $("#white-knight").off('click').on("click",function() {
 
             selectedPiece = PieceType.knight ^ PieceType.white;
-            // alert( "Handler for white knight called." );
         });
 
         $("#white-bishop").off('click').on("click",function() {
             selectedPiece = PieceType.bishop ^ PieceType.white;
-            // alert( "Handler for white bishop called." );
         });
 
         $("#white-queen").off('click').on("click",function() {
             selectedPiece = PieceType.queen ^ PieceType.white;
-            // alert( "Handler for white queen called." );
         });
 
         $("#white-king").off('click').on("click",function() {
             selectedPiece = PieceType.king ^ PieceType.white;
-            // alert( "Handler for white king called." );
         });
 
         $("#white-pawn").off('click').on("click",function() {
             selectedPiece = PieceType.pawn ^ PieceType.white;
-            // alert( "Handler for white pawn called." );
         });
 
     

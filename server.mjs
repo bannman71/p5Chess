@@ -107,8 +107,6 @@ io.on('connection', (socket) => {
     for (let i = 0; i < matchmaking.length; i++){
       for (let j = i + 1; j < matchmaking.length; j++){
         //if game found
-        const colours = {1: true, 0: false};
-        
         if ((matchmaking[i].time === matchmaking[j].time) && (matchmaking[i].interval === matchmaking[j].interval)){
           //moves matched players to game room
          
@@ -123,7 +121,7 @@ io.on('connection', (socket) => {
             if (clientID === matchmaking[i].id){
               let data = {client: matchmaking[i], page: '/onlineGame', "roomCode": roomCode, 
               isWhite: colour1}; 
-              clientSocket.emit('redirect', (data)); //emits to index.html -> !!decideColour coerces 1/0 into true/false
+              clientSocket.emit('redirect', (data)); 
             }
             else if(clientID === matchmaking[j].id){
               let data = {client: matchmaking[j], page: '/onlineGame', "roomCode": roomCode, 
