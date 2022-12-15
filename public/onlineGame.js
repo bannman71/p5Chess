@@ -136,12 +136,6 @@ new p5(function (p5) {
         whiteTime.displayTime();
         blackTime.displayTime();
 
-        //when blacks turn
-        //white timer must be displayed through client side
-        //
-
-
-
     }
 
     
@@ -162,14 +156,6 @@ function step() {
     expected += interval;
     setTimeout(step, Math.max(0, interval - dt)); // take into account drift
 }
-// setInterval(() => {
-//     var delta = Date.now()
-//     let timeTaken = delta - start;
-
-//     if (board.whiteToMove) whiteTime.tempUpdateBySecond();
-//     else blackTime.tempUpdateBySecond();
-// }, 1000);
-
     
 
     p5.mousePressed = () => {
