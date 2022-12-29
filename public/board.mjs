@@ -141,16 +141,16 @@ export function instantiateNewBoard(board, FEN){
 
 export default class Board {
 
-    constructor(FEN){
+    constructor(FEN, moveCounter, whiteToMove, castlesShortBlack, castlesLongBlack, castlesShortWhite, castlesLongWhite){
         this.occSquares = FENToBoard(FEN);
         
-        this.moveCounter = 0;
-        this.whiteToMove = true;
+        this.moveCounter = moveCounter;
+        this.whiteToMove = whiteToMove;
 
-        this.blackShortCastlingRights = true;
-        this.blackLongCastlingRights = true;
-        this.whiteShortCastlingRights = true;
-        this.whiteLongCastlingRights = true;
+        this.blackShortCastlingRights = castlesShortBlack;
+        this.blackLongCastlingRights = castlesLongBlack;
+        this.whiteShortCastlingRights = castlesShortWhite;
+        this.whiteLongCastlingRights = castlesLongWhite;
 
         //make it possible to emit board with methods over network
         
