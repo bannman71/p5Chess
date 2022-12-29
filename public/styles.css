@@ -17,13 +17,20 @@ body{
 
   z-index: 1;
 
-  top: 0px;
-  left: 0px;
-
   width: 100vw;
   height: 10vh;
 
   background-color: rgb(74, 74, 112);
+}
+
+.nav-list{
+  display: flex;
+  gap: 10rem;
+  font-size: 24px;
+
+  /* outline: auto; */
+
+  list-style: none;
 }
 
 .game-container{
@@ -82,16 +89,6 @@ body{
 
   border: 3px solid #73AD21;
   padding: 10px;
-}
-
-.nav-list{
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10rem;
-  font-size: 24px;
-
-  padding:0;
-  list-style: none;
 }
 
 a{
