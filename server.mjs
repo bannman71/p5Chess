@@ -17,7 +17,7 @@ const __dirname = path.dirname(__filename);
 //IMPORTS FROM LOCAL MODULES
 const dir = path.join(__dirname, '/public/views/');
 import Board from './public/board.mjs';
-import Timer from './public/timer.mjs';
+import {ServerTimer} from "./public/timer.mjs";
 import {PieceType} from './public/board.mjs';
 import {Piece} from './public/board.mjs';
 import { instantiateNewBoard } from './public/board.mjs';
@@ -132,8 +132,8 @@ io.on('connection', (socket) => {
 
           if (!gameRooms[roomCode]){
             let board = new Board('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR', 0, true, true, true, true, true)
-            let whiteTimer = new Timer(colour1, matchmaking[i].time, matchmaking[j].increment);
-            let blackTimer = new Timer(colour2, matchmaking[i].time, matchmaking[j].increment); 
+            let whiteTimer = new ServerTimer(matchmaking[i].time, matchmaking[j].increment);
+            let blackTimer = new ServerTimer(matchmaking[i].time, matchmaking[j].increment);
             gameRooms[roomCode] = new GameRoom(
               roomCode, board, whiteTimer, blackTimer, '', []
             );
@@ -186,7 +186,6 @@ io.on('connection', (socket) => {
     var board;
 
     board = instantiateNewBoard(data.board, data.FEN)
-    console.log(board);
 
     if (piece.type === PieceType.king){
       if(board.checkNextMoveBitmap(piece, data.fCoordsY, data.fCoordsX) === true){ //king moves need the bitmap before due to castling through a check
@@ -200,14 +199,6 @@ io.on('connection', (socket) => {
 
 
     if (isLegal){
-      console.log('LEGAl');
-      
-      if (data.whiteMoveMade) {
-        gameRooms[data.room].whiteTimer.update(data.timeTaken);
-      }else gameRooms[data.room].blackTimer.update(data.timeTaken);
-
-      console.log(gameRooms[data.room]);
-
       if (tempEnPassentTaken === true) {
         board.enPassentTaken = false;
       }
@@ -230,10 +221,17 @@ io.on('connection', (socket) => {
       let bmap = board.findMaskSquares(board.whiteToMove, board.occSquares);
       board.maskBitMap(bmap); 
 
-      if (board.kingInCheck()){
-        board.isInCheck = true;
-        // numDefenses = board.defendCheck();
-      } else board.isInCheck = false;
+      board.isInCheck = board.kingInCheck();
+
+      if (board.whiteToMove) {
+        console.log('time taken:' + data.timeTaken);
+        gameRooms[data.room].whiteTimer.time -= data.timeTaken;
+      } else gameRooms[data.room].blackTimer.time -= data.timeTaken;
+
+      console.log('white');
+      console.log(gameRooms[data.room].whiteTimer.time);
+      console.log('black');
+      console.log(gameRooms[data.room].blackTimer.time);
 
       board.changeTurn();
       var newFEN = board.boardToFEN();

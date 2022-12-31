@@ -87,10 +87,19 @@ export default class Timer{
         else {colour = "black"}
 
         let Timer = document.getElementById(`${colour}-timer`);
-        let TimerHTML = `
+        Timer.innerHTML = `
             <h4>${this.toTimeFormatMMSS()}</h4>
         `;
-        Timer.innerHTML = TimerHTML;
     }
+
+}
+
+export class ServerTimer{
+
+    constructor(time, increment){
+        this.time = time * 60;
+        this.increment = increment;
+    }
+
 
 }

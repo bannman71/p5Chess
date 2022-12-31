@@ -141,7 +141,7 @@ setTimeout(step, interval);
 function step() {
     var dt = Date.now() - expected; // the drift (positive for overshooting)
     if (dt > interval) {
-        // something really bad happened. Maybe the browser (tab) was inactive?
+        // something awful happened. Maybe the browser (tab) was inactive?
         // possibly special handling to avoid futile "catch up" run
     }
     // do what is to be done
@@ -212,12 +212,13 @@ function step() {
         }
 
         if (isLegal) {
-            let timeTaken;
-            if (board.moveCounter > 0) {
+            let timeTaken = 0;
+            if (board.moveCounter > 0){
                 timeMoveEnd = Date.now();
                 timeTaken = (timeMoveEnd - timeMoveStart) / 1000;
-            } else timeTaken = 0;
-
+                console.log('time');
+                console.log(timeTaken);
+            }
             var data =
             {
                 fCoordsX: destCoords.x, fCoordsY: destCoords.y, pieceMoved: pieceAtMouse, room: roomCode, "board": board, "FEN": board.boardToFEN(), "timeTaken": timeTaken, "whiteMoveMade": clientIsWhite
