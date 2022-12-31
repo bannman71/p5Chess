@@ -121,7 +121,7 @@ export function FENToBoard(FEN){
 export function instantiateNewBoard(board, FEN){
     var newBoard;
     newBoard = new Board(FEN);
-    newBoard.moveCounter = board.moveCounter + 1;
+    newBoard.moveCounter = board.moveCounter;
     newBoard.whiteToMove = board.whiteToMove;
     newBoard.blackShortCastlingRights = board.blackShortCastlingRights;
     newBoard.blackLongCastlingRights = board.blackLongCastlingRights;

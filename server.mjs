@@ -208,7 +208,6 @@ io.on('connection', (socket) => {
 
       console.log(gameRooms[data.room]);
 
-      console.log('legal');
       if (tempEnPassentTaken === true) {
         board.enPassentTaken = false;
       }
@@ -218,8 +217,10 @@ io.on('connection', (socket) => {
       if (piece.type !== PieceType.pawn) board.pawnMovedTwoSquares = false;
       //is set to false here and in board.isLegalMove
 
-      if (piece.colour === PieceType.black) board.moveCounter++; //after blacks move -> the move counter always increases
-      
+      if (piece.colour === PieceType.black) {
+        board.moveCounter++; //after blacks move -> the move counter always increases
+      }
+      console.log(board.moveCounter);
       if (board.enPassentTaken){
         board.updateEnPassentMove(piece, data.fCoordsY, data.fCoordsX);
       }

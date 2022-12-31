@@ -26,6 +26,8 @@ new p5(function (p5) {
     socket.emit('matchConnect', roomCode);
 
     var blackTime, whiteTime;
+    var timeMoveStart = 0;
+    var timeMoveEnd = 0;
 
     var canv;
     var canvasDiv;
@@ -61,6 +63,7 @@ new p5(function (p5) {
         console.log('in here');
 
         board = instantiateNewBoard(data.board, data.FEN)
+        console.log(board.moveCounter);
         timeMoveStart = Date.now();
 
     });
@@ -149,9 +152,15 @@ function step() {
         // possibly special handling to avoid futile "catch up" run
     }
     // do what is to be done
-    if (board.whiteToMove){
-        whiteTime.tempUpdateBySecond();
-    }else blackTime.tempUpdateBySecond();
+    if (board.moveCounter > 0){
+        console.log('game commenced');
+        if (board.whiteToMove){
+            whiteTime.tempUpdateBySecond();
+        }else {
+            blackTime.tempUpdateBySecond();
+        }
+    }
+    
 
     expected += interval;
     setTimeout(step, Math.max(0, interval - dt)); // take into account drift
@@ -222,6 +231,7 @@ function step() {
             {
                 fCoordsX: destCoords.x, fCoordsY: destCoords.y, pieceMoved: pieceAtMouse, room: roomCode, "board": board, "FEN": board.boardToFEN(), "timeTaken": timeTaken, "whiteMoveMade": clientIsWhite
             };
+            console.log(board.moveCounter);
             socket.emit('moveAttempted', data);
             console.log('legal');
 
