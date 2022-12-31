@@ -237,7 +237,10 @@ io.on('connection', (socket) => {
       var newFEN = board.boardToFEN();
       console.log(newFEN);
 
-      io.to(data.room).emit('legalMoveMade', ({"board": board, "FEN": newFEN}));
+      if (board.whiteToMove) { //slightly confusing as the turn state is changed a few lines above
+        io.to(data.room).emit('legalMoveMade', ({"board": board, "FEN": newFEN, "newTimer": gameRooms[data.room].blackTimer}));
+      } else io.to(data.room).emit('legalMoveMade', ({"board": board, "FEN": newFEN, "newTimer": gameRooms[data.room].whiteTimer}));
+
       
     }
 

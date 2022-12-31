@@ -1,12 +1,11 @@
-export default class Timer{
+export default class ClientTimer{
 
     constructor(clientIsWhite, isWhiteTimer, time, increment){ //time in minutes
         this.clientIsWhite = clientIsWhite;
         this.time = time * 60;
         this.increment = increment;
         this.isWhiteTimer = isWhiteTimer;
-        this.timeDisplayed = 0;
-        this.tempTimeToDisplay = time * 60;
+        this.timeToDisplay = time * 60;
     }
 
     update(timeTaken){
@@ -16,7 +15,7 @@ export default class Timer{
     }   
 
     tempUpdateBySecond(){
-        this.tempTimeToDisplay -= 1;
+        this.timeToDisplay -= 1;
     }
 
     addIncrement(){
@@ -72,8 +71,8 @@ export default class Timer{
     }
 
     toTimeFormatMMSS(){
-        var timeMinutesDisplayed = Math.floor(this.tempTimeToDisplay / 60);
-        var timeSecondsDisplayed = this.tempTimeToDisplay % 60;
+        var timeMinutesDisplayed = Math.floor(this.timeToDisplay / 60);
+        var timeSecondsDisplayed = Math.trunc(this.timeToDisplay) % 60;
 
         if (timeMinutesDisplayed < 10) timeMinutesDisplayed = "0"+timeMinutesDisplayed;
         if (timeSecondsDisplayed < 10) timeSecondsDisplayed = "0"+timeSecondsDisplayed; 

@@ -1,7 +1,7 @@
 import Board from './board.mjs';
 import { PieceType } from './board.mjs';
 import { instantiateNewBoard } from './board.mjs';
-import Timer from './timer.mjs';
+import ClientTimer from './timer.mjs';
 import Front from './front.mjs';
 
 new p5(function (p5) {
@@ -50,12 +50,15 @@ new p5(function (p5) {
     //SERVER SIDE LOGIC
 
     socket.on('legalMoveMade', (data) => {
-        //must create a new board object as it doesn't keep it's methods when being sent over sockets
+        //must create a new board object as it doesn't keep its methods when being sent over sockets
         //is called when the opponent makes a legal move
 
         console.log('in here');
 
-        board = instantiateNewBoard(data.board, data.FEN)
+        board = instantiateNewBoard(data.board, data.FEN);
+        if (board.whiteToMove) blackTime = new ClientTimer(clientIsWhite, false, (data.newTimer.time / 60), data.newTimer.increment);
+        else whiteTime = new ClientTimer(clientIsWhite, true, (data.newTimer.time / 60), data.newTimer.increment);
+
         console.log(board.moveCounter);
         timeMoveStart = Date.now();
 
@@ -106,8 +109,8 @@ new p5(function (p5) {
         //rnbqkbnr/p1pppppp/1p6/4P3/8/5NP1/PPPP1PBP/RNBQK2R
         //'rnbqk1nr/p4ppp/1p1b4/8/8/5NP1/P2K1PBP/RNBQ3R'
 
-        whiteTime = new Timer(clientIsWhite, true, time, increment);
-        blackTime = new Timer(clientIsWhite, false, time, increment);
+        whiteTime = new ClientTimer(clientIsWhite, true, time, increment);
+        blackTime = new ClientTimer(clientIsWhite, false, time, increment);
         
         blackTime.showContainer(size);
         whiteTime.showContainer(size);
@@ -219,9 +222,9 @@ function step() {
                 console.log('time');
                 console.log(timeTaken);
             }
-            var data =
+            let data =
             {
-                fCoordsX: destCoords.x, fCoordsY: destCoords.y, pieceMoved: pieceAtMouse, room: roomCode, "board": board, "FEN": board.boardToFEN(), "timeTaken": timeTaken, "whiteMoveMade": clientIsWhite
+                fCoordsX: destCoords.x, fCoordsY: destCoords.y, pieceMoved: pieceAtMouse, room: roomCode, "board": board, "FEN": board.boardToFEN(), "timeTaken": timeTaken
             };
             console.log(board.moveCounter);
             socket.emit('moveAttempted', data);
