@@ -246,7 +246,11 @@ io.on('connection', (socket) => {
 
   });
 
-  
+  socket.on('lostOnTime', (whiteToMove) => {
+    if (whiteToMove){
+      //end the game and display a game winning/losing card
+    }
+  });
 
 });
 

@@ -65,6 +65,8 @@ new p5(function (p5) {
     });
 
     function updateCSSFromBoardSize() {
+        //changes the size of the card
+        //based on the width of the board
         let boardWidth = $('#online-board-container').width();
         let gameInfoCSS = {
             'position': 'absolute',
@@ -75,6 +77,78 @@ new p5(function (p5) {
         $('#online-game-info').css(gameInfoCSS);
     }
 
+    function closePopup() {
+        var el = document.getElementById('popup');
+        var BG = document.getElementById('bgcover');
+        el.style.display = 'none';
+        BG.style.display = 'none';
+        alert('hello');
+    }
+
+    function myFunction(){
+        alert("hello");
+    }
+
+    function addElement() {
+        // create a new div element
+        // and give it popup content
+        var newDiv = document.createElement("div");
+        var texts = 'erd';
+        newDiv.innerHTML += `
+            <div id="popup" style=" 
+                position: absolute;
+                top: 25%;
+                width: 500px;
+                height: 500px;
+                margin: auto;
+                z-index: 99999;
+                display: block;
+                left:35%;
+                background-color: #fff;
+                border: 1px solid #ddd;
+                border-radius: 5px;  
+                box-shadow: 0 1px 6px 4px #000;  
+                overflow: hidden;   
+                padding: 10px;">
+                
+                <div class="popup_body" style="height: 160px;">${texts}</div>
+                <button style="padding: 10px;" class="close_button" id="close-btn">This is bullshit</button>
+                <button style="padding: 10px;" class="close_button">Something else</button>
+            </div>
+        `;
+
+        // Add The Background cover
+        var BG = document.createElement("div");
+        //BG.style.background-color = 'black';
+        BG.style.width = '100%';
+        BG.style.height = '100%';
+        BG.style.background = 'black';
+        BG.style.position = 'fixed';
+        BG.style.top = '0';
+        BG.style.left = '0';
+        BG.style.opacity = '0.9';
+        BG.style.display = 'none';
+        BG.setAttribute("id", "bgcover");
+
+        // add the newly created elements and its content into the DOM
+        document.body.appendChild(BG);
+        document.body.insertBefore(newDiv, BG);
+        // open popup onload
+        openPopup();
+    }
+
+    function openPopup() {
+        var el = document.getElementById('popup');
+        var BG = document.getElementById('bgcover');
+        el.style.display = 'block';
+        BG.style.display = 'block';
+
+
+
+    }
+
+
+
     p5.setup = () => {
         canvasDiv = document.getElementById('online-board-container');
         WIDTH = canvasDiv.offsetWidth;
@@ -83,6 +157,10 @@ new p5(function (p5) {
 
         canv = p5.createCanvas(size, size);
         canv.parent("online-board-container");
+
+
+        addElement();
+
 
         PIECE_SCALE = 1;
 
@@ -135,6 +213,11 @@ new p5(function (p5) {
         whiteTime.displayTime();
         blackTime.displayTime();
 
+        if (whiteTime.time < 0 || blackTime.time < 0){
+            socket.emit('lostOnTime', board.whiteToMove);
+
+        }
+
     }
 
     
@@ -149,7 +232,6 @@ function step() {
     }
     // do what is to be done
     if (board.moveCounter > 0){
-        console.log('game commenced');
         if (board.whiteToMove){
             whiteTime.tempUpdateBySecond();
         }else {
@@ -245,6 +327,11 @@ function step() {
 
         }
 
+        //not part of the game logic
+
+        $("#close-btn").off('click').on("click", function() {
+            alert('yoo');
+        });
 
     }
 
