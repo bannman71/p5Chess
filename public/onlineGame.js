@@ -1,7 +1,5 @@
 import Board from './board.mjs';
-import { FENToBoard } from './board.mjs';
 import { PieceType } from './board.mjs';
-import { Piece } from './board.mjs';
 import { instantiateNewBoard } from './board.mjs';
 import Timer from './timer.mjs';
 import Front from './front.mjs';
@@ -16,9 +14,7 @@ new p5(function (p5) {
     var increment = urlParameters.get('increment');
     var clientIsWhite = urlParameters.get('isWhite');
 
-    if (clientIsWhite === '0') {
-        clientIsWhite = false;
-    }else clientIsWhite = true;
+    clientIsWhite = clientIsWhite !== '0'; //if client is white set it to true else false
 
     var roomCode = urlParameters.get('roomCode');
 
@@ -46,13 +42,10 @@ new p5(function (p5) {
 
     let IMAGES = {};
 
-    let bitmap;
-
     let legalCircles = [];
 
     let MouseDown;
     let pieceAtMouse;
-    let selectedCoords;
 
     //SERVER SIDE LOGIC
 
@@ -160,7 +153,7 @@ function step() {
             blackTime.tempUpdateBySecond();
         }
     }
-    
+
 
     expected += interval;
     setTimeout(step, Math.max(0, interval - dt)); // take into account drift
@@ -168,10 +161,8 @@ function step() {
     
 
     p5.mousePressed = () => {
-        let tempPieceAtMouse;
         pieceAtMouse = front.getPieceAtMousepos(clientIsWhite, board.occSquares, p5.mouseX, p5.mouseY); //returns type Piece
-        if (pieceAtMouse !== tempPieceAtMouse) legalCircles = []; //empties legalcircles so that it doesn't show the squares when you click on another piece
-        tempPieceAtMouse = pieceAtMouse;
+        legalCircles = [];
 
         if (pieceAtMouse) {
 
@@ -198,7 +189,7 @@ function step() {
         let isLegal = false;
 
         console.log('client');
-        console.log(clientIsWhite == true);
+        console.log(clientIsWhite === true);
 
         if (clientIsWhite === (pieceAtMouse.colour === PieceType.white)) legalSideAttemptedMove = true;
 
@@ -246,10 +237,7 @@ function step() {
             let bmap = board.findMaskSquares(board.whiteToMove, board.occSquares);
             board.maskBitMap(bmap);
 
-            if (board.kingInCheck()) {
-                board.isInCheck = true;
-
-            } else board.isInCheck = false;
+            board.isInCheck = board.kingInCheck();
 
         }
 
