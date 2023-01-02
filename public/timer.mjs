@@ -14,8 +14,8 @@ export default class ClientTimer{
         this.time += this.increment;
     }   
 
-    tempUpdateBySecond(){
-        this.timeToDisplay -= 1;
+    clientSideTimerUpdate(){
+        this.timeToDisplay -= 0.1;
     }
 
     addIncrement(){
@@ -71,7 +71,7 @@ export default class ClientTimer{
     }
 
     toTimeFormatMMSS(){
-        var timeMinutesDisplayed = Math.floor(this.timeToDisplay / 60);
+        var timeMinutesDisplayed = Math.trunc(this.timeToDisplay / 60);
         var timeSecondsDisplayed = Math.trunc(this.timeToDisplay) % 60;
 
         if (timeMinutesDisplayed < 10) timeMinutesDisplayed = "0"+timeMinutesDisplayed;

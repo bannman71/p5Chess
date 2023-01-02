@@ -21,9 +21,11 @@ new p5(function (p5) {
 
     socket.emit('matchConnect', roomCode);
 
-    var blackTime, whiteTime;
+    var blackTimer, whiteTimer;
     var timeMoveStart = 0;
     var timeMoveEnd = 0;
+
+    let number = 0;
 
     var canv;
     var canvasDiv;
@@ -31,6 +33,11 @@ new p5(function (p5) {
     var board;
     var front;
     var size;
+
+    //if the user tabs out, a few cases must be taken care of to do with the setTimout 'catch-up run'
+    let timeInactiveStart;
+    let timeInactiveEnd;
+    let windowInactive = false;
 
     var BLOCK_SIZE;
     var PIECE_SCALE;
@@ -53,14 +60,20 @@ new p5(function (p5) {
         //must create a new board object as it doesn't keep its methods when being sent over sockets
         //is called when the opponent makes a legal move
 
-        console.log('in here');
-
         board = instantiateNewBoard(data.board, data.FEN);
-        if (board.whiteToMove) blackTime = new ClientTimer(clientIsWhite, false, (data.newTimer.time / 60), data.newTimer.increment);
-        else whiteTime = new ClientTimer(clientIsWhite, true, (data.newTimer.time / 60), data.newTimer.increment);
+        if (board.whiteToMove) blackTimer = new ClientTimer(clientIsWhite, false, (data.newTimer.time / 60), data.newTimer.increment);
+        else whiteTimer = new ClientTimer(clientIsWhite, true, (data.newTimer.time / 60), data.newTimer.increment);
 
-        console.log(board.moveCounter);
+
         timeMoveStart = Date.now();
+
+        //if the tab is inactive and the other player makes a move, a new inactive time
+        //must be declared, else it will subtract the time from when the client tabbed out
+        //during the other player's move.
+        if (windowInactive){
+            timeInactiveStart = Date.now();
+            console.log(Date.now());
+        }
 
     });
 
@@ -82,11 +95,6 @@ new p5(function (p5) {
         var BG = document.getElementById('bgcover');
         el.style.display = 'none';
         BG.style.display = 'none';
-        alert('hello');
-    }
-
-    function myFunction(){
-        alert("hello");
     }
 
     function addElement() {
@@ -118,7 +126,7 @@ new p5(function (p5) {
         `;
 
         // Add The Background cover
-        var BG = document.createElement("div");
+        let BG = document.createElement("div");
         //BG.style.background-color = 'black';
         BG.style.width = '100%';
         BG.style.height = '100%';
@@ -146,8 +154,6 @@ new p5(function (p5) {
 
 
     }
-
-
 
     p5.setup = () => {
         canvasDiv = document.getElementById('online-board-container');
@@ -187,15 +193,14 @@ new p5(function (p5) {
         //rnbqkbnr/p1pppppp/1p6/4P3/8/5NP1/PPPP1PBP/RNBQK2R
         //'rnbqk1nr/p4ppp/1p1b4/8/8/5NP1/P2K1PBP/RNBQ3R'
 
-        whiteTime = new ClientTimer(clientIsWhite, true, time, increment);
-        blackTime = new ClientTimer(clientIsWhite, false, time, increment);
+        whiteTimer = new ClientTimer(clientIsWhite, true, time, increment);
+        blackTimer = new ClientTimer(clientIsWhite, false, time, increment);
         
-        blackTime.showContainer(size);
-        whiteTime.showContainer(size);
+        blackTimer.showContainer(size);
+        whiteTimer.showContainer(size);
         updateCSSFromBoardSize();
-        whiteTime.displayTime();
-        blackTime.displayTime();
-
+        whiteTimer.displayTime();
+        blackTimer.displayTime();
 
     }
 
@@ -210,40 +215,63 @@ new p5(function (p5) {
         }
         else pieceAtMouse = 0;
 
-        whiteTime.displayTime();
-        blackTime.displayTime();
+        whiteTimer.displayTime();
+        blackTimer.displayTime();
 
-        if (whiteTime.time < 0 || blackTime.time < 0){
+        if (whiteTimer.time < 0 || blackTimer.time < 0){
             socket.emit('lostOnTime', board.whiteToMove);
 
         }
 
     }
 
-    
-var interval = 1000; // ms
-var expected = Date.now() + interval;
-setTimeout(step, interval);
-function step() {
-    var dt = Date.now() - expected; // the drift (positive for overshooting)
-    if (dt > interval) {
-        // something awful happened. Maybe the browser (tab) was inactive?
-        // possibly special handling to avoid futile "catch up" run
-    }
-    // do what is to be done
-    if (board.moveCounter > 0){
-        if (board.whiteToMove){
-            whiteTime.tempUpdateBySecond();
-        }else {
-            blackTime.tempUpdateBySecond();
+    document.addEventListener('visibilitychange', function (event) {
+        if (document.hidden) {
+            timeInactiveStart = Date.now();
+            windowInactive = true;
+        } else {
+            windowInactive = false;
+            timeInactiveEnd = Date.now();
+            if (board.moveCounter > 0) {
+                let timeTaken = timeInactiveEnd - timeInactiveStart;
+                if (board.whiteToMove) {
+                    whiteTimer.timeToDisplay -= timeTaken / 1000;
+                } else {
+                    blackTimer.timeToDisplay -= timeTaken / 1000;
+                }
+            }
         }
+    });
+
+    var interval = 100; // ms
+    var expected = Date.now() + interval;
+    let ina = false;
+    setTimeout(step, interval);
+    function step() {
+        let dt = Date.now() - expected; // the drift (positive for overshooting)
+        ina = false;
+        if (dt > interval) {
+            // something awful happened. Maybe the browser (tab) was inactive?
+            // possibly special handling to avoid futile "catch up" run
+            expected += dt;
+            ina = true; //ensure the timer doesn't count down while the catch-up is happening.
+        }
+        // do what is to be done
+
+        if (!ina) {
+            if (board.moveCounter > 0) {
+                if (board.whiteToMove) {
+                    whiteTimer.clientSideTimerUpdate();
+                } else {
+                    blackTimer.clientSideTimerUpdate();
+                }
+            }
+        }
+
+        expected += interval;
+        setTimeout(step, Math.max(0, interval - dt)); // take into account drift
     }
 
-
-    expected += interval;
-    setTimeout(step, Math.max(0, interval - dt)); // take into account drift
-}
-    
 
     p5.mousePressed = () => {
         pieceAtMouse = front.getPieceAtMousepos(clientIsWhite, board.occSquares, p5.mouseX, p5.mouseY); //returns type Piece
@@ -273,12 +301,9 @@ function step() {
         let legalSideAttemptedMove = false;
         let isLegal = false;
 
-        console.log('client');
-        console.log(clientIsWhite === true);
-
         if (clientIsWhite === (pieceAtMouse.colour === PieceType.white)) legalSideAttemptedMove = true;
 
-        let destCoords = front.getMouseCoord(clientIsWhite, p5.mouseX, p5.mouseY); // returns coord for array         
+        let destCoords = front.getMouseCoord(clientIsWhite, p5.mouseX, p5.mouseY); // returns coord for array
 
         if (board.isOnBoard(destCoords.y, destCoords.x) && pieceAtMouse && legalSideAttemptedMove) {
 
@@ -308,7 +333,6 @@ function step() {
             {
                 fCoordsX: destCoords.x, fCoordsY: destCoords.y, pieceMoved: pieceAtMouse, room: roomCode, "board": board, "FEN": board.boardToFEN(), "timeTaken": timeTaken
             };
-            console.log(board.moveCounter);
             socket.emit('moveAttempted', data);
             console.log('legal');
 
@@ -329,8 +353,12 @@ function step() {
 
         //not part of the game logic
 
+        if (windowInactive){
+            timeInactiveStart = Date.now();
+        }
+
         $("#close-btn").off('click').on("click", function() {
-            alert('yoo');
+            closePopup();
         });
 
     }
@@ -345,8 +373,8 @@ function step() {
         p5.resizeCanvas(size, size);
 
         updateCSSFromBoardSize();
-        blackTime.showContainer(size);
-        whiteTime.showContainer(size);
+        blackTimer.showContainer(size);
+        whiteTimer.showContainer(size);
     }
 
 });
