@@ -35,6 +35,11 @@ function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
+function coordFromRowCol(coords){
+    let row = {0: 'a', 1: 'b', 2: 'c', 3: 'd', 4: 'e', 5: 'f', 6: 'g', 7: 'h'};
+
+    return row[coords.row] + '' + coords.col;
+}
 function updateTableHTML(){
   //header
   let table = `
@@ -135,7 +140,7 @@ io.on('connection', (socket) => {
             let board = new Board('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR', 0, true, true, true, true, true)
             let whiteTimer = new ServerTimer(matchmaking[i].time, matchmaking[j].increment);
             let blackTimer = new ServerTimer(matchmaking[i].time, matchmaking[j].increment);
-            let pgn = new PGN();
+            let pgn = new PGN([]);
             gameRooms[roomCode] = new GameRoom(
               roomCode, board, whiteTimer, blackTimer, pgn, []
             );
@@ -187,7 +192,13 @@ io.on('connection', (socket) => {
     var piece = new Piece(data.pieceMoved.type, data.pieceMoved.row, data.pieceMoved.col, data.pieceMoved.colour);
     var board;
 
-    board = instantiateNewBoard(data.board, data.FEN)
+    board = instantiateNewBoard(data.board, data.FEN);
+
+    let whiteTimer = gameRooms[data.room].whiteTimer;
+    let blackTimer = gameRooms[data.room].blackTimer;
+
+    whiteTimer = new ServerTimer(whiteTimer.time / 60, whiteTimer.increment);
+    blackTimer = new ServerTimer(blackTimer.time / 60, whiteTimer.increment);
 
     if (piece.type === PieceType.king){
       if(board.checkNextMoveBitmap(piece, data.fCoordsY, data.fCoordsX) === true){ //king moves need the bitmap before due to castling through a check
@@ -198,7 +209,6 @@ io.on('connection', (socket) => {
         if (board.checkNextMoveBitmap(piece, data.fCoordsY, data.fCoordsX) === true) isLegal = true;
       }
     }
-
 
     if (isLegal){
       if (tempEnPassentTaken === true) {
@@ -226,25 +236,24 @@ io.on('connection', (socket) => {
       board.isInCheck = board.kingInCheck();
 
       if (board.whiteToMove) {
-        gameRooms[data.room].whiteTimer.update(data.timeTaken);
-      } else gameRooms[data.room].blackTimer.update(data.timeTaken);
+        whiteTimer.update(data.timeTaken);
+      } else blackTimer.update(data.timeTaken);
 
       board.changeTurn();
       let newFEN = board.boardToFEN();
-      let start = {"row": data.pieceMoved.row, "col": data.pieceMoved.col};
+      let pieceTypeMoved = PieceType.numToType[data.pieceMoved.type];
       let target = {"row": data.fCoordsY, "col": data.fCoordsX};
-      let newPGN = PGN.update(start, target);
-      console.log(newFEN);
+      let targetCrd = coordFromRowCol(target);
+      // let newPGN = PGN.update(pieceTypeMoved, targetCrd);
 
       if (board.whiteToMove) { //slightly confusing as the turn state is changed a few lines above
-        io.to(data.room).emit('legalMoveMade', ({"board": board, "FEN": newFEN, "newTimer": gameRooms[data.room].blackTimer}));
-      } else io.to(data.room).emit('legalMoveMade', ({"board": board, "FEN": newFEN, "newTimer": gameRooms[data.room].whiteTimer}));
-
-      
+        io.to(data.room).emit('legalMoveMade', ({"board": board, "FEN": newFEN, "newTimer": blackTimer}));
+      } else io.to(data.room).emit('legalMoveMade', ({"board": board, "FEN": newFEN, "newTimer": whiteTimer}));
     }
 
   });
 
+  //TODO
   socket.on('lostOnTime', (whiteToMove) => {
     if (whiteToMove){
       //end the game and display a game winning/losing card

@@ -348,7 +348,6 @@ new p5(function (p5) {
             {
                 fCoordsX: destCoords.x, fCoordsY: destCoords.y, pieceMoved: pieceAtMouse, room: roomCode, "board": board, "FEN": board.boardToFEN(), "timeTaken": timeTaken
             };
-            PGN.update(start, target);
             socket.emit('moveAttempted', data);
             console.log('legal');
 

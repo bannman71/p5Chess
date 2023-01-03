@@ -399,3 +399,12 @@ a{
   height: 0;
   padding-bottom:60%;
 }
+
+.game-moves-container{
+  display: grid;
+
+  grid-template-columns: 10% 45% 45%;
+  grid-template-rows: repeat(auto-fill, 5%);
+
+  outline: #73AD21;
+}
