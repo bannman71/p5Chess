@@ -22,6 +22,7 @@ import {PieceType} from './public/board.mjs';
 import {Piece} from './public/board.mjs';
 import { instantiateNewBoard } from './public/board.mjs';
 import GameRoom from './public/gameRoom.mjs';
+import PGN from './public/PGN.mjs';
 //
 
 var matchmaking = [];
@@ -37,7 +38,7 @@ function getRandomInt(min, max) {
 function updateTableHTML(){
   //header
   let table = `
-  <table class="table table-dark">
+  <table class="table" styles="">
     <thead class="thead-dark">
       <tr>
           <th scope="col">Player</th>
@@ -107,7 +108,7 @@ io.on('connection', (socket) => {
     for (let i = 0; i < matchmaking.length; i++){
       for (let j = i + 1; j < matchmaking.length; j++){
         //if game found
-        if ((matchmaking[i].time === matchmaking[j].time) && (matchmaking[i].interval === matchmaking[j].interval)){
+        if ((matchmaking[i].time === matchmaking[j].time) && (matchmaking[i].increment === matchmaking[j].increment)){
           //moves matched players to game room
          
           let clients = io.sockets.adapter.rooms.get('waitingRoom');
@@ -134,8 +135,9 @@ io.on('connection', (socket) => {
             let board = new Board('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR', 0, true, true, true, true, true)
             let whiteTimer = new ServerTimer(matchmaking[i].time, matchmaking[j].increment);
             let blackTimer = new ServerTimer(matchmaking[i].time, matchmaking[j].increment);
+            let pgn = new PGN();
             gameRooms[roomCode] = new GameRoom(
-              roomCode, board, whiteTimer, blackTimer, '', []
+              roomCode, board, whiteTimer, blackTimer, pgn, []
             );
           }
 
@@ -224,17 +226,14 @@ io.on('connection', (socket) => {
       board.isInCheck = board.kingInCheck();
 
       if (board.whiteToMove) {
-        console.log('time taken:' + data.timeTaken);
-        gameRooms[data.room].whiteTimer.time -= data.timeTaken;
-      } else gameRooms[data.room].blackTimer.time -= data.timeTaken;
-
-      console.log('white');
-      console.log(gameRooms[data.room].whiteTimer.time);
-      console.log('black');
-      console.log(gameRooms[data.room].blackTimer.time);
+        gameRooms[data.room].whiteTimer.update(data.timeTaken);
+      } else gameRooms[data.room].blackTimer.update(data.timeTaken);
 
       board.changeTurn();
-      var newFEN = board.boardToFEN();
+      let newFEN = board.boardToFEN();
+      let start = {"row": data.pieceMoved.row, "col": data.pieceMoved.col};
+      let target = {"row": data.fCoordsY, "col": data.fCoordsX};
+      let newPGN = PGN.update(start, target);
       console.log(newFEN);
 
       if (board.whiteToMove) { //slightly confusing as the turn state is changed a few lines above

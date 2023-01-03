@@ -75,6 +75,13 @@ new p5(function (p5) {
             console.log(Date.now());
         }
 
+        //update the moves DOM with the current PGN
+        let table = `
+           
+        `;
+
+
+
     });
 
     function updateCSSFromBoardSize() {
@@ -204,7 +211,7 @@ new p5(function (p5) {
 
     }
 
-    p5.draw = () => {
+    p5.draw = () => { //is the main p5 loop executed each frame
         p5.clear();
         p5.background(front.white);
         front.drawGrid();
@@ -225,6 +232,9 @@ new p5(function (p5) {
 
     }
 
+    //when the tab is inactive, this event happens.
+    //setTimeout isn't called when tab is inactive so this counts how long the user was inactive for
+    //in order to update the timer appropriately.
     document.addEventListener('visibilitychange', function (event) {
         if (document.hidden) {
             timeInactiveStart = Date.now();
@@ -243,6 +253,10 @@ new p5(function (p5) {
         }
     });
 
+    //
+
+    //ticks the client-side timer down,
+    //the actual time is stored server-side
     var interval = 100; // ms
     var expected = Date.now() + interval;
     let ina = false;
@@ -272,6 +286,7 @@ new p5(function (p5) {
         setTimeout(step, Math.max(0, interval - dt)); // take into account drift
     }
 
+    //
 
     p5.mousePressed = () => {
         pieceAtMouse = front.getPieceAtMousepos(clientIsWhite, board.occSquares, p5.mouseX, p5.mouseY); //returns type Piece
@@ -333,6 +348,7 @@ new p5(function (p5) {
             {
                 fCoordsX: destCoords.x, fCoordsY: destCoords.y, pieceMoved: pieceAtMouse, room: roomCode, "board": board, "FEN": board.boardToFEN(), "timeTaken": timeTaken
             };
+            PGN.update(start, target);
             socket.emit('moveAttempted', data);
             console.log('legal');
 
@@ -341,7 +357,7 @@ new p5(function (p5) {
             }
             else {
                 //if they didn't castle -> call the function which makes a normal move
-                board.updatePiecePos(pieceAtMouse, destCoords.y, destCoords.x); //castling changes position inside the castles function
+                board.updatePiecePos(pieceAtMouse, destCoords.y, destCoords.x);
             }
             //create a new bitmap for the current legal position for board.kingInCheck()
             let bmap = board.findMaskSquares(board.whiteToMove, board.occSquares);
@@ -352,10 +368,6 @@ new p5(function (p5) {
         }
 
         //not part of the game logic
-
-        if (windowInactive){
-            timeInactiveStart = Date.now();
-        }
 
         $("#close-btn").off('click').on("click", function() {
             closePopup();
@@ -368,7 +380,7 @@ new p5(function (p5) {
         HEIGHT = canvasDiv.offsetHeight;
 
         size = Math.min(WIDTH, HEIGHT);
-        front.blockSize = (size) / 8; //can be width but it is a square
+        front.blockSize = (size) / 8;
         front.spacing = Math.floor((front.blockSize * (1 - front.pieceScale)) / 2);
         p5.resizeCanvas(size, size);
 

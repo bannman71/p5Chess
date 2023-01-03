@@ -34,31 +34,31 @@
 
     <button class="btn" id="three-zero">
       <p>Blitz<br />3|0</p>
-      </a>
+    </button>
 
-      <button class="btn" id="three-two">
-        <p>Blitz<br />3|2</p>
-      </button>
+    <button class="btn" id="three-two">
+      <p>Blitz<br />3|2</p>
+    </button>
 
-      <button class="btn" id="five-zero">
-        <p>Blitz<br />5|0</p>
-      </button>
+    <button class="btn" id="five-zero">
+      <p>Blitz<br />5|0</p>
+    </button>
 
-      <button class="btn" id="five-three">
-        <p>Blitz<br />5|3</p>
-      </button>
+    <button class="btn" id="five-three">
+      <p>Blitz<br />5|3</p>
+    </button>
 
-      <button class="btn" id="ten-zero">
-        <p>Rapid<br />10|0</p>
-      </button>
+    <button class="btn" id="ten-zero">
+      <p>Rapid<br />10|0</p>
+    </button>
 
-      <button class="btn" id="thirty-zero">
-        <p>Classical<br />30|0</p>
-      </button>
+    <button class="btn" id="thirty-zero">
+      <p>Classical<br />30|0</p>
+    </button>
 
-      <button class="btn" id="custom">
-        <p>Custom</p>
-      </button>
+    <button class="btn" id="custom">
+      <p>Custom</p>
+    </button>
 
   </div>
 
@@ -72,19 +72,17 @@
 
 
     socket.on("updateMatchmakingTable", (data) => {
-      console.log(data);
       tableData.innerHTML = data;
     });
 
     socket.on('redirect', (data) => { //called in timeControlChosen
       var url = data.page + '?time=' + data.client.time + '&increment=' + data.client.increment + '&roomCode=' + data.roomCode + '&isWhite=' + data.isWhite;
-      console.log(data.isWhite);
       window.location.href = url; //sends them to the page created above
     });
 
 
     function chooseTimeControl(cTime, cIncrement) {
-      var data = { time: cTime, increment: cIncrement, id: socket.id };
+      let data = { "time": cTime, "increment": cIncrement, id: socket.id };
 
       socket.emit('timeControlChosen', data);
     }

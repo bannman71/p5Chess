@@ -1,5 +1,6 @@
 body{
-  background-color: rgb(74, 74, 112);
+
+  background: #161512 linear-gradient(to bottom, hsl(37deg, 12%, 16%), hsl(37deg, 10%, 8%) 116px) no-repeat;
 }
 
 .card-body p{
@@ -20,7 +21,10 @@ body{
   width: 100vw;
   height: 10vh;
 
-  background-color: rgb(74, 74, 112);
+  background: #161512 linear-gradient(to bottom, hsl(37deg, 12%, 16%), hsl(37deg, 10%, 8%) 116px) no-repeat;
+
+
+
 }
 
 .nav-list{
@@ -43,7 +47,7 @@ body{
   flex-wrap: wrap;
   flex-direction: row;
 
-  border-style: dashed;
+  border-style: none;
 
   font-size: 0px;
 
@@ -102,11 +106,18 @@ a{
   width:100%;
   height: 100%;
 
+  background: #262421;
+
   border-radius: 0px;
 }
 
 .card-header{
   font-size: 3rem;
+  background: #383532;
+}
+
+.card-body{
+  background: #262421;
 }
 
 /* START PAGE */
@@ -116,6 +127,8 @@ a{
 
   width:50vw;
   height:25vh;
+
+
 
   top: 78%;
   right: 25%;
@@ -144,32 +157,31 @@ a{
 
   justify-content: center;
   align-items: center;
+  margin: 5px;
 
-  border-radius: 0px;
-  border-style: double;
-  border-color: grey;
+  border: 2px solid #404040;
 
-  background-color: #28282B;
+  background: #262421;
 
-  width: calc(100% / 4);
+  width: calc(100% / 4 - 20px);
   height: 50%;
     
 }
 
 .btn-font{
-  color:#c5c0c0;
   font-size: calc(0.5vw + 1vw);
 }
 
 .btn p{
-  color:#c5c0c0;
+  color:#bababa;
   font-size: calc(0.5vw + 1vw);
 
 }
 
 .btn:hover{
-  border-color:aqua;
-  background-color: #19191d;
+  background: rgba(214,79,0,.2);
+  opacity: 1;
+  border: 2px solid #404040;
 }
 
 .btn:hover p{
@@ -352,7 +364,7 @@ a{
   width: 80%;
   left: 10%;
 
-  border-style: dashed;
+  border-style: none;
 
 
   bottom: 10%;
