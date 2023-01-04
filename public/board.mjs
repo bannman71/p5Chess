@@ -435,11 +435,11 @@ export default class Board {
 
             while(this.isOnBoard(row_temp,col_temp)){ //while hasn't gone outside of the array
                 if (this.occSquares[row_temp][col_temp] === 0){
-                    legalCoords.push(row_temp + '' + col_temp);
+                    legalCoords.push({"row": row_temp, "col": col_temp});
                 }
                 else{
                     if ((this.occSquares[row_temp][col_temp].colour & piece.colour) === 0){ // opposite colours
-                        legalCoords.push(row_temp + '' + col_temp);
+                        legalCoords.push({"row": row_temp, "col": col_temp});
                     }
                     break;
                 }

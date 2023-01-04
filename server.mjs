@@ -40,12 +40,19 @@ function pieceMovedNotation(pieceMoved, target, board){
     let moveNotation = '';
 
     moveNotation &= PieceType.numToType[pieceMoved.colourAndPiece()];
+    let potentialOverlap = board.attacksFromSquare(pieceMoved, target.row, target.col);
 
-    if (board.attacksFromSquare(pieceMoved, target.row, target.col).includes(pieceMoved.row)){
-      moveNotation &= row[pieceMoved.row];
-    }
-    if (board.attacksFromSquare(pieceMoved, target.row, target.col).includes(pieceMoved.row)){
-      moveNotation &= pieceMoved.col;
+
+    for (let i = 0; i < potentialOverlap.length; i++){
+      let ptnlOvlp = board.occSquares[potentialOverlap[i].row][potentialOverlap[i].col];
+      if (ptnlOvlp !== 0 && ptnlOvlp.type === pieceMoved.type) { //if we iterate over a piece which is the same type as we moved
+        if (potentialOverlap[i].row !== pieceMoved.row){ //and it isn't the row of the piece we moved
+          moveNotation &= row[potentialOverlap[i].row];
+        }
+        if (potentialOverlap[i].col !== pieceMoved.col){
+          moveNotation &= pieceMoved.col;
+        }
+      }
     }
 
     moveNotation &= target.row + '' + target.col;
