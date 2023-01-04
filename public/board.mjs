@@ -424,6 +424,32 @@ export default class Board {
         }
         return legalCoords;
     }
+    //choose a square and piece, this will calculate which squares will attack if on that square
+    attacksFromSquare(piece, row, col){
+        var legalCoords = [];
+
+        for (let options of piece.intervals()){
+            var col_temp = col + options.dx;
+            var row_temp = row + options.dy;
+
+
+            while(this.isOnBoard(row_temp,col_temp)){ //while hasn't gone outside of the array
+                if (this.occSquares[row_temp][col_temp] === 0){
+                    legalCoords.push(row_temp + '' + col_temp);
+                }
+                else{
+                    if ((this.occSquares[row_temp][col_temp].colour & piece.colour) === 0){ // opposite colours
+                        legalCoords.push(row_temp + '' + col_temp);
+                    }
+                    break;
+                }
+                col_temp += options.dx;
+                row_temp += options.dy;
+            }
+        }
+        return legalCoords;
+
+    }
 
     allPiecesLegalSquares(piece){
         let arr = [];

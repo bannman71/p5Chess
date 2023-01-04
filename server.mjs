@@ -35,10 +35,22 @@ function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-function coordFromRowCol(coords){
+function pieceMovedNotation(pieceMoved, target, board){
     let row = {0: 'a', 1: 'b', 2: 'c', 3: 'd', 4: 'e', 5: 'f', 6: 'g', 7: 'h'};
+    let moveNotation = '';
 
-    return row[coords.row] + '' + coords.col;
+    moveNotation &= PieceType.numToType[pieceMoved.colourAndPiece()];
+
+    if (board.attacksFromSquare(pieceMoved, target.row, target.col).includes(pieceMoved.row)){
+      moveNotation &= row[pieceMoved.row];
+    }
+    if (board.attacksFromSquare(pieceMoved, target.row, target.col).includes(pieceMoved.row)){
+      moveNotation &= pieceMoved.col;
+    }
+
+    moveNotation &= target.row + '' + target.col;
+
+    return moveNotation;
 }
 function updateTableHTML(){
   //header
@@ -140,7 +152,7 @@ io.on('connection', (socket) => {
             let board = new Board('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR', 0, true, true, true, true, true)
             let whiteTimer = new ServerTimer(matchmaking[i].time, matchmaking[j].increment);
             let blackTimer = new ServerTimer(matchmaking[i].time, matchmaking[j].increment);
-            let pgn = new PGN([]);
+            let pgn = new PGN();
             gameRooms[roomCode] = new GameRoom(
               roomCode, board, whiteTimer, blackTimer, pgn, []
             );
@@ -190,9 +202,12 @@ io.on('connection', (socket) => {
     let tempEnPassentTaken = false;
 
     var piece = new Piece(data.pieceMoved.type, data.pieceMoved.row, data.pieceMoved.col, data.pieceMoved.colour);
-    var board;
+    let board = instantiateNewBoard(data.board, data.FEN);;
 
-    board = instantiateNewBoard(data.board, data.FEN);
+    //redeclare PGN class to keep it's methods
+    let PGN = new PGN();
+    PGN.PGNarr = data.PGN.PGNarr;
+    PGN.FENarr = data.PGN.FENarr;
 
     let whiteTimer = gameRooms[data.room].whiteTimer;
     let blackTimer = gameRooms[data.room].blackTimer;
@@ -240,15 +255,15 @@ io.on('connection', (socket) => {
       } else blackTimer.update(data.timeTaken);
 
       board.changeTurn();
+      //TODO
       let newFEN = board.boardToFEN();
-      let pieceTypeMoved = PieceType.numToType[data.pieceMoved.type];
       let target = {"row": data.fCoordsY, "col": data.fCoordsX};
-      let targetCrd = coordFromRowCol(target);
-      // let newPGN = PGN.update(pieceTypeMoved, targetCrd);
+      let pieceMovedNtn = pieceMovedNotation(piece, target, board);
+      let newPGN = PGN.update(pieceMovedNtn,  newFEN);
 
       if (board.whiteToMove) { //slightly confusing as the turn state is changed a few lines above
-        io.to(data.room).emit('legalMoveMade', ({"board": board, "FEN": newFEN, "newTimer": blackTimer}));
-      } else io.to(data.room).emit('legalMoveMade', ({"board": board, "FEN": newFEN, "newTimer": whiteTimer}));
+        io.to(data.room).emit('legalMoveMade', ({"board": board, "FEN": newFEN, "PGN": newPGN, "newTimer": blackTimer}));
+      } else io.to(data.room).emit('legalMoveMade', ({"board": board, "FEN": newFEN, "PGN": newPGN, "newTimer": whiteTimer}));
     }
 
   });

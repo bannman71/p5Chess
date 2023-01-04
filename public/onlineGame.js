@@ -25,8 +25,6 @@ new p5(function (p5) {
     var timeMoveStart = 0;
     var timeMoveEnd = 0;
 
-    let number = 0;
-
     var canv;
     var canvasDiv;
 
@@ -38,6 +36,8 @@ new p5(function (p5) {
     let timeInactiveStart;
     let timeInactiveEnd;
     let windowInactive = false;
+
+    let PGN;
 
     var BLOCK_SIZE;
     var PIECE_SCALE;
@@ -174,6 +174,7 @@ new p5(function (p5) {
 
         addElement();
 
+        PGN = new PGN();
 
         PIECE_SCALE = 1;
 
@@ -346,7 +347,7 @@ new p5(function (p5) {
             }
             let data =
             {
-                fCoordsX: destCoords.x, fCoordsY: destCoords.y, pieceMoved: pieceAtMouse, room: roomCode, "board": board, "FEN": board.boardToFEN(), "timeTaken": timeTaken
+                fCoordsX: destCoords.x, fCoordsY: destCoords.y, pieceMoved: pieceAtMouse, room: roomCode, "board": board, "FEN": board.boardToFEN(), "timeTaken": timeTaken, "PGN": PGN
             };
             socket.emit('moveAttempted', data);
             console.log('legal');
