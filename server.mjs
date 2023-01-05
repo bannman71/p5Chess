@@ -36,26 +36,33 @@ function getRandomInt(min, max) {
 }
 
 function pieceMovedNotation(pieceMoved, target, board){
-    let row = {0: 'a', 1: 'b', 2: 'c', 3: 'd', 4: 'e', 5: 'f', 6: 'g', 7: 'h'};
+    let col = {0: 'a', 1: 'b', 2: 'c', 3: 'd', 4: 'e', 5: 'f', 6: 'g', 7: 'h'};
     let moveNotation = '';
 
-    moveNotation &= PieceType.numToType[pieceMoved.colourAndPiece()];
-    let potentialOverlap = board.attacksFromSquare(pieceMoved, target.row, target.col);
+    moveNotation += PieceType.numToPGNType[pieceMoved.colourAndPiece()];
+    if ((pieceMoved.type !== PieceType.king) && (pieceMoved.type !== PieceType.pawn)) {
+      let potentialOverlap = board.attacksFromSquare(pieceMoved, target.row, target.col);
 
 
-    for (let i = 0; i < potentialOverlap.length; i++){
-      let ptnlOvlp = board.occSquares[potentialOverlap[i].row][potentialOverlap[i].col];
-      if (ptnlOvlp !== 0 && ptnlOvlp.type === pieceMoved.type) { //if we iterate over a piece which is the same type as we moved
-        if (potentialOverlap[i].row !== pieceMoved.row){ //and it isn't the row of the piece we moved
-          moveNotation &= row[potentialOverlap[i].row];
-        }
-        if (potentialOverlap[i].col !== pieceMoved.col){
-          moveNotation &= pieceMoved.col;
+      for (let i = 0; i < potentialOverlap.length; i++) {
+        let ptnlOvlp = board.occSquares[potentialOverlap[i].row][potentialOverlap[i].col];
+        if (ptnlOvlp !== 0 && ptnlOvlp.colourAndPiece() === pieceMoved.colourAndPiece()) { //if we iterate over a piece which is the same type as we moved
+          if (potentialOverlap[i].col !== pieceMoved.col) { //and it isn't the row of the piece we moved
+            moveNotation += col[potentialOverlap[i].col]; //conc the row (a,b,c,d...)
+          }
+          if (potentialOverlap[i].row !== pieceMoved.row) { //and it isn't the same column of the piece we moved
+            moveNotation += (8 - pieceMoved.row); //conc the col (1,2,3,4...)
+          }
         }
       }
     }
 
-    moveNotation &= target.row + '' + target.col;
+    if (board.occSquares[target.row][target.col] !== 0 ) { //if a piece is captured
+      if (pieceMoved.type === PieceType.pawn) moveNotation += col[pieceMoved.col];
+      moveNotation += 'x'
+    }
+
+    moveNotation += col[target.col] + '' + (8-target.row);
 
     return moveNotation;
 }
@@ -211,10 +218,10 @@ io.on('connection', (socket) => {
     var piece = new Piece(data.pieceMoved.type, data.pieceMoved.row, data.pieceMoved.col, data.pieceMoved.colour);
     let board = instantiateNewBoard(data.board, data.FEN);;
 
-    //redeclare PGN class to keep it's methods
-    let PGN = new PGN();
-    PGN.PGNarr = data.PGN.PGNarr;
-    PGN.FENarr = data.PGN.FENarr;
+    //redeclare PGN class to keep its methods
+    let pgn = new PGN();
+    pgn.PGNarr = data.cPGN.PGNarr;
+    pgn.FENarr = data.cPGN.FENarr;
 
     let whiteTimer = gameRooms[data.room].whiteTimer;
     let blackTimer = gameRooms[data.room].blackTimer;
@@ -236,7 +243,8 @@ io.on('connection', (socket) => {
       if (tempEnPassentTaken === true) {
         board.enPassentTaken = false;
       }
-
+      let target = {"row": data.fCoordsY, "col": data.fCoordsX};
+      let pieceMovedNtn = pieceMovedNotation(piece, target, board);
       // board.defendCheck();
 
       if (piece.type !== PieceType.pawn) board.pawnMovedTwoSquares = false;
@@ -262,15 +270,14 @@ io.on('connection', (socket) => {
       } else blackTimer.update(data.timeTaken);
 
       board.changeTurn();
-      //TODO
       let newFEN = board.boardToFEN();
-      let target = {"row": data.fCoordsY, "col": data.fCoordsX};
-      let pieceMovedNtn = pieceMovedNotation(piece, target, board);
-      let newPGN = PGN.update(pieceMovedNtn,  newFEN);
+
+      pgn.update(pieceMovedNtn,  newFEN);
+      let newPGN = pgn.PGNarr;
 
       if (board.whiteToMove) { //slightly confusing as the turn state is changed a few lines above
-        io.to(data.room).emit('legalMoveMade', ({"board": board, "FEN": newFEN, "PGN": newPGN, "newTimer": blackTimer}));
-      } else io.to(data.room).emit('legalMoveMade', ({"board": board, "FEN": newFEN, "PGN": newPGN, "newTimer": whiteTimer}));
+        io.to(data.room).emit('legalMoveMade', ({"board": board, "FEN": newFEN, "cPGN": pgn, "newTimer": blackTimer}));
+      } else io.to(data.room).emit('legalMoveMade', ({"board": board, "FEN": newFEN, "cPGN": pgn, "newTimer": whiteTimer}));
     }
 
   });

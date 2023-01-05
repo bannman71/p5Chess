@@ -426,29 +426,44 @@ export default class Board {
     }
     //choose a square and piece, this will calculate which squares will attack if on that square
     attacksFromSquare(piece, row, col){
-        var legalCoords = [];
+        let arr = [];
 
-        for (let options of piece.intervals()){
-            var col_temp = col + options.dx;
-            var row_temp = row + options.dy;
+        switch (piece.type){
+            case PieceType.knight:
+                for (let options of piece.intervals()){
+                    var col_temp = col + options.dx;
+                    var row_temp = row + options.dy;
 
-
-            while(this.isOnBoard(row_temp,col_temp)){ //while hasn't gone outside of the array
-                if (this.occSquares[row_temp][col_temp] === 0){
-                    legalCoords.push({"row": row_temp, "col": col_temp});
-                }
-                else{
-                    if ((this.occSquares[row_temp][col_temp].colour & piece.colour) === 0){ // opposite colours
-                        legalCoords.push({"row": row_temp, "col": col_temp});
+                    if (this.isOnBoard(row_temp,col_temp))
+                    {
+                        if ((this.occSquares[row_temp][col_temp].colour & piece.colour) === 0 && this.checkNextMoveBitmap(piece,row_temp,col_temp)){
+                            arr.push({"row": row_temp, "col": col_temp});
+                        }
                     }
-                    break;
                 }
-                col_temp += options.dx;
-                row_temp += options.dy;
-            }
-        }
-        return legalCoords;
+                break;
+            default:
+                for (let options of piece.intervals()){
+                    var col_temp = col + options.dx;
+                    var row_temp = row + options.dy;
 
+                    while(this.isOnBoard(row_temp,col_temp)){ //while hasn't gone outside the array
+                        if (this.occSquares[row_temp][col_temp] === 0 && this.checkNextMoveBitmap(piece, row_temp, col_temp)){
+                            arr.push({"row": row_temp, "col": col_temp});
+                        }
+                        else{ //if a piece has been hit
+                            if ((this.occSquares[row_temp][col_temp].colour & piece.colour) === 0 && this.checkNextMoveBitmap(piece, row_temp, col_temp)){ // opposite colours
+                                arr.push({"row": row_temp, "col": col_temp});
+                            }
+                            break;
+                        }
+                        col_temp += options.dx;
+                        row_temp += options.dy;
+                    }
+                }
+
+        }
+        return arr;
     }
 
     allPiecesLegalSquares(piece){
@@ -805,6 +820,11 @@ export class PieceType{
     static numToType = {
         9: 'K', 10: 'P', 11: 'N', 12: 'B', 13: 'R', 14: 'Q',
         17: 'k', 18: 'p', 19: 'n', 20: 'b', 21: 'r', 22: 'q'
+    }
+
+    static numToPGNType = { //accounts for the case where a pawn is moved in PGN notation
+        9: 'K', 10: '', 11: 'N', 12: 'B', 13: 'R', 14: 'Q',
+        17: 'K', 18: '', 19: 'N', 20: 'B', 21: 'R', 22: 'Q'
     }
 
     static numToPieceName = {

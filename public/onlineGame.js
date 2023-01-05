@@ -1,4 +1,5 @@
 import Board from './board.mjs';
+import PGN from "./PGN.mjs";
 import { PieceType } from './board.mjs';
 import { instantiateNewBoard } from './board.mjs';
 import ClientTimer from './timer.mjs';
@@ -37,7 +38,7 @@ new p5(function (p5) {
     let timeInactiveEnd;
     let windowInactive = false;
 
-    let PGN;
+    let pgn;
 
     var BLOCK_SIZE;
     var PIECE_SCALE;
@@ -56,13 +57,20 @@ new p5(function (p5) {
 
     //SERVER SIDE LOGIC
 
-    socket.on('legalMoveMade', (data) => {
-        //must create a new board object as it doesn't keep its methods when being sent over sockets
-        //is called when the opponent makes a legal move
+    socket.on('legalMoveMade', (data) => { // is called when the opponent makes a legal move
 
+        // must instantiate new objects as it doesn't keep its
+        // methods when being sent over a sockets
         board = instantiateNewBoard(data.board, data.FEN);
         if (board.whiteToMove) blackTimer = new ClientTimer(clientIsWhite, false, (data.newTimer.time / 60), data.newTimer.increment);
         else whiteTimer = new ClientTimer(clientIsWhite, true, (data.newTimer.time / 60), data.newTimer.increment);
+
+        pgn = new PGN();
+        pgn.PGNarr = data.cPGN.PGNarr;
+        pgn.FENarr = data.cPGN.FENarr;
+
+        console.log('hello ');
+        console.log(pgn);
 
 
         timeMoveStart = Date.now();
@@ -75,6 +83,7 @@ new p5(function (p5) {
             console.log(Date.now());
         }
 
+        //TODO
         //update the moves DOM with the current PGN
         let table = `
            
@@ -174,7 +183,7 @@ new p5(function (p5) {
 
         addElement();
 
-        PGN = new PGN();
+        pgn = new PGN();
 
         PIECE_SCALE = 1;
 
@@ -347,7 +356,7 @@ new p5(function (p5) {
             }
             let data =
             {
-                fCoordsX: destCoords.x, fCoordsY: destCoords.y, pieceMoved: pieceAtMouse, room: roomCode, "board": board, "FEN": board.boardToFEN(), "timeTaken": timeTaken, "PGN": PGN
+                fCoordsX: destCoords.x, fCoordsY: destCoords.y, pieceMoved: pieceAtMouse, room: roomCode, "board": board, "FEN": board.boardToFEN(), "timeTaken": timeTaken, "cPGN": pgn
             };
             socket.emit('moveAttempted', data);
             console.log('legal');

@@ -5,7 +5,7 @@ export default class PGN{
         this.FENarr = [];
     }
 
-    update(pieceMovedNotation, target, FEN){
+    update(pieceMovedNotation, FEN){
          this.PGNarr.push(pieceMovedNotation);
          this.FENarr.push(FEN);
     }
