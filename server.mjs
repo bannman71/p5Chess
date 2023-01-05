@@ -46,7 +46,10 @@ function pieceMovedNotation(pieceMoved, target, board){
 
       for (let i = 0; i < potentialOverlap.length; i++) {
         let ptnlOvlp = board.occSquares[potentialOverlap[i].row][potentialOverlap[i].col];
+
         if (ptnlOvlp !== 0 && ptnlOvlp.colourAndPiece() === pieceMoved.colourAndPiece()) { //if we iterate over a piece which is the same type as we moved
+          //TODO
+          //col is triggering when it shouldnt be
           if (potentialOverlap[i].col !== pieceMoved.col) { //and it isn't the row of the piece we moved
             moveNotation += col[potentialOverlap[i].col]; //conc the row (a,b,c,d...)
           }

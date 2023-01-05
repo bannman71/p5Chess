@@ -436,9 +436,7 @@ export default class Board {
 
                     if (this.isOnBoard(row_temp,col_temp))
                     {
-                        if ((this.occSquares[row_temp][col_temp].colour & piece.colour) === 0 && this.checkNextMoveBitmap(piece,row_temp,col_temp)){
-                            arr.push({"row": row_temp, "col": col_temp});
-                        }
+                        arr.push({"row": row_temp, "col": col_temp});
                     }
                 }
                 break;
@@ -448,13 +446,11 @@ export default class Board {
                     var row_temp = row + options.dy;
 
                     while(this.isOnBoard(row_temp,col_temp)){ //while hasn't gone outside the array
-                        if (this.occSquares[row_temp][col_temp] === 0 && this.checkNextMoveBitmap(piece, row_temp, col_temp)){
+                        if (this.occSquares[row_temp][col_temp] === 0){
                             arr.push({"row": row_temp, "col": col_temp});
                         }
                         else{ //if a piece has been hit
-                            if ((this.occSquares[row_temp][col_temp].colour & piece.colour) === 0 && this.checkNextMoveBitmap(piece, row_temp, col_temp)){ // opposite colours
-                                arr.push({"row": row_temp, "col": col_temp});
-                            }
+                            arr.push({"row": row_temp, "col": col_temp});
                             break;
                         }
                         col_temp += options.dx;
