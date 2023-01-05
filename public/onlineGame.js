@@ -283,7 +283,7 @@ new p5(function (p5) {
         // do what is to be done
 
         if (!ina) {
-            if (board.moveCounter > 0) {
+            if (board && board.moveCounter > 0) {
                 if (board.whiteToMove) {
                     whiteTimer.clientSideTimerUpdate();
                 } else {
@@ -356,7 +356,16 @@ new p5(function (p5) {
             }
             let data =
             {
-                fCoordsX: destCoords.x, fCoordsY: destCoords.y, pieceMoved: pieceAtMouse, room: roomCode, "board": board, "FEN": board.boardToFEN(), "timeTaken": timeTaken, "cPGN": pgn
+                fCoordsX: destCoords.x,
+                fCoordsY: destCoords.y,
+                pieceMoved: pieceAtMouse,
+                room: roomCode,
+                "board": board,
+                "FEN": board.boardToFEN(),
+                "timeTaken": timeTaken,
+                "cPGN": pgn,
+                "wTime": whiteTimer.time,
+                "bTime": blackTimer.time
             };
             socket.emit('moveAttempted', data);
             console.log('legal');

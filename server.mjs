@@ -38,29 +38,38 @@ function getRandomInt(min, max) {
 function pieceMovedNotation(pieceMoved, target, board){
     let col = {0: 'a', 1: 'b', 2: 'c', 3: 'd', 4: 'e', 5: 'f', 6: 'g', 7: 'h'};
     let moveNotation = '';
+    let captures = board.occSquares[target.row][target.col] !== 0;
 
     moveNotation += PieceType.numToPGNType[pieceMoved.colourAndPiece()];
-    if ((pieceMoved.type !== PieceType.king) && (pieceMoved.type !== PieceType.pawn)) {
-      let potentialOverlap = board.attacksFromSquare(pieceMoved, target.row, target.col);
+
+    if (captures && (pieceMoved.type === PieceType.rook || pieceMoved.type === PieceType.queen || pieceMoved.type === PieceType.bishop)){
+      //calculate if positive or negative direction
+      //calcualte if this was along row or column
+      //go in required direction
+      //if a piece of the same colour and type is hit don't conc anything
+      //else concatenate either row or col necessary
+
+    }else {
 
 
-      for (let i = 0; i < potentialOverlap.length; i++) {
-        let ptnlOvlp = board.occSquares[potentialOverlap[i].row][potentialOverlap[i].col];
+      if ((pieceMoved.type !== PieceType.king) && (pieceMoved.type !== PieceType.pawn)) {
+        let potentialOverlap = board.attacksFromSquare(pieceMoved, target.row, target.col);
 
-        if (ptnlOvlp !== 0 && ptnlOvlp.colourAndPiece() === pieceMoved.colourAndPiece()) { //if we iterate over a piece which is the same type as we moved
-          //TODO
-          //col is triggering when it shouldnt be
-          if (potentialOverlap[i].col !== pieceMoved.col) { //and it isn't the row of the piece we moved
-            moveNotation += col[pieceMoved.col]; //conc the row (a,b,c,d...)
-          }
-          if (potentialOverlap[i].row !== pieceMoved.row && pieceMoved.type !== PieceType.knight && pieceMoved.type !== PieceType.rook) { //and it isn't the same column of the piece we moved
-            moveNotation += (8 - pieceMoved.row); //conc the col (1,2,3,4...)
+
+        for (let i = 0; i < potentialOverlap.length; i++) {
+          let ptnlOvlp = board.occSquares[potentialOverlap[i].row][potentialOverlap[i].col];
+
+
+          if (ptnlOvlp !== 0 && ptnlOvlp.colourAndPiece() === pieceMoved.colourAndPiece()) { //if we iterate over a piece which is the same type as we moved
+            if (potentialOverlap[i].col !== pieceMoved.col && (pieceMoved.type !== PieceType.rook && captures)) { //and it isn't the col of the piece we moved
+              moveNotation += col[pieceMoved.col]; //conc the col (a,b,c,d...)
+            }
+
           }
         }
       }
     }
-
-    if (board.occSquares[target.row][target.col] !== 0 ) { //if a piece is captured
+    if (captures) {
       if (pieceMoved.type === PieceType.pawn) moveNotation += col[pieceMoved.col];
       moveNotation += 'x'
     }
@@ -229,8 +238,8 @@ io.on('connection', (socket) => {
     let whiteTimer = gameRooms[data.room].whiteTimer;
     let blackTimer = gameRooms[data.room].blackTimer;
 
-    whiteTimer = new ServerTimer(whiteTimer.time / 60, whiteTimer.increment);
-    blackTimer = new ServerTimer(blackTimer.time / 60, whiteTimer.increment);
+    whiteTimer = new ServerTimer(data.wTime / 60, whiteTimer.increment);
+    blackTimer = new ServerTimer(data.bTime / 60, whiteTimer.increment);
 
     if (piece.type === PieceType.king){
       if(board.checkNextMoveBitmap(piece, data.fCoordsY, data.fCoordsX) === true){ //king moves need the bitmap before due to castling through a check
