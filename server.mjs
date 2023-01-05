@@ -51,9 +51,9 @@ function pieceMovedNotation(pieceMoved, target, board){
           //TODO
           //col is triggering when it shouldnt be
           if (potentialOverlap[i].col !== pieceMoved.col) { //and it isn't the row of the piece we moved
-            moveNotation += col[potentialOverlap[i].col]; //conc the row (a,b,c,d...)
+            moveNotation += col[pieceMoved.col]; //conc the row (a,b,c,d...)
           }
-          if (potentialOverlap[i].row !== pieceMoved.row) { //and it isn't the same column of the piece we moved
+          if (potentialOverlap[i].row !== pieceMoved.row && pieceMoved.type !== PieceType.knight && pieceMoved.type !== PieceType.rook) { //and it isn't the same column of the piece we moved
             moveNotation += (8 - pieceMoved.row); //conc the col (1,2,3,4...)
           }
         }
