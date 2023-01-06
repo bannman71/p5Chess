@@ -587,6 +587,37 @@ export default class Board {
         return arr;
     }
 
+    //the PGN requires this when multiple of the same piece can move to the same square
+    iterateRowOrCol(piece, iterateBF, iterationDir, target){
+        let col = {0: 'a', 1: 'b', 2: 'c', 3: 'd', 4: 'e', 5: 'f', 6: 'g', 7: 'h'};
+        if (iterationDir === 'row'){
+            for (let i = (piece.col += iterateBF); i < 8; i+= iterateBF){
+                if (!this.isOnBoard(piece.row, i)) break;
+                if (this.occSquares[piece.row][i] !== 0){ //iterate along the rank (a,b,c,d...)
+                   if (this.occSquares[piece.row][i].colourAndPiece() === piece.colourAndPiece() && this.occSquares[piece.row][i].rowAndCol() !== piece.rowAndCol()) {
+                        if ((target.row+''+target.col).includes(this.allPiecesLegalSquares(this.occSquares[piece.row][i]))){
+                            return i;
+                        }
+                   }
+                }
+            }
+
+        }
+        else if (iterationDir === 'col'){
+            for (let i = (piece.row += iterateBF); i < 8; i+= iterateBF){
+                if (!this.isOnBoard(i, piece.col)) break;
+                if (this.occSquares[i][piece.col] !== 0){ //iterate along the rank (a,b,c,d...)
+                    if (this.occSquares[i][piece.col].colourAndPiece() === piece.colourAndPiece() && this.occSquares[i][piece.col].rowAndCol() !== piece.rowAndCol()) {
+                        if ((target.row+''+target.col).includes(this.allPiecesLegalSquares(this.occSquares[i][piece.col]))){
+                            return i;
+                        }
+                    }
+                }
+            }
+        }
+
+    }
+
     changeTurn(){ // black -> white || white -> black
         this.whiteToMove = !this.whiteToMove;
     }
@@ -878,6 +909,10 @@ export class Piece {
     isOppositeColour(occSquares,destRow,destCol){
         if (occSquares[destRow][destCol] === 0) return true
         return (this.colour & occSquares[destRow][destCol].colour) === 0;
+    }
+
+    rowAndCol(){
+        return this.row + '' + this.col;
     }
 
 }

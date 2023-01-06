@@ -43,6 +43,7 @@ function pieceMovedNotation(pieceMoved, target, board){
     moveNotation += PieceType.numToPGNType[pieceMoved.colourAndPiece()];
 
     if (captures && (pieceMoved.type === PieceType.rook || pieceMoved.type === PieceType.queen || pieceMoved.type === PieceType.bishop)){
+      //TODO
       //calculate if positive or negative direction
       //calcualte if this was along row or column
       //go in required direction
