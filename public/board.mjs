@@ -588,32 +588,20 @@ export default class Board {
     }
 
     //the PGN requires this when multiple of the same piece can move to the same square
-    iterateRowOrCol(piece, iterateBF, iterationDir, target){
+    iterateRowOrCol(piece, target) {
         let col = {0: 'a', 1: 'b', 2: 'c', 3: 'd', 4: 'e', 5: 'f', 6: 'g', 7: 'h'};
-        if (iterationDir === 'row'){
-            for (let i = (piece.col += iterateBF); i < 8; i+= iterateBF){
-                if (!this.isOnBoard(piece.row, i)) break;
-                if (this.occSquares[piece.row][i] !== 0){ //iterate along the rank (a,b,c,d...)
-                   if (this.occSquares[piece.row][i].colourAndPiece() === piece.colourAndPiece() && this.occSquares[piece.row][i].rowAndCol() !== piece.rowAndCol()) {
-                        if ((target.row+''+target.col).includes(this.allPiecesLegalSquares(this.occSquares[piece.row][i]))){
-                            return i;
-                        }
-                   }
-                }
-            }
-
-        }
-        else if (iterationDir === 'col'){
-            for (let i = (piece.row += iterateBF); i < 8; i+= iterateBF){
-                if (!this.isOnBoard(i, piece.col)) break;
-                if (this.occSquares[i][piece.col] !== 0){ //iterate along the rank (a,b,c,d...)
-                    if (this.occSquares[i][piece.col].colourAndPiece() === piece.colourAndPiece() && this.occSquares[i][piece.col].rowAndCol() !== piece.rowAndCol()) {
-                        if ((target.row+''+target.col).includes(this.allPiecesLegalSquares(this.occSquares[i][piece.col]))){
-                            return i;
+        let colIntervals = {"row": 1}
+        for (let i = piece.row; i < 8; i++) { //iterate over file
+            if (this.isOnBoard(i, piece.col)) {
+                if (this.occSquares[i][piece.col] !== 0) {
+                    if (this.occSquares[i][piece.col].colourAndPiece() === piece.colourAndPiece()) {
+                        let LegalSquares = this.allPiecesLegalSquares(this.occSquares[i][piece.col]);
+                        if ((target.row + '' + target.col).includes(LegalSquares)) {
+                            return piece.col;
                         }
                     }
                 }
-            }
+            } else break;
         }
 
     }

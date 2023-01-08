@@ -194,7 +194,7 @@ new p5(function (p5) {
 
         SPACING = Math.floor((BLOCK_SIZE * (1 - PIECE_SCALE)) / 2);
 
-        board = new Board('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR', 0, true, true, true, true, true);
+        board = new Board('3k4/N1rq4/2r3n1/4R3/1N2r1n1/2Q1R3/8/4K3 ', 0, true, true, true, true, true);
 
         board.maskBitMap(board.findMaskSquares(!board.whiteToMove, board.occSquares));
 

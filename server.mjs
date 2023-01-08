@@ -36,39 +36,36 @@ function getRandomInt(min, max) {
 }
 
 function pieceMovedNotation(pieceMoved, target, board){
-    let col = {0: 'a', 1: 'b', 2: 'c', 3: 'd', 4: 'e', 5: 'f', 6: 'g', 7: 'h'};
-    let moveNotation = '';
-    let captures = board.occSquares[target.row][target.col] !== 0;
+  let col = {0: 'a', 1: 'b', 2: 'c', 3: 'd', 4: 'e', 5: 'f', 6: 'g', 7: 'h'};
+  let moveNotation = '';
+  let captures = board.occSquares[target.row][target.col] !== 0;
 
-    moveNotation += PieceType.numToPGNType[pieceMoved.colourAndPiece()];
+  moveNotation += PieceType.numToPGNType[pieceMoved.colourAndPiece()];
 
-    if (captures && (pieceMoved.type === PieceType.rook || pieceMoved.type === PieceType.queen || pieceMoved.type === PieceType.bishop)){
-      //TODO
-      //calculate if positive or negative direction
-      //calcualte if this was along row or column
-      //go in required direction
-      //if a piece of the same colour and type is hit don't conc anything
-      //else concatenate either row or col necessary
-
-    }else {
+  if ((pieceMoved.type !== PieceType.king) && (pieceMoved.type !== PieceType.pawn)) {
+    let attacksFromSquare = board.attacksFromSquare(pieceMoved, target.row, target.col);
 
 
-      if ((pieceMoved.type !== PieceType.king) && (pieceMoved.type !== PieceType.pawn)) {
-        let potentialOverlap = board.attacksFromSquare(pieceMoved, target.row, target.col);
+    for (let i = 0; i < attacksFromSquare.length; i++) {
+      let currSquare = board.occSquares[attacksFromSquare[i].row][attacksFromSquare[i].col];
 
-
-        for (let i = 0; i < potentialOverlap.length; i++) {
-          let ptnlOvlp = board.occSquares[potentialOverlap[i].row][potentialOverlap[i].col];
-
-
-          if (ptnlOvlp !== 0 && ptnlOvlp.colourAndPiece() === pieceMoved.colourAndPiece()) { //if we iterate over a piece which is the same type as we moved
-            if (potentialOverlap[i].col !== pieceMoved.col && (pieceMoved.type !== PieceType.rook && captures)) { //and it isn't the col of the piece we moved
-              moveNotation += col[pieceMoved.col]; //conc the col (a,b,c,d...)
+      //if we iterate over a piece which is the same type as we moved but isn't the piece we moved
+      if (currSquare !== 0 && currSquare.colourAndPiece() === pieceMoved.colourAndPiece() && (currSquare.rowAndCol() !== pieceMoved.rowAndCol())) {
+        //TODO
+        //works except for knights
+        let ovlpPieceAttacks = board.allPiecesLegalSquares(currSquare);
+        for (let k = 0; k < ovlpPieceAttacks.length; k++) {
+          if (ovlpPieceAttacks[k] == (target.row + '' + target.col)) {
+            if (currSquare.row !== pieceMoved.row) {
+              moveNotation += (8 - pieceMoved.row);
             }
-
+            if (currSquare.col !== pieceMoved.col) {
+              moveNotation += col[pieceMoved.col];
+            }
           }
         }
       }
+    }
     }
     if (captures) {
       if (pieceMoved.type === PieceType.pawn) moveNotation += col[pieceMoved.col];
@@ -176,7 +173,7 @@ io.on('connection', (socket) => {
           }
 
           if (!gameRooms[roomCode]){
-            let board = new Board('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR', 0, true, true, true, true, true)
+            let board = new Board('3k4/N1rq4/2r3n1/4R3/1N2r1n1/2Q1R3/8/4K3 ', 0, true, true, true, true, true)
             let whiteTimer = new ServerTimer(matchmaking[i].time, matchmaking[j].increment);
             let blackTimer = new ServerTimer(matchmaking[i].time, matchmaking[j].increment);
             let pgn = new PGN();
