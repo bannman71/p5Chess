@@ -56,12 +56,13 @@ function pieceMovedNotation(pieceMoved, target, board){
         let ovlpPieceAttacks = board.allPiecesLegalSquares(currSquare);
         for (let k = 0; k < ovlpPieceAttacks.length; k++) {
           if (ovlpPieceAttacks[k] == (target.row + '' + target.col)) {
-            if (currSquare.row !== pieceMoved.row) {
-              moveNotation += (8 - pieceMoved.row);
-            }
             if (currSquare.col !== pieceMoved.col) {
               moveNotation += col[pieceMoved.col];
+            } else if (currSquare.row !== pieceMoved.row) {
+              moveNotation += (8 - pieceMoved.row);
             }
+
+
           }
         }
       }
@@ -173,7 +174,7 @@ io.on('connection', (socket) => {
           }
 
           if (!gameRooms[roomCode]){
-            let board = new Board('3k4/N1rq4/2r3n1/4R3/1N2r1n1/2Q1R3/8/4K3 ', 0, true, true, true, true, true)
+            let board = new Board('3k4/N1rq4/2r3n1/4R3/1N2r1n1/2Q1R3/8/4K3', 0, true, true, true, true, true)
             let whiteTimer = new ServerTimer(matchmaking[i].time, matchmaking[j].increment);
             let blackTimer = new ServerTimer(matchmaking[i].time, matchmaking[j].increment);
             let pgn = new PGN();
