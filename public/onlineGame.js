@@ -1,9 +1,11 @@
 import Board from './board.mjs';
 import PGN from "./PGN.mjs";
-import { PieceType } from './board.mjs';
-import { instantiateNewBoard } from './board.mjs';
+import {PieceType} from './board.mjs';
+import {instantiateNewBoard} from './board.mjs';
 import ClientTimer from './timer.mjs';
 import Front from './front.mjs';
+import {Grid} from "gridjs";
+import "gridjs/dist/theme/mermaid.css";
 
 new p5(function (p5) {
     // const socket = io('https://bannman71-p5chess-674rjrqr9vxh4grq-3000.preview.app.github.dev');

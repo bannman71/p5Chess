@@ -206,13 +206,57 @@ export default class Board {
         return FEN;
     }
 
-    isLegalMove(piece, destRow, destCol){
+    pieceMovedNotation(pieceMoved, target) {
+        let col = {0: 'a', 1: 'b', 2: 'c', 3: 'd', 4: 'e', 5: 'f', 6: 'g', 7: 'h'};
+        let moveNotation = '';
+
+        let captures = this.occSquares[target.row][target.col] !== 0;
+
+        moveNotation += PieceType.numToPGNType[pieceMoved.colourAndPiece()];
+
+        if ((pieceMoved.type !== PieceType.king) && (pieceMoved.type !== PieceType.pawn)) {
+            let attacksFromSquare = this.attacksFromSquare(pieceMoved, target.row, target.col);
+
+
+            for (let i = 0; i < attacksFromSquare.length; i++) {
+                let currSquare = this.occSquares[attacksFromSquare[i].row][attacksFromSquare[i].col];
+
+                //if we iterate over a piece which is the same type as we moved but isn't the piece we moved
+                if (currSquare !== 0 && currSquare.colourAndPiece() === pieceMoved.colourAndPiece() && (currSquare.rowAndCol() !== pieceMoved.rowAndCol())) {
+                    //TODO
+                    //works except for knights
+                    let ovlpPieceAttacks = this.allPiecesLegalSquares(currSquare);
+                    for (let k = 0; k < ovlpPieceAttacks.length; k++) {
+                        if (ovlpPieceAttacks[k] == (target.row + '' + target.col)) {
+                            if (currSquare.col !== pieceMoved.col) {
+                                moveNotation += col[pieceMoved.col];
+                            } else if (currSquare.row !== pieceMoved.row) {
+                                moveNotation += (8 - pieceMoved.row);
+                            }
+
+
+                        }
+                    }
+                }
+            }
+        }
+        if (captures) {
+            if (pieceMoved.type === PieceType.pawn) moveNotation += col[pieceMoved.col];
+            moveNotation += 'x'
+        }
+
+        moveNotation += col[target.col] + '' + (8 - target.row);
+
+        return moveNotation;
+    }
+
+    isLegalMove(piece, destRow, destCol) {
         var destPos = destRow + '' + destCol;
 
         if (this.whiteToMove === true && piece.colour === PieceType.black) return false;
         if (this.whiteToMove === false && piece.colour === PieceType.white) return false;
 
-        if (piece.row === destRow && piece.col === destCol){
+        if (piece.row === destRow && piece.col === destCol) {
             return false;
         }
            

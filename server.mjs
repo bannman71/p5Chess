@@ -35,48 +35,6 @@ function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-function pieceMovedNotation(pieceMoved, target, board){
-  let col = {0: 'a', 1: 'b', 2: 'c', 3: 'd', 4: 'e', 5: 'f', 6: 'g', 7: 'h'};
-  let moveNotation = '';
-  let captures = board.occSquares[target.row][target.col] !== 0;
-
-  moveNotation += PieceType.numToPGNType[pieceMoved.colourAndPiece()];
-
-  if ((pieceMoved.type !== PieceType.king) && (pieceMoved.type !== PieceType.pawn)) {
-    let attacksFromSquare = board.attacksFromSquare(pieceMoved, target.row, target.col);
-
-
-    for (let i = 0; i < attacksFromSquare.length; i++) {
-      let currSquare = board.occSquares[attacksFromSquare[i].row][attacksFromSquare[i].col];
-
-      //if we iterate over a piece which is the same type as we moved but isn't the piece we moved
-      if (currSquare !== 0 && currSquare.colourAndPiece() === pieceMoved.colourAndPiece() && (currSquare.rowAndCol() !== pieceMoved.rowAndCol())) {
-        //TODO
-        //works except for knights
-        let ovlpPieceAttacks = board.allPiecesLegalSquares(currSquare);
-        for (let k = 0; k < ovlpPieceAttacks.length; k++) {
-          if (ovlpPieceAttacks[k] == (target.row + '' + target.col)) {
-            if (currSquare.col !== pieceMoved.col) {
-              moveNotation += col[pieceMoved.col];
-            } else if (currSquare.row !== pieceMoved.row) {
-              moveNotation += (8 - pieceMoved.row);
-            }
-
-
-          }
-        }
-      }
-    }
-    }
-    if (captures) {
-      if (pieceMoved.type === PieceType.pawn) moveNotation += col[pieceMoved.col];
-      moveNotation += 'x'
-    }
-
-    moveNotation += col[target.col] + '' + (8-target.row);
-
-    return moveNotation;
-}
 function updateTableHTML(){
   //header
   let table = `
@@ -109,10 +67,15 @@ function updateTableHTML(){
 
 }
 
-function generateRoomCode(){
+function updateMoveTable() {
+
+
+}
+
+function generateRoomCode() {
   var roomCode = '';
-  for (let i = 0; i < 6; i++){
-    roomCode += String.fromCharCode(getRandomInt(48,122));
+  for (let i = 0; i < 6; i++) {
+    roomCode += String.fromCharCode(getRandomInt(48, 122));
   }
   gameRooms.push({"roomCode": [gameRooms.length], "rC": roomCode});
   // make the roomcode return an index
@@ -255,7 +218,7 @@ io.on('connection', (socket) => {
         board.enPassentTaken = false;
       }
       let target = {"row": data.fCoordsY, "col": data.fCoordsX};
-      let pieceMovedNtn = pieceMovedNotation(piece, target, board);
+      let pieceMovedNtn = board.pieceMovedNotation(piece, target);
       // board.defendCheck();
 
       if (piece.type !== PieceType.pawn) board.pawnMovedTwoSquares = false;
@@ -267,14 +230,15 @@ io.on('connection', (socket) => {
       console.log(board.moveCounter);
       if (board.enPassentTaken){
         board.updateEnPassentMove(piece, data.fCoordsY, data.fCoordsX);
-      }
-      else board.updatePiecePos(piece, data.fCoordsY, data.fCoordsX); 
-      
+      } else board.updatePiecePos(piece, data.fCoordsY, data.fCoordsX);
+
       //create a new bitmap for the current legal position for board.kingInCheck()
       let bmap = board.findMaskSquares(board.whiteToMove, board.occSquares);
-      board.maskBitMap(bmap); 
+      board.maskBitMap(bmap);
 
       board.isInCheck = board.kingInCheck();
+
+      if (board.isInCheck) pieceMovedNtn += '+';
 
       if (board.whiteToMove) {
         whiteTimer.update(data.timeTaken);
@@ -283,8 +247,7 @@ io.on('connection', (socket) => {
       board.changeTurn();
       let newFEN = board.boardToFEN();
 
-      pgn.update(pieceMovedNtn,  newFEN);
-      let newPGN = pgn.PGNarr;
+      pgn.update(pieceMovedNtn, newFEN);
 
       if (board.whiteToMove) { //slightly confusing as the turn state is changed a few lines above
         io.to(data.room).emit('legalMoveMade', ({"board": board, "FEN": newFEN, "cPGN": pgn, "newTimer": blackTimer}));
