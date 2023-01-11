@@ -4,12 +4,14 @@ import {PieceType} from './board.mjs';
 import {instantiateNewBoard} from './board.mjs';
 import ClientTimer from './timer.mjs';
 import Front from './front.mjs';
-import {Grid} from "gridjs";
-import "gridjs/dist/theme/mermaid.css";
+import {Grid} from './gridjs.mjs';
+
+//TODO
 
 new p5(function (p5) {
     // const socket = io('https://bannman71-p5chess-674rjrqr9vxh4grq-3000.preview.app.github.dev');
     const socket = io('http://localhost:3000');
+
 
     const queryString = window.location.search;
     const urlParameters = new URLSearchParams(queryString);
@@ -182,8 +184,33 @@ new p5(function (p5) {
         canv = p5.createCanvas(size, size);
         canv.parent("online-board-container");
 
+        new Grid({
+            data: [
+                ["John", "john@example.com", "(353) 01 222 3333"],
+                ["Mark", "mark@gmail.com", "(01) 22 888 4444"],
+                ["Eoin", "eoin@gmail.com", "0097 22 654 00033"],
+                ["Sarah", "sarahcdd@gmail.com", "+322 876 1233"],
+                ["Afshin", "afshin@mail.com", "(353) 22 87 8356"]
+            ],
+            style: {
+                table: {
+                    border: 'none'
+                },
+                th: {
+                    color: '#000',
+                    'border-bottom': 'none',
+                    'text-align': 'center'
+                },
+                td: {
+                    'text-align': 'center',
+                    'border': 'none'
+                }
+            }
+        }).render(document.getElementById("game-moves-container"));
+
 
         addElement();
+        closePopup();
 
         pgn = new PGN();
 
