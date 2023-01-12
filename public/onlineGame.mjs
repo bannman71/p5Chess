@@ -5,6 +5,7 @@ import {instantiateNewBoard} from './board.mjs';
 import ClientTimer from './timer.mjs';
 import Front from './front.mjs';
 import {Grid} from './gridjs.mjs';
+import {html} from './gridjs.mjs';
 
 //TODO
 
@@ -36,6 +37,10 @@ new p5(function (p5) {
     var board;
     var front;
     var size;
+
+    //this is the variable that stores the PGN and
+    //is used to display it in a grid.
+    let gridData = [['1', '2', '3']];
 
     //if the user tabs out, a few cases must be taken care of to do with the setTimout 'catch-up run'
     let timeInactiveStart;
@@ -89,9 +94,6 @@ new p5(function (p5) {
 
         //TODO
         //update the moves DOM with the current PGN
-        let table = `
-           
-        `;
 
 
 
@@ -185,13 +187,7 @@ new p5(function (p5) {
         canv.parent("online-board-container");
 
         new Grid({
-            data: [
-                ["John", "john@example.com", "(353) 01 222 3333"],
-                ["Mark", "mark@gmail.com", "(01) 22 888 4444"],
-                ["Eoin", "eoin@gmail.com", "0097 22 654 00033"],
-                ["Sarah", "sarahcdd@gmail.com", "+322 876 1233"],
-                ["Afshin", "afshin@mail.com", "(353) 22 87 8356"]
-            ],
+            data: gridData,
             style: {
                 table: {
                     border: 'none'
@@ -411,6 +407,7 @@ new p5(function (p5) {
             board.maskBitMap(bmap);
 
             board.isInCheck = board.kingInCheck();
+
 
         }
 

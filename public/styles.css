@@ -412,6 +412,13 @@ td.gridjs-td {
   background-color: #262421;
 }
 
+td.gridjs-td:first-child {
+  font: 1vw "Apple Braille";
+  color: white;
+
+  background-color: white;
+}
+
 th.gridjs-th {
   font: 16px "Apple Braille";
   color: white;

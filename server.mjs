@@ -142,7 +142,7 @@ io.on('connection', (socket) => {
             let blackTimer = new ServerTimer(matchmaking[i].time, matchmaking[j].increment);
             let pgn = new PGN();
             gameRooms[roomCode] = new GameRoom(
-              roomCode, board, whiteTimer, blackTimer, pgn, []
+                roomCode, board, whiteTimer, blackTimer, pgn, [], [['1']]
             );
           }
 
@@ -226,6 +226,7 @@ io.on('connection', (socket) => {
 
       if (piece.colour === PieceType.black) {
         board.moveCounter++; //after blacks move -> the move counter always increases
+        //gridData.push( moveCounter )
       }
       console.log(board.moveCounter);
       if (board.enPassentTaken){
@@ -249,9 +250,19 @@ io.on('connection', (socket) => {
 
       pgn.update(pieceMovedNtn, newFEN);
 
+      //if whiteToMove:
+      //  gridData[0][0].push( pgn move )
+      //else:
+      //  gridData[0][1].push( pgn move )
+
       if (board.whiteToMove) { //slightly confusing as the turn state is changed a few lines above
         io.to(data.room).emit('legalMoveMade', ({"board": board, "FEN": newFEN, "cPGN": pgn, "newTimer": blackTimer}));
-      } else io.to(data.room).emit('legalMoveMade', ({"board": board, "FEN": newFEN, "cPGN": pgn, "newTimer": whiteTimer}));
+      } else io.to(data.room).emit('legalMoveMade', ({
+        "board": board,
+        "FEN": newFEN,
+        "cPGN": pgn,
+        "newTimer": whiteTimer
+      }));
     }
 
   });
