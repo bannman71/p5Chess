@@ -75,9 +75,7 @@ new p5(function (p5) {
         if (board.whiteToMove) blackTimer = new ClientTimer(clientIsWhite, false, (data.newTimer.time / 60), data.newTimer.increment);
         else whiteTimer = new ClientTimer(clientIsWhite, true, (data.newTimer.time / 60), data.newTimer.increment);
 
-        pgn = new PGN();
-        pgn.PGNarr = data.cPGN.PGNarr;
-        pgn.FENarr = data.cPGN.FENarr;
+        pgn = new PGN(data.PGNarr, data.FENarr);
 
         console.log('hello ');
         console.log(pgn);
@@ -211,7 +209,6 @@ new p5(function (p5) {
         addElement();
         closePopup();
 
-        pgn = new PGN();
 
         PIECE_SCALE = 1;
 
@@ -240,12 +237,17 @@ new p5(function (p5) {
 
         whiteTimer = new ClientTimer(clientIsWhite, true, time, increment);
         blackTimer = new ClientTimer(clientIsWhite, false, time, increment);
-        
+
         blackTimer.showContainer(size);
         whiteTimer.showContainer(size);
         updateCSSFromBoardSize();
         whiteTimer.displayTime();
         blackTimer.displayTime();
+
+
+        pgn = new PGN([], []);
+
+        console.log(pgn.Data[0].FENarr);
 
     }
 
@@ -379,8 +381,6 @@ new p5(function (p5) {
             if (board.moveCounter > 1) {
                 timeMoveEnd = Date.now();
                 timeTaken = (timeMoveEnd - timeMoveStart) / 1000;
-                console.log('time');
-                console.log(timeTaken);
             }
             let data =
                 {
@@ -391,10 +391,12 @@ new p5(function (p5) {
                     "board": board,
                     "FEN": board.boardToFEN(),
                     "timeTaken": timeTaken,
-                    "cPGN": pgn,
                     "wTime": whiteTimer,
                     "bTime": blackTimer,
-                    "gridData": gridData
+                    "gridData": gridData,
+                    "moveCounter": board.moveCounter,
+                    "PGNarr": pgn.PGNarr,
+                    "FENarr": pgn.FENarr
                 };
             socket.emit('moveAttempted', data);
             console.log('legal');
@@ -417,9 +419,13 @@ new p5(function (p5) {
 
         //not part of the game logic
 
-        $("#close-btn").off('click').on("click", function() {
+        $("#close-btn").off('click').on("click", function () {
             closePopup();
         });
+
+        grid.on('rowClick', (...args) => console.log('row: ' + JSON.stringify(args), args));
+        grid.on('cellClick', (...args) => console.log('cell: ' + JSON.stringify(args), args));
+
 
     }
 

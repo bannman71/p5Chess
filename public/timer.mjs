@@ -101,7 +101,6 @@ export class ServerTimer{
     }
 
     update(timeTaken){
-        console.log(timeTaken + ' TimeTaken');
         this.time -= timeTaken;
         this.time += this.increment;
     }

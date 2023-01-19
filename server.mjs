@@ -190,13 +190,15 @@ io.on('connection', (socket) => {
 
     let newGridData = data.gridData;
 
+    //object which stores the FEN string in an array for each move
+    //is be used to view a previous position from the game
+    let moveData;
+
     var piece = new Piece(data.pieceMoved.type, data.pieceMoved.row, data.pieceMoved.col, data.pieceMoved.colour);
     let board = instantiateNewBoard(data.board, data.FEN);
 
     //redeclare PGN class to keep its methods
-    let pgn = new PGN();
-    pgn.PGNarr = data.cPGN.PGNarr;
-    pgn.FENarr = data.cPGN.FENarr;
+    let pgn = new PGN(data.PGNarr, data.FENarr);
 
     let whiteTimer;
     let blackTimer;
@@ -249,29 +251,35 @@ io.on('connection', (socket) => {
       board.changeTurn();
       let newFEN = board.boardToFEN();
 
-      pgn.update(pieceMovedNtn, newFEN);
-
       //TODO
       if (board.whiteToMove) {
         newGridData[newGridData.length - 1][2] = pieceMovedNtn;
+        pgn.update(pieceMovedNtn, newFEN, board.moveCounter, board.whiteToMove)
       } else {
-        newGridData.push([board.moveCounter, '', '']);
+        newGridData.push([board.moveCounter, '', '', '']);
         newGridData[newGridData.length - 1][1] = pieceMovedNtn;
+        pgn.update(pieceMovedNtn, newFEN, board.moveCounter, board.whiteToMove)
       }
       if (board.whiteToMove) { //slightly confusing as the turn state is changed a few lines above
         io.to(data.room).emit('legalMoveMade', ({
           "board": board,
           "FEN": newFEN,
           "cPGN": pgn,
+          "FENarr": pgn.FENarr,
+          "PGNarr": pgn.PGNarr,
           "newTimer": blackTimer,
-          "newGridData": newGridData
+          "newGridData": newGridData,
+          "moveCounter": board.moveCounter
         }));
       } else io.to(data.room).emit('legalMoveMade', ({
         "board": board,
         "FEN": newFEN,
         "cPGN": pgn,
+        "FENarr": pgn.FENarr,
+        "PGNarr": pgn.PGNarr,
         "newTimer": whiteTimer,
-        "newGridData": newGridData
+        "newGridData": newGridData,
+        "moveCounter": board.moveCounter
       }));
     }
 

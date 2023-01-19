@@ -1,17 +1,26 @@
-export default class PGN{
+export default class PGN {
 
-    constructor() {
-        this.PGNarr = [];
-        this.FENarr = [];
+    constructor(PGNarr, FENarr) {
+        this.PGNarr = PGNarr;
+        this.FENarr = FENarr;
+        this.Data = [{"moveCounter": '', "PGNarr": this.PGNarr, "FENarr": this.FENarr}]
     }
 
-    update(pieceMovedNotation, FEN){
-         this.PGNarr.push(pieceMovedNotation);
-         this.FENarr.push(FEN);
+    update(pieceMovedNotation, FEN, moveCounter, whiteToMove) {
+        this.PGNarr.push(pieceMovedNotation);
+        this.FENarr.push(FEN);
+        //every move, a fen needs to be stored,
+        //it must be pushed when it is white's turn
+        if (whiteToMove) {
+            this.Data.push({"moveCounter": '', "PGNarr": [], "FENarr": []})
+        }
+        this.Data[this.Data.length - 1].moveCounter = moveCounter;
+        // this.Data[this.Data.length - 1].PGN
     }
 
+    find(moveNum, pgnNotation) {
 
-    //for i length arr
-    //  div &=
+
+    }
 
 }
