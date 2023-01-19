@@ -40,7 +40,8 @@ new p5(function (p5) {
 
     //this is the variable that stores the PGN and
     //is used to display it in a grid.
-    let gridData = [['1', '2', '3']];
+    let grid;
+    let gridData = [];
 
     //if the user tabs out, a few cases must be taken care of to do with the setTimout 'catch-up run'
     let timeInactiveStart;
@@ -87,15 +88,17 @@ new p5(function (p5) {
         //if the tab is inactive and the other player makes a move, a new inactive time
         //must be declared, else it will subtract the time from when the client tabbed out
         //during the other player's move.
-        if (windowInactive){
+        if (windowInactive) {
             timeInactiveStart = Date.now();
             console.log(Date.now());
         }
 
+        gridData = data.newGridData;
         //TODO
         //update the moves DOM with the current PGN
-
-
+        grid.updateConfig({
+            data: gridData
+        }).forceRender();
 
     });
 
@@ -186,8 +189,8 @@ new p5(function (p5) {
         canv = p5.createCanvas(size, size);
         canv.parent("online-board-container");
 
-        new Grid({
-            data: gridData,
+        grid = new Grid({
+            data: [[]],
             style: {
                 table: {
                     border: 'none'
@@ -219,7 +222,7 @@ new p5(function (p5) {
 
         SPACING = Math.floor((BLOCK_SIZE * (1 - PIECE_SCALE)) / 2);
 
-        board = new Board('3k4/N1rq4/2r3n1/4R3/1N2r1n1/2Q1R3/8/4K3', 0, true, true, true, true, true);
+        board = new Board('3k4/N1rq4/2r3n1/4R3/1N2r1n1/2Q1R3/8/4K3', 1, true, true, true, true, true);
 
         board.maskBitMap(board.findMaskSquares(!board.whiteToMove, board.occSquares));
 
@@ -277,7 +280,7 @@ new p5(function (p5) {
         } else {
             windowInactive = false;
             timeInactiveEnd = Date.now();
-            if (board.moveCounter > 0) {
+            if (board.moveCounter > 1) {
                 let timeTaken = timeInactiveEnd - timeInactiveStart;
                 if (board.whiteToMove) {
                     whiteTimer.timeToDisplay -= timeTaken / 1000;
@@ -380,18 +383,19 @@ new p5(function (p5) {
                 console.log(timeTaken);
             }
             let data =
-            {
-                fCoordsX: destCoords.x,
-                fCoordsY: destCoords.y,
-                pieceMoved: pieceAtMouse,
-                room: roomCode,
-                "board": board,
-                "FEN": board.boardToFEN(),
-                "timeTaken": timeTaken,
-                "cPGN": pgn,
-                "wTime": whiteTimer.time,
-                "bTime": blackTimer.time
-            };
+                {
+                    fCoordsX: destCoords.x,
+                    fCoordsY: destCoords.y,
+                    pieceMoved: pieceAtMouse,
+                    room: roomCode,
+                    "board": board,
+                    "FEN": board.boardToFEN(),
+                    "timeTaken": timeTaken,
+                    "cPGN": pgn,
+                    "wTime": whiteTimer,
+                    "bTime": blackTimer,
+                    "gridData": gridData
+                };
             socket.emit('moveAttempted', data);
             console.log('legal');
 

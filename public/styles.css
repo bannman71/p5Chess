@@ -406,21 +406,24 @@ a{
 }
 
 td.gridjs-td {
-  font: 1vw "Apple Braille";
+  font-family: "Noto Sans", Sans-Serif;
+  font-size: 1vw;
   color: white;
 
   background-color: #262421;
 }
 
 td.gridjs-td:first-child {
-  font: 1vw "Apple Braille";
+  font-family: "Noto Sans", Sans-Serif;
+  font-size: 1vw;
   color: white;
 
-  background-color: white;
+  background-color: #404040;
 }
 
 th.gridjs-th {
-  font: 16px "Apple Braille";
+  font-family: "Noto Sans", Sans-Serif;
+  font-size: 1vw;
   color: white;
   background-color: #262421;
 }

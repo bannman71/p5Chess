@@ -137,7 +137,7 @@ io.on('connection', (socket) => {
           }
 
           if (!gameRooms[roomCode]){
-            let board = new Board('3k4/N1rq4/2r3n1/4R3/1N2r1n1/2Q1R3/8/4K3', 0, true, true, true, true, true)
+            let board = new Board('3k4/N1rq4/2r3n1/4R3/1N2r1n1/2Q1R3/8/4K3', 1, true, true, true, true, true)
             let whiteTimer = new ServerTimer(matchmaking[i].time, matchmaking[j].increment);
             let blackTimer = new ServerTimer(matchmaking[i].time, matchmaking[j].increment);
             let pgn = new PGN();
@@ -184,31 +184,32 @@ io.on('connection', (socket) => {
 
   //GAME LOGIC
 
-  socket.on('moveAttempted', function(data) { 
-    //data = fCoordsX fCoordsY pieceMoved room board FEN timeTaken whiteMoveMade
+  socket.on('moveAttempted', function(data) {
     let isLegal = false;
     let tempEnPassentTaken = false;
 
+    let newGridData = data.gridData;
+
     var piece = new Piece(data.pieceMoved.type, data.pieceMoved.row, data.pieceMoved.col, data.pieceMoved.colour);
-    let board = instantiateNewBoard(data.board, data.FEN);;
+    let board = instantiateNewBoard(data.board, data.FEN);
 
     //redeclare PGN class to keep its methods
     let pgn = new PGN();
     pgn.PGNarr = data.cPGN.PGNarr;
     pgn.FENarr = data.cPGN.FENarr;
 
-    let whiteTimer = gameRooms[data.room].whiteTimer;
-    let blackTimer = gameRooms[data.room].blackTimer;
+    let whiteTimer;
+    let blackTimer;
 
-    whiteTimer = new ServerTimer(data.wTime / 60, whiteTimer.increment);
-    blackTimer = new ServerTimer(data.bTime / 60, whiteTimer.increment);
+    whiteTimer = new ServerTimer(data.wTime.time / 60, data.wTime.increment);
+    blackTimer = new ServerTimer(data.bTime.time / 60, data.bTime.increment);
 
-    if (piece.type === PieceType.king){
-      if(board.checkNextMoveBitmap(piece, data.fCoordsY, data.fCoordsX) === true){ //king moves need the bitmap before due to castling through a check
+    if (piece.type === PieceType.king) {
+      if (board.checkNextMoveBitmap(piece, data.fCoordsY, data.fCoordsX) === true) { //king moves need the bitmap before due to castling through a check
         if (board.isLegalKingMove(piece, data.fCoordsY, data.fCoordsX)) isLegal = true;
       }
     } else {
-      if (board.isLegalMove(piece, data.fCoordsY, data.fCoordsX)){ //doesn't need the bitmap first as it can find after a move has been made whether or not it is in check
+      if (board.isLegalMove(piece, data.fCoordsY, data.fCoordsX)) { //doesn't need the bitmap first as it can find after a move has been made whether or not it is in check
         if (board.checkNextMoveBitmap(piece, data.fCoordsY, data.fCoordsX) === true) isLegal = true;
       }
     }
@@ -226,7 +227,7 @@ io.on('connection', (socket) => {
 
       if (piece.colour === PieceType.black) {
         board.moveCounter++; //after blacks move -> the move counter always increases
-        //gridData.push( moveCounter )
+
       }
       console.log(board.moveCounter);
       if (board.enPassentTaken){
@@ -250,18 +251,27 @@ io.on('connection', (socket) => {
 
       pgn.update(pieceMovedNtn, newFEN);
 
-      //if whiteToMove:
-      //  gridData[0][0].push( pgn move )
-      //else:
-      //  gridData[0][1].push( pgn move )
-
+      //TODO
+      if (board.whiteToMove) {
+        newGridData[newGridData.length - 1][2] = pieceMovedNtn;
+      } else {
+        newGridData.push([board.moveCounter, '', '']);
+        newGridData[newGridData.length - 1][1] = pieceMovedNtn;
+      }
       if (board.whiteToMove) { //slightly confusing as the turn state is changed a few lines above
-        io.to(data.room).emit('legalMoveMade', ({"board": board, "FEN": newFEN, "cPGN": pgn, "newTimer": blackTimer}));
+        io.to(data.room).emit('legalMoveMade', ({
+          "board": board,
+          "FEN": newFEN,
+          "cPGN": pgn,
+          "newTimer": blackTimer,
+          "newGridData": newGridData
+        }));
       } else io.to(data.room).emit('legalMoveMade', ({
         "board": board,
         "FEN": newFEN,
         "cPGN": pgn,
-        "newTimer": whiteTimer
+        "newTimer": whiteTimer,
+        "newGridData": newGridData
       }));
     }
 

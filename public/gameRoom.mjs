@@ -4,7 +4,7 @@ export default class GameRoom{
         this.roomCode = roomCode;
         this.board = board;
         this.whiteTimer = whiteTimer;
-        this.blackTimer = blackTiamer;
+        this.blackTimer = blackTimer;
         this.PGN = PGN;
         this.client = client;
         this.gridData = gridData;
