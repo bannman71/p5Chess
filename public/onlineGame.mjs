@@ -311,7 +311,7 @@ new p5(function (p5) {
         // do what is to be done
 
         if (!ina) {
-            if (board && board.moveCounter > 0) {
+            if (board && board.moveCounter > 1) {
                 if (board.whiteToMove) {
                     whiteTimer.clientSideTimerUpdate();
                 } else {
@@ -376,7 +376,7 @@ new p5(function (p5) {
 
         if (isLegal) {
             let timeTaken = 0;
-            if (board.moveCounter > 0){
+            if (board.moveCounter > 1) {
                 timeMoveEnd = Date.now();
                 timeTaken = (timeMoveEnd - timeMoveStart) / 1000;
                 console.log('time');

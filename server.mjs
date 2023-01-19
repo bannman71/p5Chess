@@ -201,8 +201,8 @@ io.on('connection', (socket) => {
     let whiteTimer;
     let blackTimer;
 
-    whiteTimer = new ServerTimer(data.wTime.time / 60, data.wTime.increment);
-    blackTimer = new ServerTimer(data.bTime.time / 60, data.bTime.increment);
+    whiteTimer = new ServerTimer(data.wTime.time / 60, data.wTime.increment / 1);
+    blackTimer = new ServerTimer(data.bTime.time / 60, data.bTime.increment / 1);
 
     if (piece.type === PieceType.king) {
       if (board.checkNextMoveBitmap(piece, data.fCoordsY, data.fCoordsX) === true) { //king moves need the bitmap before due to castling through a check
