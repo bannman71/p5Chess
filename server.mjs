@@ -254,11 +254,11 @@ io.on('connection', (socket) => {
       //TODO
       if (board.whiteToMove) {
         newGridData[newGridData.length - 1][2] = pieceMovedNtn;
-        pgn.update(pieceMovedNtn, newFEN, board.moveCounter, board.whiteToMove)
+        pgn.update(pieceMovedNtn, newFEN, board.moveCounter - 1)
       } else {
         newGridData.push([board.moveCounter, '', '', '']);
         newGridData[newGridData.length - 1][1] = pieceMovedNtn;
-        pgn.update(pieceMovedNtn, newFEN, board.moveCounter, board.whiteToMove)
+        pgn.update(pieceMovedNtn, newFEN, board.moveCounter)
       }
       if (board.whiteToMove) { //slightly confusing as the turn state is changed a few lines above
         io.to(data.room).emit('legalMoveMade', ({

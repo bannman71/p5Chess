@@ -247,7 +247,6 @@ new p5(function (p5) {
 
         pgn = new PGN([], []);
 
-        console.log(pgn.Data[0].FENarr);
 
     }
 
