@@ -198,7 +198,7 @@ io.on('connection', (socket) => {
     let board = instantiateNewBoard(data.board, data.FEN);
 
     //redeclare PGN class to keep its methods
-    let pgn = new PGN(data.PGNarr, data.FENarr);
+    let pgn = new PGN(data.PGNarr, data.FENarr, data.pgnData);
 
     let whiteTimer;
     let blackTimer;
@@ -260,11 +260,14 @@ io.on('connection', (socket) => {
         newGridData[newGridData.length - 1][1] = pieceMovedNtn;
         pgn.update(pieceMovedNtn, newFEN, board.moveCounter)
       }
+      console.log('yoyoyoyoyoyoyoy');
+      console.log(pgn.Data);
       if (board.whiteToMove) { //slightly confusing as the turn state is changed a few lines above
         io.to(data.room).emit('legalMoveMade', ({
           "board": board,
           "FEN": newFEN,
           "cPGN": pgn,
+          "pgnData": pgn.Data,
           "FENarr": pgn.FENarr,
           "PGNarr": pgn.PGNarr,
           "newTimer": blackTimer,
@@ -277,6 +280,7 @@ io.on('connection', (socket) => {
         "cPGN": pgn,
         "FENarr": pgn.FENarr,
         "PGNarr": pgn.PGNarr,
+        "pgnData": pgn.Data,
         "newTimer": whiteTimer,
         "newGridData": newGridData,
         "moveCounter": board.moveCounter

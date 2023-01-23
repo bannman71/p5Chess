@@ -49,6 +49,8 @@ new p5(function (p5) {
     let windowInactive = false;
 
     let pgn;
+    let moveCounterToFind;
+    let PGNToFind;
 
     var BLOCK_SIZE;
     var PIECE_SCALE;
@@ -75,11 +77,10 @@ new p5(function (p5) {
         if (board.whiteToMove) blackTimer = new ClientTimer(clientIsWhite, false, (data.newTimer.time / 60), data.newTimer.increment);
         else whiteTimer = new ClientTimer(clientIsWhite, true, (data.newTimer.time / 60), data.newTimer.increment);
 
-        pgn = new PGN(data.PGNarr, data.FENarr);
-
+        pgn = new PGN(data.PGNarr, data.FENarr, data.pgnData);
+        pgn.Data.push({"moveCounter": data.moveCounter, "PGNarr": pgn.PGNarr, "FENarr": pgn.FENarr});
         console.log('hello ');
         console.log(pgn);
-
 
         timeMoveStart = Date.now();
 
@@ -245,7 +246,7 @@ new p5(function (p5) {
         blackTimer.displayTime();
 
 
-        pgn = new PGN([], []);
+        pgn = new PGN([], [], []);
 
 
     }
@@ -336,8 +337,7 @@ new p5(function (p5) {
             // var start = performance.now();
             if (board.whiteToMove && (pieceAtMouse.colour === PieceType.white) && clientIsWhite) {
                 legalCircles = board.allPiecesLegalSquares(pieceAtMouse);
-            }
-            else if (!board.whiteToMove && (pieceAtMouse.colour === PieceType.black) && !clientIsWhite) {
+            } else if (!board.whiteToMove && (pieceAtMouse.colour === PieceType.black) && !clientIsWhite) {
                 legalCircles = board.allPiecesLegalSquares(pieceAtMouse);
             }
             // var end = performance.now();
@@ -345,6 +345,20 @@ new p5(function (p5) {
             MouseDown = true;
 
         } else legalCircles = [];
+
+        grid.on('rowClick', (...args) => {
+            //get the move counter of the row clicked
+            JSON.stringify(args);
+            moveCounterToFind = $.extend({}, args[1]._cells[0].data);
+
+            moveCounterToFind = args[1]._cells[0].data;
+            console.log(moveCounterToFind);
+        });
+        grid.on('cellClick', (...args) => {
+            //get the PGN of the clicked cell
+            PGNToFind = args[1].data;
+        })
+
 
     }
 
@@ -395,7 +409,8 @@ new p5(function (p5) {
                     "gridData": gridData,
                     "moveCounter": board.moveCounter,
                     "PGNarr": pgn.PGNarr,
-                    "FENarr": pgn.FENarr
+                    "FENarr": pgn.FENarr,
+                    "pgnData": pgn.Data
                 };
             socket.emit('moveAttempted', data);
             console.log('legal');
@@ -422,11 +437,26 @@ new p5(function (p5) {
             closePopup();
         });
 
-        grid.on('rowClick', (...args) => console.log('row: ' + JSON.stringify(args), args));
-        grid.on('cellClick', (...args) => console.log('cell: ' + JSON.stringify(args), args));
+        ;
 
+        // grid.on('rowClick', (...args) => console.log('row: ' + JSON.stringify(args), args));
+        // grid.on('cellClick', (...args) => console.log('cell: ' + JSON.stringify(args), args));
+
+
+        // console.log('yoo');
+        // console.log(moveCounterToFind);
+
+        // console.log(moveCounterToFind + ' on ' + PGNToFind);
+        //go back to the FEN string of that move
+        // setTimeout(pgn.find(moveCounterToFind, PGNToFind), 10);
+        // setTimeout(() => {
+        //     console.log(moveCounterToFind + ' on ' + PGNToFind);
+        //
+        // }, 1);
+        // pgn.find(moveCounterToFind, PGNToFind);
 
     }
+
 
     p5.windowResized = () => {
         WIDTH = canvasDiv.offsetWidth;
