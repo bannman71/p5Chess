@@ -78,7 +78,6 @@ new p5(function (p5) {
         else whiteTimer = new ClientTimer(clientIsWhite, true, (data.newTimer.time / 60), data.newTimer.increment);
 
         pgn = new PGN(data.PGNarr, data.FENarr, data.pgnData);
-        pgn.Data.push({"moveCounter": data.moveCounter, "PGNarr": pgn.PGNarr, "FENarr": pgn.FENarr});
         console.log('hello ');
         console.log(pgn);
 
@@ -448,12 +447,11 @@ new p5(function (p5) {
 
         // console.log(moveCounterToFind + ' on ' + PGNToFind);
         //go back to the FEN string of that move
-        // setTimeout(pgn.find(moveCounterToFind, PGNToFind), 10);
-        // setTimeout(() => {
-        //     console.log(moveCounterToFind + ' on ' + PGNToFind);
-        //
-        // }, 1);
-        // pgn.find(moveCounterToFind, PGNToFind);
+        setTimeout(() => {
+            console.log(moveCounterToFind + ' on ' + PGNToFind);
+
+        }, 1);
+        pgn.find(moveCounterToFind, PGNToFind);
 
     }
 

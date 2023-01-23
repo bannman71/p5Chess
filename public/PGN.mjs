@@ -12,19 +12,20 @@ export default class PGN {
 
         console.log('hey');
         console.log(moveCounter);
+        this.Data.push({"moveCounter": moveCounter, "PGNarr": this.PGNarr, "FENarr": this.FENarr});
         //every move, a fen needs to be stored,
         //it must be pushed when it is white's turn
 
     }
 
     find(moveNum, pgnNotation) {
-        for (let i = 0; i < this.data.length - 1; i++) {
-            for (let j = 0; j < this.data[i].PGNarr.length; j++) {
-                if (moveNum === this.data[i].moveCounter) {
-                    if (pgnNotation === this.data[i].PGNarr[j]) {
+        for (let i = 0; i < this.Data.length - 1; i++) {
+            for (let j = 0; j < this.PGNarr.length; j++) {
+                if (moveNum === this.Data[i].moveCounter) {
+                    if (pgnNotation === this.Data[i].PGNarr[j]) {
                         console.log('hello');
-                        console.log(this.data[i]);
-                        return this.data[i].FENarr[j];
+                        console.log(this.Data[i]);
+                        return this.Data[i].FENarr[j];
                     }
                 } else break;
 
