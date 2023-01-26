@@ -19,11 +19,14 @@ export default class PGN {
     }
 
     find(moveNum, pgnNotation) {
-        for (let i = 0; i < this.Data.length - 1; i++) {
+
+        console.log(moveNum + ' on ' + pgnNotation);
+        for (let i = 0; i < this.Data.length; i++) {
             for (let j = 0; j < this.PGNarr.length; j++) {
-                if (moveNum === this.Data[i].moveCounter) {
+                //TODO
+                if (moveNum === this.Data[i].moveCounter) { //if indexed into move to find
                     if (pgnNotation === this.Data[i].PGNarr[j]) {
-                        console.log('hello');
+                        console.log('hello in find');
                         console.log(this.Data[i]);
                         return this.Data[i].FENarr[j];
                     }

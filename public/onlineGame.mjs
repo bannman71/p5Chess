@@ -1,4 +1,4 @@
-import Board from './board.mjs';
+import Board, {FENToBoard} from './board.mjs';
 import PGN from "./PGN.mjs";
 import {PieceType} from './board.mjs';
 import {instantiateNewBoard} from './board.mjs';
@@ -6,8 +6,6 @@ import ClientTimer from './timer.mjs';
 import Front from './front.mjs';
 import {Grid} from './gridjs.mjs';
 import {html} from './gridjs.mjs';
-
-//TODO
 
 new p5(function (p5) {
     // const socket = io('https://bannman71-p5chess-674rjrqr9vxh4grq-3000.preview.app.github.dev');
@@ -51,6 +49,8 @@ new p5(function (p5) {
     let pgn;
     let moveCounterToFind;
     let PGNToFind;
+    let displayOldPosition = false;
+    let oldPosFEN;
 
     var BLOCK_SIZE;
     var PIECE_SCALE;
@@ -254,17 +254,19 @@ new p5(function (p5) {
         p5.clear();
         p5.background(front.white);
         front.drawGrid();
-        front.drawAllPieces(clientIsWhite, board.occSquares, pieceAtMouse);
+        if (displayOldPosition) {
+            let pos = FENToBoard(oldPosFEN);
+            front.drawAllPieces(clientIsWhite, pos, pieceAtMouse)
+        } else front.drawAllPieces(clientIsWhite, board.occSquares, pieceAtMouse);
         if (MouseDown) {
             front.drawPieceAtMousepos(pieceAtMouse, p5.mouseX, p5.mouseY);
             front.drawLegalSquares(clientIsWhite, legalCircles);
-        }
-        else pieceAtMouse = 0;
+        } else pieceAtMouse = 0;
 
         whiteTimer.displayTime();
         blackTimer.displayTime();
 
-        if (whiteTimer.time < 0 || blackTimer.time < 0){
+        if (whiteTimer.time < 0 || blackTimer.time < 0) {
             socket.emit('lostOnTime', board.whiteToMove);
 
         }
@@ -356,6 +358,7 @@ new p5(function (p5) {
         grid.on('cellClick', (...args) => {
             //get the PGN of the clicked cell
             PGNToFind = args[1].data;
+            displayOldPosition = true;
         })
 
 
@@ -436,22 +439,21 @@ new p5(function (p5) {
             closePopup();
         });
 
-        ;
+        $(window).click(function () {
+            // return board to original state
+            displayOldPosition = false;
+            console.log('yup');
+        });
 
-        // grid.on('rowClick', (...args) => console.log('row: ' + JSON.stringify(args), args));
-        // grid.on('cellClick', (...args) => console.log('cell: ' + JSON.stringify(args), args));
+        $('#game-moves-container').click(function (event) {
+            event.stopPropagation();
+            console.log('nope');
+        });
 
-
-        // console.log('yoo');
-        // console.log(moveCounterToFind);
-
-        // console.log(moveCounterToFind + ' on ' + PGNToFind);
-        //go back to the FEN string of that move
         setTimeout(() => {
-            console.log(moveCounterToFind + ' on ' + PGNToFind);
+            oldPosFEN = pgn.find(moveCounterToFind, PGNToFind);
 
         }, 1);
-        pgn.find(moveCounterToFind, PGNToFind);
 
     }
 
