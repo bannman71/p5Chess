@@ -254,7 +254,7 @@ new p5(function (p5) {
         p5.clear();
         p5.background(front.white);
         front.drawGrid();
-        if (displayOldPosition) {
+        if (displayOldPosition && oldPosFEN !== '') {
             let pos = FENToBoard(oldPosFEN);
             front.drawAllPieces(clientIsWhite, pos, pieceAtMouse)
         } else front.drawAllPieces(clientIsWhite, board.occSquares, pieceAtMouse);
@@ -333,7 +333,7 @@ new p5(function (p5) {
         pieceAtMouse = front.getPieceAtMousepos(clientIsWhite, board.occSquares, p5.mouseX, p5.mouseY); //returns type Piece
         legalCircles = [];
 
-        if (pieceAtMouse) {
+        if (!displayOldPosition && pieceAtMouse) {
 
             // var start = performance.now();
             if (board.whiteToMove && (pieceAtMouse.colour === PieceType.white) && clientIsWhite) {
@@ -355,10 +355,16 @@ new p5(function (p5) {
             moveCounterToFind = args[1]._cells[0].data;
             console.log(moveCounterToFind);
         });
-        grid.on('cellClick', (...args) => {
+        grid.off('cellClick').on('cellClick', (...args) => {
             //get the PGN of the clicked cell
-            PGNToFind = args[1].data;
-            displayOldPosition = true;
+            console.log('yoyoyoyoyoy');
+            // console.log(Number.isInteger(args[1].data));
+            if (!Number.isInteger(args[1].data)) {
+                console.log(args[1].data);
+                PGNToFind = args[1].data;
+                displayOldPosition = true;
+            } else PGNToFind = '';
+
         })
 
 
@@ -451,7 +457,7 @@ new p5(function (p5) {
         });
 
         setTimeout(() => {
-            oldPosFEN = pgn.find(moveCounterToFind, PGNToFind);
+            if (PGNToFind !== '') oldPosFEN = pgn.find(moveCounterToFind, PGNToFind);
 
         }, 1);
 
