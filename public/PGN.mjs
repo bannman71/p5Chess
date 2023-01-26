@@ -23,7 +23,6 @@ export default class PGN {
         console.log(moveNum + ' on ' + pgnNotation);
         for (let i = 0; i < this.Data.length; i++) {
             for (let j = 0; j < this.PGNarr.length; j++) {
-                //TODO
                 if (moveNum === this.Data[i].moveCounter) { //if indexed into move to find
                     if (pgnNotation === this.Data[i].PGNarr[j]) {
                         console.log('hello in find');

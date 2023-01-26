@@ -298,12 +298,6 @@ io.on('connection', (socket) => {
 
 });
 
-// setInterval(function() {
-//   console.log(matchmaking);
-//   // do your stuff here.
-// }, 2000);
-
-
 app.get('/', (req,res) => {
   res.sendFile(path.join(dir, '/index.html'));
 });

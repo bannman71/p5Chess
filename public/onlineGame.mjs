@@ -92,7 +92,6 @@ new p5(function (p5) {
         }
 
         gridData = data.newGridData;
-        //TODO
         //update the moves DOM with the current PGN
         grid.updateConfig({
             data: gridData
@@ -357,8 +356,6 @@ new p5(function (p5) {
         });
         grid.off('cellClick').on('cellClick', (...args) => {
             //get the PGN of the clicked cell
-            console.log('yoyoyoyoyoy');
-            // console.log(Number.isInteger(args[1].data));
             if (!Number.isInteger(args[1].data)) {
                 console.log(args[1].data);
                 PGNToFind = args[1].data;

@@ -415,10 +415,15 @@ td.gridjs-td {
 
 td.gridjs-td:first-child {
   font-family: "Noto Sans", Sans-Serif;
+  width: 3%;
   font-size: 1vw;
   color: white;
 
   background-color: #404040;
+}
+
+td.gridjs-td:hover {
+  background-color: red;
 }
 
 th.gridjs-th {
@@ -431,4 +436,14 @@ th.gridjs-th {
 .gridjs.gridjs-container {
   width: 100%;
   height: 100%;
+}
+
+.timer {
+  background: #161512 linear-gradient(to bottom, hsl(37deg, 12%, 16%), hsl(37deg, 10%, 8%) 116px) no-repeat;
+  color: #bababa;
+  direction: ltr;
+  text-align: left;
+  overflow-x: hidden;
+}
+
 }
