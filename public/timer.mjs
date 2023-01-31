@@ -47,26 +47,26 @@ export default class ClientTimer{
         if (this.clientIsWhite){
             //set black css
             blackTimerCSS = showTop;
-            $('#black-timer-container').css(blackTimerCSS);
+            $('#black-timer').css(blackTimerCSS);
 
             //calculate how far from top white's timer must be
-            timerDistFromTop = $('#black-timer-container').height() + boardSize;
+            timerDistFromTop = $('#black-timer').height() + boardSize;
             showBottom.top = ('%dpx', timerDistFromTop);
             whiteTimerCSS = showBottom;
         }else {
             //set white css
             whiteTimerCSS = showTop;
-            $('#white-timer-container').css(whiteTimerCSS);
+            $('#white-timer').css(whiteTimerCSS);
 
             //calculate how far from top black's timer must be
-            timerDistFromTop = $('#white-timer-container').height() + boardSize;
+            timerDistFromTop = $('#white-timer').height() + boardSize;
             showBottom.top = ('%dpx', timerDistFromTop);
             blackTimerCSS = showBottom;
 
         }
 
-        $('#black-timer-container').css(blackTimerCSS);
-        $('#white-timer-container').css(whiteTimerCSS);
+        $('#black-timer').css(blackTimerCSS);
+        $('#white-timer').css(whiteTimerCSS);
 
     }
 

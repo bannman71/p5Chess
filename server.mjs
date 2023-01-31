@@ -220,6 +220,9 @@ io.on('connection', (socket) => {
       if (tempEnPassentTaken === true) {
         board.enPassentTaken = false;
       }
+
+      let captures = board.occSquares[data.fCoordsY][data.fCoordsX] !== 0;
+
       let target = {"row": data.fCoordsY, "col": data.fCoordsX};
       let pieceMovedNtn = board.pieceMovedNotation(piece, target);
       // board.defendCheck();
@@ -256,7 +259,7 @@ io.on('connection', (socket) => {
         newGridData[newGridData.length - 1][2] = pieceMovedNtn;
         pgn.update(pieceMovedNtn, newFEN, board.moveCounter - 1)
       } else {
-        newGridData.push([board.moveCounter, '', '', '']);
+        newGridData.push([board.moveCounter, '', '']);
         newGridData[newGridData.length - 1][1] = pieceMovedNtn;
         pgn.update(pieceMovedNtn, newFEN, board.moveCounter)
       }
@@ -272,7 +275,8 @@ io.on('connection', (socket) => {
           "PGNarr": pgn.PGNarr,
           "newTimer": blackTimer,
           "newGridData": newGridData,
-          "moveCounter": board.moveCounter
+          "moveCounter": board.moveCounter,
+          "captures": captures
         }));
       } else io.to(data.room).emit('legalMoveMade', ({
         "board": board,
@@ -283,7 +287,8 @@ io.on('connection', (socket) => {
         "pgnData": pgn.Data,
         "newTimer": whiteTimer,
         "newGridData": newGridData,
-        "moveCounter": board.moveCounter
+        "moveCounter": board.moveCounter,
+        "captures": captures
       }));
     }
 

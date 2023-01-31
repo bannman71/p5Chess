@@ -422,8 +422,12 @@ td.gridjs-td:first-child {
   background-color: #404040;
 }
 
+td.gridjs-td:first-child:hover {
+  background-color: #404040;
+}
+
 td.gridjs-td:hover {
-  background-color: red;
+  background-color: #8f8b8b;
 }
 
 th.gridjs-th {
@@ -444,6 +448,4 @@ th.gridjs-th {
   direction: ltr;
   text-align: left;
   overflow-x: hidden;
-}
-
 }

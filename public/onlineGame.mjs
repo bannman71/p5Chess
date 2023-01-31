@@ -67,6 +67,10 @@ new p5(function (p5) {
     let MouseDown;
     let pieceAtMouse;
 
+    let moveSound;
+    let captureSound;
+    let checkSound;
+
     //SERVER SIDE LOGIC
 
     socket.on('legalMoveMade', (data) => { // is called when the opponent makes a legal move
@@ -96,6 +100,11 @@ new p5(function (p5) {
         grid.updateConfig({
             data: gridData
         }).forceRender();
+
+        if (data.captures) {
+            captureSound.play();
+        } else moveSound.play();
+
 
     });
 
@@ -174,7 +183,12 @@ new p5(function (p5) {
         BG.style.display = 'block';
 
 
+    }
 
+    p5.preload = () => {
+        const soundPath = '../sound/'
+        moveSound = new Audio('../sound/Move.mp3');
+        captureSound = new Audio(soundPath + 'Capture.mp3');
     }
 
     p5.setup = () => {
@@ -306,7 +320,7 @@ new p5(function (p5) {
         ina = false;
         if (dt > interval) {
             // something awful happened. Maybe the browser (tab) was inactive?
-            // possibly special handling to avoid futile "catch up" run
+            // special handling to avoid futile "catch up" run
             expected += dt;
             ina = true; //ensure the timer doesn't count down while the catch-up is happening.
         }
@@ -318,6 +332,9 @@ new p5(function (p5) {
                     whiteTimer.clientSideTimerUpdate();
                 } else {
                     blackTimer.clientSideTimerUpdate();
+                }
+                if (whiteTimer.timeToDisplay <= 0 || blackTimer.timeToDisplay <= 0) {
+                    socket.emit('lostOnTime', (data));
                 }
             }
         }
@@ -359,7 +376,8 @@ new p5(function (p5) {
             if (!Number.isInteger(args[1].data)) {
                 console.log(args[1].data);
                 PGNToFind = args[1].data;
-                displayOldPosition = true;
+                oldPosFEN =
+                    displayOldPosition = true;
             } else PGNToFind = '';
 
         })
@@ -373,6 +391,7 @@ new p5(function (p5) {
         board.longCastles = false;
         let legalSideAttemptedMove = false;
         let isLegal = false;
+        let captures = false;
 
         if (clientIsWhite === (pieceAtMouse.colour === PieceType.white)) legalSideAttemptedMove = true;
 
@@ -400,6 +419,7 @@ new p5(function (p5) {
                 timeMoveEnd = Date.now();
                 timeTaken = (timeMoveEnd - timeMoveStart) / 1000;
             }
+
             let data =
                 {
                     fCoordsX: destCoords.x,
@@ -454,6 +474,7 @@ new p5(function (p5) {
         });
 
         setTimeout(() => {
+            console.log(PGNToFind); //don't remove this, it doesn't work without it
             if (PGNToFind !== '') oldPosFEN = pgn.find(moveCounterToFind, PGNToFind);
 
         }, 1);
