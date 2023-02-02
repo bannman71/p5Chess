@@ -115,8 +115,9 @@ new p5(function (p5) {
         let gameInfoCSS = {
             'position': 'absolute',
             'left': ('%dpx', boardWidth),
-            'top': '6%'
+            'top': '40px'
         };
+
 
         $('#online-game-info').css(gameInfoCSS);
     }
@@ -333,7 +334,8 @@ new p5(function (p5) {
                 } else {
                     blackTimer.clientSideTimerUpdate();
                 }
-                if (whiteTimer.timeToDisplay <= 0 || blackTimer.timeToDisplay <= 0) {
+                if (whiteTimer.timeToDisplay <= 55 || blackTimer.timeToDisplay <= 55) {
+                    alert('timer');
                     socket.emit('lostOnTime', (data));
                 }
             }
@@ -465,12 +467,10 @@ new p5(function (p5) {
         $(window).click(function () {
             // return board to original state
             displayOldPosition = false;
-            console.log('yup');
         });
 
         $('#game-moves-container').click(function (event) {
             event.stopPropagation();
-            console.log('nope');
         });
 
         setTimeout(() => {

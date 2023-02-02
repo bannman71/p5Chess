@@ -18,25 +18,21 @@ export default class ClientTimer{
         this.timeToDisplay -= 0.1;
     }
 
-    addIncrement(){
-        this.time += this.increment;
-    }
-
     showContainer(boardSize){
         let timerDistFromTop;
         let showTop = { //display the timer at top of the board
             'position': 'absolute',
             'top': '0px',
-            'width': '25%',
-            'height': '6%',
+            'width': '135px',
+            'height': '40px',
             'background-color': 'white',
             'border-style': 'none'
         }; 
         let showBottom = { //display timer at the bottom of the board
             'position': 'absolute',
-            'top': 'ToBeDecided',
-            'width': '25%',
-            'height': '6%',
+            'top': 'ToBeDecided', //is changed via jquery
+            'width': '135px',
+            'height': '40px',
             'background-color': 'white',
             'border-style': 'none'
         };
@@ -80,17 +76,23 @@ export default class ClientTimer{
         return timeMinutesDisplayed+':'+timeSecondsDisplayed;
     }
 
-    displayTime(){
+    displayTime() {
         let colour;
-        if (this.isWhiteTimer) {colour = "white"} 
-        else {colour = "black"}
+        if (this.isWhiteTimer) {
+            colour = "white"
+        } else {
+            colour = "black"
+        }
 
         let Timer = document.getElementById(`${colour}-timer`);
+        let tempID = `${colour}-timer-text`;
+        let tempContainer = `${colour}-timer-container`;
         Timer.innerHTML = `
-            <div class="timer-container">
-                <p class="timer-text">${this.toTimeFormatMMSS()}</p>
+            <div class="timer-container" id="${tempContainer}">
+                <p id="${tempID}" class="timer-content">${this.toTimeFormatMMSS()}</p>
             </div>
         `;
+
     }
 
 }
