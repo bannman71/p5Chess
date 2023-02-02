@@ -87,7 +87,9 @@ export default class ClientTimer{
 
         let Timer = document.getElementById(`${colour}-timer`);
         Timer.innerHTML = `
-            <h4>${this.toTimeFormatMMSS()}</h4>
+            <div class="timer-container">
+                <p class="timer-text">${this.toTimeFormatMMSS()}</p>
+            </div>
         `;
     }
 

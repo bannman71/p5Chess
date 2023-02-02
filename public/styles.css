@@ -446,6 +446,16 @@ th.gridjs-th {
   background: #161512 linear-gradient(to bottom, hsl(37deg, 12%, 16%), hsl(37deg, 10%, 8%) 116px) no-repeat;
   color: #bababa;
   direction: ltr;
-  text-align: left;
+  text-align: center;
+  border: 3px;
   overflow-x: hidden;
+}
+
+.timer-container {
+  height: 100%;
+}
+
+.timer-text {
+  font-size: 3vw;
+  color: white;
 }
