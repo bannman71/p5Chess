@@ -294,14 +294,42 @@ io.on('connection', (socket) => {
 
   });
 
-  //TODO
-  socket.on('lostOnTime', (whiteToMove) => {
-    if (whiteToMove){
-      //end the game and display a game winning/losing card
-    }
+  // //TODO
+  socket.on('lostOnTime', (data) => {
+    //end the game and display a game winning/losing card
+
+    let winningScreen = `
+      <div id="win-lost-banner" class="center">You win!</div>
+
+
+
+    `;
+
+    let winningCSS = {
+
+    };
+
+    console.log(data.room);
+    let nData = {
+      "winningScreen": winningScreen,
+      "winningCSS": winningCSS,
+      "whiteLoses": data.whiteLoses
+    };
+
+
+    io.to(data.room).emit('gameOverScreen', (nData));
+              
   });
 
+  socket.on('attemptedRematch', (data) => {
+    console.log(data);
+  });
+  
+
+
 });
+
+
 
 app.get('/', (req,res) => {
   res.sendFile(path.join(dir, '/index.html'));

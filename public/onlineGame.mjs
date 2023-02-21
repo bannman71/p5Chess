@@ -5,7 +5,6 @@ import {instantiateNewBoard} from './board.mjs';
 import ClientTimer from './timer.mjs';
 import Front from './front.mjs';
 import {Grid} from './gridjs.mjs';
-import {html} from './gridjs.mjs';
 
 new p5(function (p5) {
     // const socket = io('https://bannman71-p5chess-674rjrqr9vxh4grq-3000.preview.app.github.dev');
@@ -69,7 +68,8 @@ new p5(function (p5) {
 
     let moveSound;
     let captureSound;
-    let checkSound;
+
+    let lostGame = false;
 
     //SERVER SIDE LOGIC
 
@@ -101,12 +101,133 @@ new p5(function (p5) {
             data: gridData
         }).forceRender();
 
-        if (data.captures) {
+        if (data.captures) { //if a piece was taken play the sound
             captureSound.play();
-        } else moveSound.play();
+        } else moveSound.play(); //otherwise make the move sound
 
 
     });
+
+    socket.on('gameOverScreen', (data) =>{
+        let popupContent = document.getElementById("popup-content");
+
+        if (clientIsWhite){ 
+            if (data.whiteLoses){ //if white lost
+                document.getElementById("popup").style.backgroundColor = "#a52a2a";
+                popupContent.innerHTML = `
+                    <div class="semi-circle"></div>
+                    <h2 class="center">You lose!</h2>
+                `;
+                openPopup();
+            }else {
+                popupContent.innerHTML = `
+                <div class=semi-circle></div>
+                    <h2 class="center">You win!</h2>
+                `; 
+                openPopup();
+            }
+        }else {
+            if (data.whiteLoses){ //if black and white loses
+                document.getElementById("popup").style.backgroundColor = "#355b44";
+                popupContent.innerHTML = `
+                <div class=semi-circle></div>
+                    <h2 class="center">You win!</h2>
+                `;
+                openPopup();
+            }else {
+                popupContent.innerHTML = `
+                <div class="semi-circle"></div>
+                <h2 class="center">You lose!</h2>
+            `;
+            openPopup();
+            }
+        }
+
+       
+    
+    });
+
+    //
+
+    //when the tab is inactive, this event happens.
+    //setTimeout isn't called when tab is inactive so this counts how long the user was inactive for
+    //in order to update the timer appropriately.
+    document.addEventListener('visibilitychange', function (event) {
+        if (document.hidden) {
+            timeInactiveStart = Date.now();
+            windowInactive = true;
+        } else {
+            windowInactive = false;
+            timeInactiveEnd = Date.now();
+            if (board.moveCounter > 1) {
+                let timeTaken = timeInactiveEnd - timeInactiveStart;
+                if (board.whiteToMove) {
+                    whiteTimer.timeToDisplay -= timeTaken / 1000;
+                } else {
+                    blackTimer.timeToDisplay -= timeTaken / 1000;
+                }
+            }
+        }
+    });
+
+    //
+
+    //ticks the client-side timer down,
+    //the actual time is stored server-side
+    var interval = 100; // ms
+    var expected = Date.now() + interval;
+    let ina = false;
+    setTimeout(step, interval);
+    function step() {
+        let dt = Date.now() - expected; // the drift (positive for overshooting)
+        ina = false;
+        if (dt > interval) {
+            // something awful happened. Maybe the browser (tab) was inactive?
+            // special handling to avoid futile "catch up" run
+            expected += dt;
+            ina = true; //ensure the timer doesn't count down while the catch-up is happening.
+        }
+
+        // do what is to be done
+
+        if (!ina) {
+
+            console.log(roomCode);
+
+            if (board && board.moveCounter > 1 && !lostGame) {
+                if (board.whiteToMove && whiteTimer.timeToDisplay > 0) {
+                    whiteTimer.clientSideTimerUpdate();
+                } else if (!board.whiteToMove && blackTimer.timeToDisplay > 0) {
+                    blackTimer.clientSideTimerUpdate();
+                }
+                if (whiteTimer.timeToDisplay <= 55){
+                    lostGame = true;
+                    let data = {
+                        "whiteLoses": true,
+                        "room": roomCode
+                    };
+                    socket.emit('lostOnTime', (data));
+                    
+                }
+                else if (blackTimer.timeToDisplay <= 55) {
+                    lostGame = true;
+                    let data = {
+                        "whiteLoses": false,
+                        "room": roomCode
+                    };
+                    socket.emit('lostOnTime', (data)); 
+                    
+                }
+            }
+        }
+
+        expected += interval;
+        setTimeout(step, Math.max(0, interval - dt)); // take into account drift
+    }
+
+    //
+
+
 
     function updateCSSFromBoardSize() {
         //changes the size of the card
@@ -129,6 +250,10 @@ new p5(function (p5) {
         BG.style.display = 'none';
     }
 
+    function yo(){
+        alert('yo');
+    }
+
     function addElement() {
         // create a new div element
         // and give it popup content
@@ -138,8 +263,8 @@ new p5(function (p5) {
             <div id="popup" style=" 
                 position: absolute;
                 top: 25%;
-                width: 500px;
-                height: 500px;
+                width: 300px;
+                height: 300px;
                 margin: auto;
                 z-index: 99999;
                 display: block;
@@ -151,15 +276,14 @@ new p5(function (p5) {
                 overflow: hidden;   
                 padding: 10px;">
                 
-                <div class="popup_body" style="height: 160px;">${texts}</div>
-                <button style="padding: 10px;" class="close_button" id="close-btn">This is bullshit</button>
-                <button style="padding: 10px;" class="close_button">Something else</button>
+                <div class="popup-body" id="popup-content" style="height: 160px;">${texts}</div>
+                <button style="padding: 10px; z-index: 9999;" class="close-button" id="rematch-btn">Rematch</button>
+                <button style="padding: 10px; z-index: 9999;" class="close-button" onclick="location.href='/';">Home screen</button>
             </div>
         `;
 
         // Add The Background cover
         let BG = document.createElement("div");
-        //BG.style.background-color = 'black';
         BG.style.width = '100%';
         BG.style.height = '100%';
         BG.style.background = 'black';
@@ -286,66 +410,6 @@ new p5(function (p5) {
         }
 
     }
-
-    //when the tab is inactive, this event happens.
-    //setTimeout isn't called when tab is inactive so this counts how long the user was inactive for
-    //in order to update the timer appropriately.
-    document.addEventListener('visibilitychange', function (event) {
-        if (document.hidden) {
-            timeInactiveStart = Date.now();
-            windowInactive = true;
-        } else {
-            windowInactive = false;
-            timeInactiveEnd = Date.now();
-            if (board.moveCounter > 1) {
-                let timeTaken = timeInactiveEnd - timeInactiveStart;
-                if (board.whiteToMove) {
-                    whiteTimer.timeToDisplay -= timeTaken / 1000;
-                } else {
-                    blackTimer.timeToDisplay -= timeTaken / 1000;
-                }
-            }
-        }
-    });
-
-    //
-
-    //ticks the client-side timer down,
-    //the actual time is stored server-side
-    var interval = 100; // ms
-    var expected = Date.now() + interval;
-    let ina = false;
-    setTimeout(step, interval);
-    function step() {
-        let dt = Date.now() - expected; // the drift (positive for overshooting)
-        ina = false;
-        if (dt > interval) {
-            // something awful happened. Maybe the browser (tab) was inactive?
-            // special handling to avoid futile "catch up" run
-            expected += dt;
-            ina = true; //ensure the timer doesn't count down while the catch-up is happening.
-        }
-        // do what is to be done
-
-        if (!ina) {
-            if (board && board.moveCounter > 1) {
-                if (board.whiteToMove) {
-                    whiteTimer.clientSideTimerUpdate();
-                } else {
-                    blackTimer.clientSideTimerUpdate();
-                }
-                if (whiteTimer.timeToDisplay <= 55 || blackTimer.timeToDisplay <= 55) {
-                    alert('timer');
-                    socket.emit('lostOnTime', (data));
-                }
-            }
-        }
-
-        expected += interval;
-        setTimeout(step, Math.max(0, interval - dt)); // take into account drift
-    }
-
-    //
 
     p5.mousePressed = () => {
         pieceAtMouse = front.getPieceAtMousepos(clientIsWhite, board.occSquares, p5.mouseX, p5.mouseY); //returns type Piece
@@ -478,6 +542,8 @@ new p5(function (p5) {
             if (PGNToFind !== '') oldPosFEN = pgn.find(moveCounterToFind, PGNToFind);
 
         }, 1);
+
+        document.getElementById('rematch-btn').onclick = () => {socket.emit('attemptedRematch', 'h')};
 
     }
 
