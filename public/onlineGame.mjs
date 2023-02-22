@@ -104,7 +104,10 @@ new p5(function (p5) {
         if (data.captures) { //if a piece was taken play the sound
             captureSound.play();
         } else moveSound.play(); //otherwise make the move sound
-
+        
+        let numLegalMoves = board.calculateNumLegalMoves();
+        if (numLegalMoves === 0 && !board.isInCheck) socket.emit('stalemate', data);
+        else if (numLegalMoves === 0 && board.isInCheck) socket.emit('checkmate')
 
     });
 
@@ -208,7 +211,7 @@ new p5(function (p5) {
                 } else if (!board.whiteToMove && blackTimer.timeToDisplay > 0) {
                     blackTimer.clientSideTimerUpdate();
                 }
-                if (whiteTimer.timeToDisplay <= 59){
+                if (whiteTimer.timeToDisplay <= 0){
                     lostGame = true;
                     let data = {
                         "whiteLoses": true,
@@ -427,6 +430,7 @@ new p5(function (p5) {
 
             // var start = performance.now();
             if (board.whiteToMove && (pieceAtMouse.colour === PieceType.white) && clientIsWhite) {
+                console.log(board.allPiecesLegalSquares(pieceAtMouse));
                 legalCircles = board.allPiecesLegalSquares(pieceAtMouse);
             } else if (!board.whiteToMove && (pieceAtMouse.colour === PieceType.black) && !clientIsWhite) {
                 legalCircles = board.allPiecesLegalSquares(pieceAtMouse);
@@ -513,7 +517,7 @@ new p5(function (p5) {
                 };
             socket.emit('moveAttempted', data);
             console.log('legal');
-
+            
             if (board.enPassentTaken) {
                 board.updateEnPassentMove(pieceAtMouse, destCoords.y, destCoords.x);
             }
@@ -526,7 +530,7 @@ new p5(function (p5) {
             board.maskBitMap(bmap);
 
             board.isInCheck = board.kingInCheck();
-            console.log(board.calculateNumLegalMoves());
+               
 
         }
 
@@ -548,7 +552,6 @@ new p5(function (p5) {
         setTimeout(() => {
             console.log(PGNToFind); //don't remove this, it doesn't work without it
             if (PGNToFind !== '') oldPosFEN = pgn.find(moveCounterToFind, PGNToFind);
-
         }, 1);
 
         document.getElementById('rematch-btn').onclick = () => {

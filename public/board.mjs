@@ -517,9 +517,10 @@ export default class Board {
         
                     if (this.isOnBoard(row_temp,col_temp))
                     { 
-                        if ((this.occSquares[row_temp][col_temp].colour & piece.colour) === 0 && this.checkNextMoveBitmap(piece,row_temp,col_temp)){
+                        if ((this.occSquares[row_temp][col_temp] === 0 || (this.occSquares[row_temp][col_temp] !== 0 && (this.occSquares[row_temp][col_temp].colour & piece.colour) === 0)) && this.checkNextMoveBitmap(piece,row_temp,col_temp)){
                             arr.push(row_temp + '' + col_temp);
                         }
+        
                     }
                 }
                 break;
@@ -529,7 +530,7 @@ export default class Board {
                     var row_temp = piece.row + options.dy;
         
                     if (this.isOnBoard(row_temp,col_temp)){
-                        if ((this.maskMap[row_temp][col_temp] === 0 || ((this.maskMap[row_temp][col_temp] & piece.colour) === 0)) && this.checkNextMoveBitmap(piece,row_temp,col_temp)){
+                        if (((this.maskMap[row_temp][col_temp] === 0 || ((this.maskMap[row_temp][col_temp].colour & piece.colour) === 0))) && this.checkNextMoveBitmap(piece,row_temp,col_temp)){
                             arr.push(row_temp + '' + col_temp);
                         }
                     }
@@ -829,30 +830,19 @@ export default class Board {
         return outOfCheck;
     }
 
-    defendCheck(){
-        let colourCalc = 8;
-        if (!this.whiteToMove) colourCalc = 16; 
-        let numDefense = 0;
-
-        for (let i = 0; i < 8; i++){
-            for (let j = 0; j < 8; j++){
-                if (this.occSquares[i][j] !== 0 && (this.occSquares[i][j].colour & colourCalc) === colourCalc){
-                    numDefense += this.allPiecesLegalSquares(this.occSquares[i][j]).length;
-                }
-            }
-        }
-
-        return numDefense;
-    }
-
     calculateNumLegalMoves(){
         let numLegal = 0;
         let colourCalc = 16; //black
-        if (this.whiteToMove) colourCalc = 16; //white
+        if (this.whiteToMove) colourCalc = 8; //white
 
         for (let i = 0; i < 8; i++){
             for (let j = 0; j < 8; j++){
                 if (this.occSquares[i][j] !== 0 && ((this.occSquares[i][j].colour & colourCalc) === colourCalc)){ //if colour you want to find number of moves of
+                    let test = this.allPiecesLegalSquares(this.occSquares[i][j]);
+                    // console.log(this.occSquares[i][j]);
+                    // console.log(test);   
+                    console.log('thsi is the length');
+                    console.log(test.length);
                     numLegal += this.allPiecesLegalSquares(this.occSquares[i][j]).length - 1;
                 }
             }

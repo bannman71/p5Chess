@@ -330,7 +330,6 @@ io.on('connection', (socket) => {
     if (!alreadyRematching) rematchWaitingRoom.push({"room": data.roomCode, "ID": data.socketID});
     let tempRoomCode;
     let tempID;
-    let Rdata = data; 
 
     console.log('rematch attempted');
     console.log(rematchWaitingRoom);
@@ -345,13 +344,8 @@ io.on('connection', (socket) => {
           rematchWaitingRoom.splice(i,1);
         }
       }
-
     }
-
   });
-  
-
-
 });
 
 
