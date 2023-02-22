@@ -104,7 +104,7 @@ new p5(function (p5) {
         if (data.captures) { //if a piece was taken play the sound
             captureSound.play();
         } else moveSound.play(); //otherwise make the move sound
-        
+
         let numLegalMoves = board.calculateNumLegalMoves();
         if (numLegalMoves === 0 && !board.isInCheck) socket.emit('stalemate', data);
         else if (numLegalMoves === 0 && board.isInCheck) socket.emit('checkmate')
@@ -117,31 +117,19 @@ new p5(function (p5) {
         if (clientIsWhite){ 
             if (data.whiteLoses){ //if white lost
                 document.getElementById("popup").style.backgroundColor = "#a52a2a";
-                popupContent.innerHTML = `
-                    <div class="semi-circle"></div>
-                    <h2 class="center">You lose!</h2>
-                `;
+                popupContent.innerHTML = data.losingScreen;
                 openPopup();
             }else {
-                popupContent.innerHTML = `
-                <div class=semi-circle></div>
-                    <h2 class="center">You win!</h2>
-                `; 
+                popupContent.innerHTML = data.winningScreen;
                 openPopup();
             }
         }else {
             if (data.whiteLoses){ //if black and white loses
                 document.getElementById("popup").style.backgroundColor = "#355b44";
-                popupContent.innerHTML = `
-                <div class=semi-circle></div>
-                    <h2 class="center">You win!</h2>
-                `;
+                popupContent.innerHTML = data.winningScreen;
                 openPopup();
             }else {
-                popupContent.innerHTML = `
-                <div class="semi-circle"></div>
-                <h2 class="center">You lose!</h2>
-            `;
+                popupContent.innerHTML = data.losingScreen;
             openPopup();
             }
         }

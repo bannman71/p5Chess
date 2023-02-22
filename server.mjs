@@ -23,6 +23,7 @@ import {Piece} from './public/board.mjs';
 import { instantiateNewBoard } from './public/board.mjs';
 import GameRoom from './public/gameRoom.mjs';
 import PGN from './public/PGN.mjs';
+import { Socket } from 'socket.io-client';
 //
 
 var matchmaking = [];
@@ -65,11 +66,6 @@ function updateTableHTML(){
   </table>
   `;
   io.sockets.emit("updateMatchmakingTable", table); //send all clients updated table
-
-}
-
-function updateMoveTable() {
-
 
 }
 
@@ -299,27 +295,34 @@ io.on('connection', (socket) => {
   socket.on('lostOnTime', (data) => {
     //end the game and display a game winning/losing card
 
+
+
+
     let winningScreen = `
-      <div id="win-lost-banner" class="center">You win!</div>
+      <div class=semi-circle></div>
+      <h2 class="center">You win!</h2>
+    `; 
 
-
-
+    let losingScreen = `
+      <div class="semi-circle"></div>
+      <h2 class="center">You lose!</h2>
     `;
 
-    let winningCSS = {
-
-    };
 
     console.log(data.room);
     let nData = {
       "winningScreen": winningScreen,
-      "winningCSS": winningCSS,
+      "losingScreen": losingScreen,
       "whiteLoses": data.whiteLoses
     };
 
 
     io.to(data.room).emit('gameOverScreen', (nData));
               
+  });
+
+  socket.on('stalemate', (data) => {
+
   });
 
   socket.on('attemptedRematch', (data) => {
