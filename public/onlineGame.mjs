@@ -154,7 +154,7 @@ new p5(function (p5) {
         else if (colour == 0) colour = 1;
         var url = '/onlineGame' + '?time=' + data.time + '&increment=' + data.increment + '&roomCode=' + data.roomCode + '&isWhite=' + colour;
         window.location.href = url; //sends them to the page created above
-    })
+    });;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     
 
     //
@@ -202,15 +202,13 @@ new p5(function (p5) {
 
         if (!ina) {
 
-            console.log(roomCode);
-
             if (board && board.moveCounter > 1 && !lostGame) {
                 if (board.whiteToMove && whiteTimer.timeToDisplay > 0) {
                     whiteTimer.clientSideTimerUpdate();
                 } else if (!board.whiteToMove && blackTimer.timeToDisplay > 0) {
                     blackTimer.clientSideTimerUpdate();
                 }
-                if (whiteTimer.timeToDisplay <= 55){
+                if (whiteTimer.timeToDisplay <= 59){
                     lostGame = true;
                     let data = {
                         "whiteLoses": true,
@@ -219,7 +217,7 @@ new p5(function (p5) {
                     socket.emit('lostOnTime', (data));
                     
                 }
-                else if (blackTimer.timeToDisplay <= 55) {
+                else if (blackTimer.timeToDisplay <= 0) {
                     lostGame = true;
                     let data = {
                         "whiteLoses": false,
@@ -528,7 +526,7 @@ new p5(function (p5) {
             board.maskBitMap(bmap);
 
             board.isInCheck = board.kingInCheck();
-
+            console.log(board.calculateNumLegalMoves());
 
         }
 
@@ -558,7 +556,8 @@ new p5(function (p5) {
                 "roomCode": roomCode,
                 "time": time,
                 "increment": increment,
-                "clientIsWhite": clientIsWhite
+                "clientIsWhite": clientIsWhite,
+                "socketID": socket.id
             };
             socket.emit('attemptedRematch', data);
         };

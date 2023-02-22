@@ -323,24 +323,30 @@ io.on('connection', (socket) => {
   });
 
   socket.on('attemptedRematch', (data) => {
-      rematchWaitingRoom.push(data.roomCode);
-      let tempRoomCode;
-      let Rdata = data; 
+    let alreadyRematching = false;
+    for (let x = 0; x < rematchWaitingRoom.length; x++){
+      if (rematchWaitingRoom && rematchWaitingRoom[x].ID === data.socketID) alreadyRematching = true;
+    }
+    if (!alreadyRematching) rematchWaitingRoom.push({"room": data.roomCode, "ID": data.socketID});
+    let tempRoomCode;
+    let tempID;
+    let Rdata = data; 
 
-      console.log('rematch attempted');
-      console.log(Rdata);
+    console.log('rematch attempted');
+    console.log(rematchWaitingRoom);
 
-      for (let i = 0; i < rematchWaitingRoom.length; i++){
-        tempRoomCode = rematchWaitingRoom[i];
-        for (let j = rematchWaitingRoom.length - 1; j > 0; j--){
-          if (tempRoomCode === rematchWaitingRoom[j]){
-            io.to(tempRoomCode).emit('rematchFound', Rdata);
-            rematchWaitingRoom.splice(j,1);
-            rematchWaitingRoom.splice(i,1);
-          }
+    for (let i = 0; i < rematchWaitingRoom.length; i++){
+      tempRoomCode = rematchWaitingRoom[i].room;
+      tempID = rematchWaitingRoom[i].ID;
+      for (let j = rematchWaitingRoom.length - 1; j > i; j--){
+        if (tempRoomCode === rematchWaitingRoom[j].room && tempID !== rematchWaitingRoom[j].ID){
+          io.to(tempRoomCode).emit('rematchFound', data);
+          rematchWaitingRoom.splice(j,1);
+          rematchWaitingRoom.splice(i,1);
         }
-
       }
+
+    }
 
   });
   

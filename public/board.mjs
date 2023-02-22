@@ -847,13 +847,13 @@ export default class Board {
 
     calculateNumLegalMoves(){
         let numLegal = 0;
-        let colourCalc = 8;
-        if (!this.whiteToMove) colourCalc = 16;
+        let colourCalc = 16; //black
+        if (this.whiteToMove) colourCalc = 16; //white
 
         for (let i = 0; i < 8; i++){
             for (let j = 0; j < 8; j++){
                 if (this.occSquares[i][j] !== 0 && ((this.occSquares[i][j].colour & colourCalc) === colourCalc)){ //if colour you want to find number of moves of
-                    numLegal += this.allPiecesLegalSquares(this.occSquares[i][j]).length;
+                    numLegal += this.allPiecesLegalSquares(this.occSquares[i][j]).length - 1;
                 }
             }
         }
@@ -867,6 +867,9 @@ export default class Board {
         }
         return false;
     }
+
+    
+
 
 }
 
