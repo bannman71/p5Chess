@@ -147,6 +147,16 @@ new p5(function (p5) {
     
     });
 
+    socket.on('rematchFound', (data) => {
+        console.log('rematch found');
+        let colour = urlParameters.get('isWhite');
+        if (colour == 1) colour = 0;
+        else if (colour == 0) colour = 1;
+        var url = '/onlineGame' + '?time=' + data.time + '&increment=' + data.increment + '&roomCode=' + data.roomCode + '&isWhite=' + colour;
+        window.location.href = url; //sends them to the page created above
+    })
+    
+
     //
 
     //when the tab is inactive, this event happens.
@@ -543,7 +553,15 @@ new p5(function (p5) {
 
         }, 1);
 
-        document.getElementById('rematch-btn').onclick = () => {socket.emit('attemptedRematch', 'h')};
+        document.getElementById('rematch-btn').onclick = () => {
+            let data = {
+                "roomCode": roomCode,
+                "time": time,
+                "increment": increment,
+                "clientIsWhite": clientIsWhite
+            };
+            socket.emit('attemptedRematch', data);
+        };
 
     }
 

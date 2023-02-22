@@ -27,6 +27,7 @@ import PGN from './public/PGN.mjs';
 
 var matchmaking = [];
 var gameRooms = [];
+var rematchWaitingRoom = [];
 
 
 function getRandomInt(min, max) {
@@ -322,7 +323,25 @@ io.on('connection', (socket) => {
   });
 
   socket.on('attemptedRematch', (data) => {
-    console.log(data);
+      rematchWaitingRoom.push(data.roomCode);
+      let tempRoomCode;
+      let Rdata = data; 
+
+      console.log('rematch attempted');
+      console.log(Rdata);
+
+      for (let i = 0; i < rematchWaitingRoom.length; i++){
+        tempRoomCode = rematchWaitingRoom[i];
+        for (let j = rematchWaitingRoom.length - 1; j > 0; j--){
+          if (tempRoomCode === rematchWaitingRoom[j]){
+            io.to(tempRoomCode).emit('rematchFound', Rdata);
+            rematchWaitingRoom.splice(j,1);
+            rematchWaitingRoom.splice(i,1);
+          }
+        }
+
+      }
+
   });
   
 
