@@ -23,7 +23,6 @@ import {Piece} from './public/board.mjs';
 import { instantiateNewBoard } from './public/board.mjs';
 import GameRoom from './public/gameRoom.mjs';
 import PGN from './public/PGN.mjs';
-import { Socket } from 'socket.io-client';
 //
 
 var matchmaking = [];
@@ -40,8 +39,8 @@ function getRandomInt(min, max) {
 function updateTableHTML(){
   //header
   let table = `
-  <table class="table" styles="">
-    <thead class="thead-dark">
+  <table class="table table-secondary">
+    <thead class="thead">
       <tr>
           <th scope="col">Player</th>
           <th scope="col">Game Type</th>

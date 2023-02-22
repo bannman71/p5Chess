@@ -142,7 +142,7 @@ a{
 
 
 
-  top: 78%;
+  top: 80%;
   right: 25%;
 }
 
@@ -203,6 +203,10 @@ a{
 .wrap-text{
   display: flex;
   flex: 1;
+}
+
+.table-secondary{
+  --bs-table-bg: #bababa;
 }
 
 /* BOARD EDITOR */
@@ -475,4 +479,12 @@ th.gridjs-th {
   padding: 0.1rem;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+#rematch-btn:hover{
+  background-color: #8f8b8b;
+}
+
+#home-screen-btn:hover{
+  background-color: #8f8b8b;
 }

@@ -132,13 +132,13 @@ new p5(function (p5) {
                 popupContent.innerHTML = data.losingScreen;
                 openPopup();
             }else {
-                document.getElementById("popup").style.backgroundColor = "#355b44";
+                document.getElementById("popup").style.backgroundColor = "#85a94e";
                 popupContent.innerHTML = data.winningScreen;
                 openPopup();
             }
         }else {
             if (data.whiteLoses){ //if black and white loses
-                document.getElementById("popup").style.backgroundColor = "#355b44";
+                document.getElementById("popup").style.backgroundColor = "#85a94e";
                 popupContent.innerHTML = data.winningScreen;
                 openPopup();
             }else {
@@ -165,13 +165,13 @@ new p5(function (p5) {
                 popupContent.innerHTML = data.losingScreen;
                 openPopup();
             }else{
-                document.getElementById("popup").style.backgroundColor = "#355b44";
+                document.getElementById("popup").style.backgroundColor = "#85a94e";
                 popupContent.innerHTML = data.winningScreen;
                 openPopup();
             } 
         }else {
             if (data.whiteLoses){ //if client is black and white loses
-                document.getElementById("popup").style.backgroundColor = "#355b44";
+                document.getElementById("popup").style.backgroundColor = "#85a94e";
                 popupContent.innerHTML = data.winningScreen;
                 openPopup();
             }else {
@@ -272,8 +272,6 @@ new p5(function (p5) {
 
     //
 
-
-
     function updateCSSFromBoardSize() {
         //changes the size of the card
         //based on the width of the board
@@ -322,8 +320,8 @@ new p5(function (p5) {
                 padding: 10px;">
                 
                 <div class="popup-body" id="popup-content" style="height: 160px;">${texts}</div>
-                <button style="padding: 10px; z-index: 9999;" class="close-button" id="rematch-btn">Rematch</button>
-                <button style="padding: 10px; z-index: 9999;" class="close-button" onclick="location.href='/';">Home screen</button>
+                <button style="position: absolute; width: 125px; height: 100px; bottom:10px; right: 10px; padding: 10px; z-index: 9999;" class="btn btn-dark" id="rematch-btn">Rematch</button>
+                <button style="position: absolute; padding: 10px; z-index: 9999; width: 125px; height: 100px; bottom: 10px; left: 10px" class="btn btn-dark" id="home-screen-btn" onclick="location.href='/';">Home screen</button>
             </div>
         `;
 
@@ -342,8 +340,6 @@ new p5(function (p5) {
         // add the newly created elements and its content into the DOM
         document.body.appendChild(BG);
         document.body.insertBefore(newDiv, BG);
-        // open popup onload
-        openPopup();
     }
 
     function openPopup() {
