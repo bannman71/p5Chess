@@ -144,7 +144,7 @@ new p5(function (p5) {
             }else {
                 document.getElementById("popup").style.backgroundColor = "#a52a2a";
                 popupContent.innerHTML = data.losingScreen;
-            openPopup();
+                openPopup();
             }
         } 
     });

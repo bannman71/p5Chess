@@ -322,7 +322,7 @@ io.on('connection', (socket) => {
     <div class="semi-circle"></div>
     <h2 class="center">Draw by stalemate</h2>
     `;
-    io.to(data.room).emit('stalemateScreen', drawScreen);
+    io.to(room).emit('stalemateScreen', drawScreen);
   });
 
   socket.on('checkmate', (data) => {
