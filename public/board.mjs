@@ -843,11 +843,12 @@ export default class Board {
                     // console.log(test);   
                     console.log('thsi is the length');
                     console.log(test.length);
-                    numLegal += this.allPiecesLegalSquares(this.occSquares[i][j]).length - 1;
+                    numLegal += Math.max(this.allPiecesLegalSquares(this.occSquares[i][j]).length - 1, 0);
                 }
             }
         }
-
+        console.log('in the function');
+        console.log(numLegal);
         return numLegal;
     }
 

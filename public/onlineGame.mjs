@@ -105,9 +105,21 @@ new p5(function (p5) {
             captureSound.play();
         } else moveSound.play(); //otherwise make the move sound
 
+        //calculates if stalemate or checkmate has happened
         let numLegalMoves = board.calculateNumLegalMoves();
-        if (numLegalMoves === 0 && !board.isInCheck) socket.emit('stalemate', data);
-        else if (numLegalMoves === 0 && board.isInCheck) socket.emit('checkmate')
+        if (numLegalMoves == 0 && !board.isInCheck) socket.emit('stalemate', roomCode);
+        let mateData = {
+            "whiteToMove": board.whiteToMove,
+            "room": roomCode
+        };
+        console.log('check');
+        console.log(board.isInCheck);
+        console.log(numLegalMoves);
+        if (numLegalMoves == 0 && board.isInCheck) {
+            console.log('heyyyyyyyy');
+            socket.emit('checkmate', mateData);
+            
+        }
 
     });
 
@@ -120,6 +132,7 @@ new p5(function (p5) {
                 popupContent.innerHTML = data.losingScreen;
                 openPopup();
             }else {
+                document.getElementById("popup").style.backgroundColor = "#355b44";
                 popupContent.innerHTML = data.winningScreen;
                 openPopup();
             }
@@ -129,13 +142,45 @@ new p5(function (p5) {
                 popupContent.innerHTML = data.winningScreen;
                 openPopup();
             }else {
+                document.getElementById("popup").style.backgroundColor = "#a52a2a";
                 popupContent.innerHTML = data.losingScreen;
             openPopup();
             }
-        }
+        } 
+    });
 
-       
-    
+    socket.on('stalemateScreen', (drawScreen) => {
+        let popupContent = document.getElementById("popup-content");
+
+        document.getElementById("popup").style.backgroundColor = "#808080";
+        popupContent.innerHTML = drawScreen;
+        openPopup();
+    });
+
+    socket.on('checkmateScreen', (data) => {
+        let popupContent = document.getElementById("popup-content");
+        if (clientIsWhite){
+            if (data.whiteLoses){ // if client is white and white loses
+                document.getElementById("popup").style.backgroundColor = "#a52a2a";
+                popupContent.innerHTML = data.losingScreen;
+                openPopup();
+            }else{
+                document.getElementById("popup").style.backgroundColor = "#355b44";
+                popupContent.innerHTML = data.winningScreen;
+                openPopup();
+            } 
+        }else {
+            if (data.whiteLoses){ //if client is black and white loses
+                document.getElementById("popup").style.backgroundColor = "#355b44";
+                popupContent.innerHTML = data.winningScreen;
+                openPopup();
+            }else {
+                document.getElementById("popup").style.backgroundColor = "#a52a2a";
+                popupContent.innerHTML = data.losingScreen;
+                openPopup();
+            } 
+        }
+        
     });
 
     socket.on('rematchFound', (data) => {
@@ -147,6 +192,7 @@ new p5(function (p5) {
         window.location.href = url; //sends them to the page created above
     });;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     
+
 
     //
 

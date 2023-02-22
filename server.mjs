@@ -294,18 +294,14 @@ io.on('connection', (socket) => {
   // //TODO
   socket.on('lostOnTime', (data) => {
     //end the game and display a game winning/losing card
-
-
-
-
     let winningScreen = `
       <div class=semi-circle></div>
-      <h2 class="center">You win!</h2>
+      <h2 class="center">You win on time</h2>
     `; 
 
     let losingScreen = `
       <div class="semi-circle"></div>
-      <h2 class="center">You lose!</h2>
+      <h2 class="center">You lose on time</h2>
     `;
 
 
@@ -321,8 +317,39 @@ io.on('connection', (socket) => {
               
   });
 
-  socket.on('stalemate', (data) => {
+  socket.on('stalemate', (room) => {
+    let drawScreen = `
+    <div class="semi-circle"></div>
+    <h2 class="center">Draw by stalemate</h2>
+    `;
+    io.to(data.room).emit('stalemateScreen', drawScreen);
+  });
 
+  socket.on('checkmate', (data) => {
+    console.log('yoyasdwahsdhwsd');
+    let whiteLoses = false;
+    let winningScreen = `
+      <div class=semi-circle></div>
+      <h2 class="center">You win by checkmate</h2>
+    `; 
+
+    let losingScreen = `
+      <div class="semi-circle"></div>
+      <h2 class="center">You lose by checkmate</h2>
+    `;
+
+    if (data.whiteToMove) whiteLoses = true;
+
+    let mateData = {
+      "winningScreen": winningScreen,
+      "losingScreen": losingScreen,
+      "whiteLoses": whiteLoses
+    };
+
+
+    io.to(data.room).emit('checkmateScreen', (mateData));
+            
+    
   });
 
   socket.on('attemptedRematch', (data) => {
