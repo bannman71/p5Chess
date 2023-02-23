@@ -433,6 +433,7 @@ new p5(function (p5) {
         p5.clear();
         p5.background(front.white);
         front.drawGrid();
+        front.drawCoordinates(clientIsWhite);    
         if (displayOldPosition && oldPosFEN !== '') {
             let pos = FENToBoard(oldPosFEN);
             front.drawAllPieces(clientIsWhite, pos, pieceAtMouse)

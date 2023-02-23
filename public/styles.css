@@ -206,7 +206,8 @@ a{
 }
 
 .table-secondary{
-  --bs-table-bg: #bababa;
+  --bs-table-bg: #262421;
+  color: white;
 }
 
 /* BOARD EDITOR */

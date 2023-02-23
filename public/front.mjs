@@ -72,6 +72,27 @@ export default class Front {
         }
     }
 
+    drawCoordinates(isWhite){
+        let offset = 7;
+        if (isWhite) offset = 0;
+
+        for (let i = 0; i < 8; i++){
+            this.p5.fill(1);
+            this.p5.textSize(12);
+            //column letter
+            this.p5.text(String.fromCharCode(97 + i), Math.abs(offset -i) * this.blockSize + (this.blockSize*0.8), 8 * this.blockSize - (this.blockSize * 0.05));
+            //row numbers
+            this.p5.text(8 - i, 3, (Math.abs(offset - i) * this.blockSize) + (this.blockSize * 0.35));
+
+
+        }
+
+        //row number
+        for (let j = 0; j < 8; j++){
+
+        }
+    }
+
     drawAllPieces(isWhite, occSquares, pieceAtMouse){
         var offset = 7;
         if (isWhite) offset = 0;

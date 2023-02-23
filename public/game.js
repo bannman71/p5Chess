@@ -77,6 +77,7 @@ new p5(function(p5){
         p5.clear();
         p5.background(front.white);
         front.drawGrid();
+        front.drawCoordinates(board.whiteToMove);
         front.drawAllPieces(board.whiteToMove, board.occSquares, pieceAtMouse);
         
         if (MouseDown){
