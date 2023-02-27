@@ -97,6 +97,7 @@ new p5(function (p5) {
 
         gridData = data.newGridData;
         //update the moves DOM with the current PGN
+
         grid.updateConfig({
             data: gridData
         }).forceRender();
@@ -106,6 +107,7 @@ new p5(function (p5) {
         } else moveSound.play(); //otherwise make the move sound
 
         //calculates if stalemate or checkmate has happened
+        console.log(board.maskMap);
         let numLegalMoves = board.calculateNumLegalMoves();
         if (numLegalMoves == 0 && !board.isInCheck) socket.emit('stalemate', roomCode);
         let mateData = {
@@ -118,7 +120,6 @@ new p5(function (p5) {
         if (numLegalMoves == 0 && board.isInCheck) {
             console.log('heyyyyyyyy');
             socket.emit('checkmate', mateData);
-            
         }
 
     });
@@ -448,7 +449,6 @@ new p5(function (p5) {
 
         if (whiteTimer.time < 0 || blackTimer.time < 0) {
             socket.emit('lostOnTime', board.whiteToMove);
-
         }
 
     }

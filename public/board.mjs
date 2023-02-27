@@ -132,6 +132,7 @@ export function instantiateNewBoard(board, FEN){
     newBoard.pawnMovedTwoSquaresCol = board.pawnMovedTwoSquaresCol;
     newBoard.enPassentTaken = board.enPassentTaken;
     newBoard.isInCheck = board.isInCheck;
+    newBoard.maskMap = board.maskMap;
     newBoard.shortCastles = false
     newBoard.longCastles = false;
 
@@ -526,13 +527,46 @@ export default class Board {
                 break;
             case PieceType.king:
                 for (let options of piece.intervals()){
-                    var col_temp =  piece.col + options.dx;
+                    var col_temp = piece.col + options.dx;
                     var row_temp = piece.row + options.dy;
         
+                    console.log(piece.colour);
+
                     if (this.isOnBoard(row_temp,col_temp)){
-                        if (((this.maskMap[row_temp][col_temp] === 0 || ((this.maskMap[row_temp][col_temp].colour & piece.colour) === 0))) && this.checkNextMoveBitmap(piece,row_temp,col_temp)){
-                            arr.push(row_temp + '' + col_temp);
+
+                        // if (this.maskMap[row_temp][col_temp] !== 0){
+                        //     console.log('opopopopopopopopopop');
+                        //     // if (this.maskMap[row_temp][col_temp] !== 1) {
+                        //     //     console.log(this.maskMap[row_temp][col_temp]);
+                        //     //     console.log('colour');
+                        //     //     console.log(this.maskMap[row_temp][col_temp]);
+                        //     // }
+                        //     // console.log(this.maskMap[row_temp][col_temp] !== 1);
+                        //     // console.log(piece.colour);
+                        //     console.log(row_temp + ' a ' + col_temp);
+                        //     if (this.maskMap[row_temp][col_temp] != 1 && (this.maskMap[row_temp][col_temp] & piece.colour) === 0){
+                        //         console.log(row_temp + ' ' + col_temp);
+                        //         console.log('asdghjkasdghjasdghjasd');
+                        //     }
+                        // }
+
+                        
+
+
+                       
+                        console.log('there is a thing')
+                        if (((this.maskMap[row_temp][col_temp] & piece.colour) === 0) || this.maskMap[row_temp][col_temp] === 0){
+                            console.log('temp');
+                            let temp = this.checkNextMoveBitmap(piece, row_temp, col_temp);
+                            console.log(temp);
+                            if (temp == true){
+                                console.log('yea its legal');
+                                console.log(this.occSquares[row_temp][col_temp]);
+                                arr.push(row_temp + '' + col_temp);
+                                console.log(arr);
+                            }
                         }
+
                     }
                 }
                 if (!this.isInCheck){
@@ -825,8 +859,10 @@ export default class Board {
         this.maskBitMap(bitmap);
 
 
-        if (this.maskMap[kingRow][kingCol] === 1) outOfCheck = false; //this is the line that makes it all happen -> disallows pinned pieces and stuff from putting the king in check
-
+        if (this.maskMap[kingRow][kingCol] === 1){ 
+            outOfCheck = false; //this is the line that makes it all happen -> disallows pinned pieces and stuff from putting the king in check
+        }
+        
         return outOfCheck;
     }
 
@@ -838,17 +874,10 @@ export default class Board {
         for (let i = 0; i < 8; i++){
             for (let j = 0; j < 8; j++){
                 if (this.occSquares[i][j] !== 0 && ((this.occSquares[i][j].colour & colourCalc) === colourCalc)){ //if colour you want to find number of moves of
-                    let test = this.allPiecesLegalSquares(this.occSquares[i][j]);
-                    // console.log(this.occSquares[i][j]);
-                    // console.log(test);   
-                    console.log('thsi is the length');
-                    console.log(test.length);
-                    numLegal += Math.max(this.allPiecesLegalSquares(this.occSquares[i][j]).length - 1, 0);
+                    numLegal += Math.max(this.allPiecesLegalSquares(this.occSquares[i][j]), 0);
                 }
             }
         }
-        console.log('in the function');
-        console.log(numLegal);
         return numLegal;
     }
 
