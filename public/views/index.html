@@ -184,18 +184,24 @@ function closePopup() {
       //have some sorta menu which chooses these numbers
       // chooseTimeControl();
     });
-      
+
+    $(window).click(function() {
+      //Hide the menus if visible
+      closePopup();
+    });
+    
+    $('#custom').click((e) => {
+      e.stopPropagation();
+    });
+
     addElement();
     openPopup();
     $(document).click(function(event) {
-      var text = $(event.target).text().trim();
-
+      var text = event.target.id;
       console.log(text);
+    
+      if (text == 'popup' || text =='popup-content') event.stopImmediatePropagation();
 
-      if (!(text === 'Custom')){ 
-        console.log('out');
-        closePopup();
-      }
     });
   </script>
 
