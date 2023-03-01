@@ -138,7 +138,6 @@ new p5(function(p5){
                     board.enPassentTaken = false;
                 }
 
-                board.defendCheck();
 
                 if (pieceAtMouse.type !== PieceType.pawn) board.pawnMovedTwoSquares = false;
                 //is set to false here and in board.isLegalMove
@@ -167,7 +166,13 @@ new p5(function(p5){
                 board.changeTurn();
 
             }
-
+            
+            gridData = data.newGridData;
+            //update the moves DOM with the current PGN
+    
+            grid.updateConfig({
+                data: gridData
+            }).forceRender();
             if (board.kingInCheck()){
                 board.isInCheck = true;
                 numDefenses = board.defendCheck();
@@ -187,22 +192,10 @@ new p5(function(p5){
         WIDTH = canvasDiv.offsetWidth;
         HEIGHT = canvasDiv.offsetHeight;
 
-        
-        
-
         size = Math.min(WIDTH, HEIGHT);
-        front.blockSize = (size) / 8; //can be width but it is a square
+        front.blockSize = (size) / 8;
         front.spacing = Math.floor((front.blockSize * (1 - front.pieceScale)) / 2);
         p5.resizeCanvas(size, size);
-
-        let boardWidth = $('#board-container').width();
-        let gameInfoCSS = {
-            'position': 'absolute',
-            'left': ('%dpx', boardWidth),
-            'top': '6%'
-        };
-
-        $('#local-game-info').css(gameInfoCSS);
     }
 
 });

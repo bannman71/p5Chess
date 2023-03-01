@@ -20,9 +20,7 @@
     <ul class="nav-list">
       <li><a href="/">Home</a></li>
       <li><a href="/PlayLocally">Play Locally</a></li>
-      <li><a href="/Puzzles">Puzzles</a></li>
       <li><a href="/BoardEditor">Board Editor</a></li>
-      <li><a href="/PlayAI">Play AI</a></li>
     </ul>
   </div>
 
@@ -65,6 +63,71 @@
   <div id="matchmaking-table"></div>
 
   <script type="text/javascript">
+    let popupOpen = true;
+
+function closePopup() {
+        var el = document.getElementById('popup');
+        var BG = document.getElementById('bgcover');
+        el.style.display = 'none';
+        BG.style.display = 'none';
+    }
+
+    function yo(){
+        alert('yo');
+    }
+
+    function addElement() {
+        // create a new div element
+        // and give it popup content
+        var newDiv = document.createElement("div");
+        var texts = '';
+        newDiv.innerHTML += `
+            <div id="popup" style=" 
+                position: absolute;
+                top: 25%;
+                width: 300px;
+                height: 300px;
+                margin: auto;
+                z-index: 99999;
+                display: block;
+                left:35%;
+                background-color: #fff;
+                border: 1px solid #ddd;
+                border-radius: 5px;  
+                box-shadow: 0 1px 6px 4px #000;  
+                overflow: hidden;   
+                padding: 10px;">
+                
+                <div class="popup-body" id="popup-content" style="height: 160px;">${texts}</div>
+                <button style="position: absolute; width: 125px; height: 100px; top:10px; right: 10px; padding: 10px; z-index: 9999;" class="btn btn-dark" id="rematch-btn">Time</button>
+                <button style="position: absolute; padding: 10px; z-index: 9999; width: 125px; height: 100px; top: 10px; left: 10px" class="btn btn-dark" id="home-screen-btn" onclick="location.href='/';">Increment</button>
+            </div>
+        `;
+
+        // Add The Background cover
+        let BG = document.createElement("div");
+        BG.style.width = '100%';
+        BG.style.height = '100%';
+        BG.style.background = 'black';
+        BG.style.position = 'fixed';
+        BG.style.top = '0';
+        BG.style.left = '0';
+        BG.style.opacity = '0.9';
+        BG.style.display = 'none';
+        BG.setAttribute("id", "bgcover");
+
+        // add the newly created elements and its content into the DOM
+        document.body.appendChild(BG);
+        document.body.insertBefore(newDiv, BG);
+    }
+
+    function openPopup() {
+      var el = document.getElementById('popup');
+      var BG = document.getElementById('bgcover');
+      el.style.display = 'block';
+      BG.style.display = 'block';
+    }
+
 
     var socket = io.connect('http://localhost:3000');
     // var socket = io.connect('https://bannman71-p5chess-674rjrqr9vxh4grq-3000.preview.app.github.dev');
@@ -115,11 +178,25 @@
     });
 
     $('#custom').click(() => {
-      socket.emit('getClients', '');
+      openPopup();
+      popupOpen = true;
+      console.log(popupOpen);
       //have some sorta menu which chooses these numbers
       // chooseTimeControl();
     });
+      
+    addElement();
+    openPopup();
+    $(document).click(function(event) {
+      var text = $(event.target).text().trim();
 
+      console.log(text);
+
+      if (!(text === 'Custom')){ 
+        console.log('out');
+        closePopup();
+      }
+    });
   </script>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
