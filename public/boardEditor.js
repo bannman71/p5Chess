@@ -118,6 +118,7 @@ new p5(function(p5){
             blackPieceToSelect = '#b-' + piece + '-square'; 
 
             $(whitePieceToSelect).css(DEFSTYLE);
+            $(blackPieceToSelect).css(DEFSTYLE);
 
             if ((selectedPiece & 24) === PieceType.black){
                 if (PieceType.numToPieceName[selectedPiece & 7] === piece){
@@ -149,7 +150,7 @@ new p5(function(p5){
 
     setInterval(() => {
         updateCSSFromBoardSize();
-    }, 2000);
+    }, 500);
 
 
     p5.mouseReleased = () => {
