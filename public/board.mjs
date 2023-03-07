@@ -213,6 +213,9 @@ export default class Board {
 
         let captures = this.occSquares[target.row][target.col] !== 0;
 
+        console.log(this.occSquares);
+        console.log(this.occSquares[target.row][target.col]);
+
         moveNotation += PieceType.numToPGNType[pieceMoved.colourAndPiece()];
 
         if ((pieceMoved.type !== PieceType.king) && (pieceMoved.type !== PieceType.pawn)) {
@@ -224,8 +227,6 @@ export default class Board {
 
                 //if we iterate over a piece which is the same type as we moved but isn't the piece we moved
                 if (currSquare !== 0 && currSquare.colourAndPiece() === pieceMoved.colourAndPiece() && (currSquare.rowAndCol() !== pieceMoved.rowAndCol())) {
-                    //TODO
-                    //works except for knights
                     let ovlpPieceAttacks = this.allPiecesLegalSquares(currSquare);
                     for (let k = 0; k < ovlpPieceAttacks.length; k++) {
                         if (ovlpPieceAttacks[k] == (target.row + '' + target.col)) {
@@ -530,40 +531,10 @@ export default class Board {
                     var col_temp = piece.col + options.dx;
                     var row_temp = piece.row + options.dy;
         
-                    console.log(piece.colour);
-
                     if (this.isOnBoard(row_temp,col_temp)){
-
-                        // if (this.maskMap[row_temp][col_temp] !== 0){
-                        //     console.log('opopopopopopopopopop');
-                        //     // if (this.maskMap[row_temp][col_temp] !== 1) {
-                        //     //     console.log(this.maskMap[row_temp][col_temp]);
-                        //     //     console.log('colour');
-                        //     //     console.log(this.maskMap[row_temp][col_temp]);
-                        //     // }
-                        //     // console.log(this.maskMap[row_temp][col_temp] !== 1);
-                        //     // console.log(piece.colour);
-                        //     console.log(row_temp + ' a ' + col_temp);
-                        //     if (this.maskMap[row_temp][col_temp] != 1 && (this.maskMap[row_temp][col_temp] & piece.colour) === 0){
-                        //         console.log(row_temp + ' ' + col_temp);
-                        //         console.log('asdghjkasdghjasdghjasd');
-                        //     }
-                        // }
-
-                        
-
-
-                       
-                        console.log('there is a thing')
                         if (((this.maskMap[row_temp][col_temp] & piece.colour) === 0) || this.maskMap[row_temp][col_temp] === 0){
-                            console.log('temp');
-                            let temp = this.checkNextMoveBitmap(piece, row_temp, col_temp);
-                            console.log(temp);
-                            if (temp == true){
-                                console.log('yea its legal');
-                                console.log(this.occSquares[row_temp][col_temp]);
+                            if (this.checkNextMoveBitmap(piece,row_temp, col_temp) == true){
                                 arr.push(row_temp + '' + col_temp);
-                                console.log(arr);
                             }
                         }
 
@@ -971,4 +942,3 @@ export class Piece {
     }
 
 }
-

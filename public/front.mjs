@@ -127,6 +127,4 @@ export default class Front {
         }
         
     }
-
-
 }

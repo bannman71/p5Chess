@@ -9,5 +9,4 @@ export default class GameRoom{
         this.client = client;
         this.gridData = gridData;
     }
-
 }

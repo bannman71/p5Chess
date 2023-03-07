@@ -133,7 +133,7 @@ io.on('connection', (socket) => {
           }
 
           if (!gameRooms[roomCode]){
-            let board = new Board('3k4/N1rq4/2r3n1/4R3/1N2r1n1/2Q1R3/8/4K3', 1, true, true, true, true, true)
+            let board = new Board('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR', 1, true, true, true, true, true)
             let whiteTimer = new ServerTimer(matchmaking[i].time, matchmaking[j].increment);
             let blackTimer = new ServerTimer(matchmaking[i].time, matchmaking[j].increment);
             let pgn = new PGN();
@@ -250,7 +250,6 @@ io.on('connection', (socket) => {
       board.changeTurn();
       let newFEN = board.boardToFEN();
 
-      //TODO
       if (board.whiteToMove) {
         newGridData[newGridData.length - 1][2] = pieceMovedNtn;
         pgn.update(pieceMovedNtn, newFEN, board.moveCounter - 1)
@@ -259,8 +258,6 @@ io.on('connection', (socket) => {
         newGridData[newGridData.length - 1][1] = pieceMovedNtn;
         pgn.update(pieceMovedNtn, newFEN, board.moveCounter)
       }
-      console.log('yoyoyoyoyoyoyoy');
-      console.log(pgn.Data);
       if (board.whiteToMove) { //slightly confusing as the turn state is changed a few lines above
         io.to(data.room).emit('legalMoveMade', ({
           "board": board,
@@ -387,20 +384,10 @@ app.get('/onlineGame', (req, res) => {
   res.sendFile(path.join(dir, 'onlineGame.html'));
 });
 
-
-app.get('/Puzzles', (req,res) => {
-  res.send('Hello World, This is puzzles router');
-});
-
-
 app.get('/BoardEditor', (req,res) => {
   res.sendFile(path.join(dir, '/BoardEditor.html'))
 });
 
-
-app.get('/PlayAi', (req,res) => {
-  res.send('Hello World, This is AI router');
-});
 
 app.get('/PlayLocally', (req,res) => {
   res.sendFile(path.join(dir, 'playLocalGame.html'));
