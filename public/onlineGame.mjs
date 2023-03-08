@@ -116,11 +116,7 @@ new p5(function (p5) {
             "whiteToMove": board.whiteToMove,
             "room": roomCode
         };
-        console.log('check');
-        console.log(board.isInCheck);
-        console.log(numLegalMoves);
         if (numLegalMoves == 0 && board.isInCheck) {
-            console.log('heyyyyyyyy');
             socket.emit('checkmate', mateData);
         }
 
@@ -403,6 +399,7 @@ new p5(function (p5) {
 
         board = new Board('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR', 1, true, true, true, true, true);
 
+        console.log(board.whiteLongCastlingRights);
         board.maskBitMap(board.findMaskSquares(!board.whiteToMove, board.occSquares));
 
         for (let im in BIN_PIECES) {
@@ -551,6 +548,7 @@ new p5(function (p5) {
                     "FENarr": pgn.FENarr,
                     "pgnData": pgn.Data
                 };
+            console.log(board);
 
             socket.emit('moveAttempted', data);
             console.log('legal');

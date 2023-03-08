@@ -209,13 +209,9 @@ io.on('connection', (socket) => {
       }
     } else {
       if (board.isLegalMove(piece, data.fCoordsY, data.fCoordsX)) { //doesn't need the bitmap first as it can find after a move has been made whether or not it is in check
-        console.log('yea in herer');
         if (board.checkNextMoveBitmap(piece, data.fCoordsY, data.fCoordsX) === true) isLegal = true;
       }
     }
-
-    console.log('fuck you');
-    console.log(board.enPassentTaken);
 
     if (isLegal){
 
