@@ -144,9 +144,6 @@ io.on('connection', (socket) => {
 
           gameFound = true;
 
-          console.log(gameRooms[roomCode].board.occSquares);
-
-
           //remove them from matchmaking list as they have found a game
           matchmaking.splice(j,1);
           matchmaking.splice(i,1);
@@ -182,7 +179,7 @@ io.on('connection', (socket) => {
 
   socket.on('moveAttempted', function(data) {
     let isLegal = false;
-    let tempEnPassentTaken = false;
+    
 
     let newGridData = data.gridData;
 
@@ -192,6 +189,10 @@ io.on('connection', (socket) => {
 
     var piece = new Piece(data.pieceMoved.type, data.pieceMoved.row, data.pieceMoved.col, data.pieceMoved.colour);
     let board = instantiateNewBoard(data.board, data.FEN);
+
+    console.log('fuck off');
+    console.log(board.pawnMovedTwoSquares);
+    console.log(board.enPassentTaken);
 
     //redeclare PGN class to keep its methods
     let pgn = new PGN(data.PGNarr, data.FENarr, data.pgnData);
@@ -208,15 +209,17 @@ io.on('connection', (socket) => {
       }
     } else {
       if (board.isLegalMove(piece, data.fCoordsY, data.fCoordsX)) { //doesn't need the bitmap first as it can find after a move has been made whether or not it is in check
+        console.log('yea in herer');
         if (board.checkNextMoveBitmap(piece, data.fCoordsY, data.fCoordsX) === true) isLegal = true;
       }
     }
 
-    if (isLegal){
-      if (tempEnPassentTaken === true) {
-        board.enPassentTaken = false;
-      }
+    console.log('fuck you');
+    console.log(board.enPassentTaken);
 
+    if (isLegal){
+
+      console.log('woah');
       let captures = board.occSquares[data.fCoordsY][data.fCoordsX] !== 0;
 
       let target = {"row": data.fCoordsY, "col": data.fCoordsX};
@@ -224,13 +227,12 @@ io.on('connection', (socket) => {
       // board.defendCheck();
 
       if (piece.type !== PieceType.pawn) board.pawnMovedTwoSquares = false;
-      //is set to false here and in board.isLegalMove
 
+      console.log('fuck me?');
+      console.log(board.enPassentTaken);
       if (piece.colour === PieceType.black) {
         board.moveCounter++; //after blacks move -> the move counter always increases
-
       }
-      console.log(board.moveCounter);
       if (board.enPassentTaken){
         board.updateEnPassentMove(piece, data.fCoordsY, data.fCoordsX);
       } else board.updatePiecePos(piece, data.fCoordsY, data.fCoordsX);
@@ -301,7 +303,6 @@ io.on('connection', (socket) => {
     `;
 
 
-    console.log(data.room);
     let nData = {
       "winningScreen": winningScreen,
       "losingScreen": losingScreen,

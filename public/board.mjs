@@ -120,13 +120,7 @@ export function FENToBoard(FEN){
 
 export function instantiateNewBoard(board, FEN){
     var newBoard;
-    newBoard = new Board(FEN);
-    newBoard.moveCounter = board.moveCounter;
-    newBoard.whiteToMove = board.whiteToMove;
-    newBoard.blackShortCastlingRights = board.blackShortCastlingRights;
-    newBoard.blackLongCastlingRights = board.blackLongCastlingRights;
-    newBoard.whiteShortCastlingRights = board.whiteShortCastlingRights;
-    newBoard.whiteLongCastlingRights = board.whiteLongCastlingRights;
+    newBoard = new Board(FEN, board.moveCounter, board.whiteToMove, board.castlesShortBlack, board.castlesLongBlack, board.castlesShortWhite, board.castlesLongWhite);
 
     newBoard.pawnMovedTwoSquares = board.pawnMovedTwoSquares;
     newBoard.pawnMovedTwoSquaresCol = board.pawnMovedTwoSquaresCol;
@@ -300,7 +294,6 @@ export default class Board {
                     }
                     else if (piece.row - destRow === 1){ // if moves once
                         if (this.occSquares[5][destCol] == PieceType.none){
-                            this.pawnMovedTwoSquares = false;
                             return true;
                         }
                     }
@@ -308,7 +301,6 @@ export default class Board {
                 else{
                     if (piece.row-destRow == 1){ //if not on starting square
                         if (this.occSquares[destRow][destCol] == PieceType.none){
-                            this.pawnMovedTwoSquares = false;
                             return true;
                         }
                     }
@@ -317,7 +309,6 @@ export default class Board {
                 if ((this.occSquares[destRow][destCol] !== 0) && (piece.isOppositeColour(this.occSquares,destRow,destCol))) return true;
                 else if ((this.pawnMovedTwoSquares === true) && (piece.row === 3) && (destCol === this.pawnMovedTwoSquaresCol)){
                     this.enPassentTaken = true;
-                    this.pawnMovedTwoSquares = false;
                     return true; //en passent
                 }
             }
@@ -328,13 +319,14 @@ export default class Board {
                     if (destRow - piece.row === 2){ //if moves twice
                         if ((this.occSquares[3][destCol] == PieceType.none) && (this.occSquares[2][destCol] == PieceType.none)){
                             this.pawnMovedTwoSquares = true;
+                            console.log('YEAEAEAAEAEA');
+                            console.log(this.pawnMovedTwoSquares);
                             this.pawnMovedTwoSquaresCol = destCol;
                             return true;
                         }
                     }
                     else if (destRow - piece.row === 1){
                         if (this.occSquares[2][destCol] == PieceType.none){ //if moves once
-                            this.pawnMovedTwoSquares = false;
                             return true;
                         }
                     }
@@ -342,7 +334,7 @@ export default class Board {
                 else{
                     if (destRow - piece.row === 1){
                         if (this.occSquares[destRow][destCol] == PieceType.none){
-                            this.pawnMovedTwoSquares = false;
+                           
                             return true;
                         }
                     }
@@ -353,7 +345,6 @@ export default class Board {
                 if ((this.occSquares[destRow][destCol] !== 0) && ((this.occSquares[destRow][destCol].colour & piece.colour) === 0) ) return true;
                 else if ((this.pawnMovedTwoSquares === true) && (piece.row === 4) && (destCol === this.pawnMovedTwoSquaresCol)){
                     this.enPassentTaken = true;
-                    this.pawnMovedTwoSquares = false;
                     return true; //en passent
                 }
             }
@@ -625,7 +616,6 @@ export default class Board {
                             }
                         }
                         else{ //if a piece has been hit
-                            console.log(this.occSquares[row_temp][col_temp]);
                             if ((this.occSquares[row_temp][col_temp].colour & piece.colour) === 0 && this.checkNextMoveBitmap(piece, row_temp, col_temp)){ // opposite colours
                                 arr.push(row_temp + '' + col_temp);
                             }

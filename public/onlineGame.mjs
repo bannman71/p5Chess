@@ -71,6 +71,8 @@ new p5(function (p5) {
 
     let lostGame = false;
 
+    let tempPawnMovedTwoSquares;
+
     //SERVER SIDE LOGIC
 
     socket.on('legalMoveMade', (data) => { // is called when the opponent makes a legal move
@@ -461,7 +463,6 @@ new p5(function (p5) {
 
             // var start = performance.now();
             if (board.whiteToMove && (pieceAtMouse.colour === PieceType.white) && clientIsWhite) {
-                console.log(board.allPiecesLegalSquares(pieceAtMouse));
                 legalCircles = board.allPiecesLegalSquares(pieceAtMouse);
             } else if (!board.whiteToMove && (pieceAtMouse.colour === PieceType.black) && !clientIsWhite) {
                 legalCircles = board.allPiecesLegalSquares(pieceAtMouse);
@@ -502,6 +503,8 @@ new p5(function (p5) {
         let isLegal = false;
         let captures = false;
 
+        tempPawnMovedTwoSquares = board.tempPawnMovedTwoSquares;
+
         if (clientIsWhite === (pieceAtMouse.colour === PieceType.white)) legalSideAttemptedMove = true;
 
         let destCoords = front.getMouseCoord(clientIsWhite, p5.mouseX, p5.mouseY); // returns coord for array
@@ -529,6 +532,8 @@ new p5(function (p5) {
                 timeTaken = (timeMoveEnd - timeMoveStart) / 1000;
             }
 
+            if (tempPawnMovedTwoSquares === true) board.pawnMovedTwoSquares = false;
+
             let data =
                 {
                     fCoordsX: destCoords.x,
@@ -546,11 +551,12 @@ new p5(function (p5) {
                     "FENarr": pgn.FENarr,
                     "pgnData": pgn.Data
                 };
+
             socket.emit('moveAttempted', data);
             console.log('legal');
-            
             if (board.enPassentTaken) {
                 board.updateEnPassentMove(pieceAtMouse, destCoords.y, destCoords.x);
+                board.enPassentTaken = false;
             }
             else {
                 //if they didn't castle -> call the function which makes a normal move
@@ -562,7 +568,7 @@ new p5(function (p5) {
 
             board.isInCheck = board.kingInCheck();
                
-
+            if (board.enPassentTaken) board.enPassentTaken = false;
         }
 
         //not part of the game logic
