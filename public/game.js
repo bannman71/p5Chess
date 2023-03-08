@@ -211,8 +211,6 @@ new p5(function(p5){
                 if (board.kingInCheck()){
                     board.isInCheck = true;
                     
-                    numDefenses = board.defendCheck();
-
                 } else board.isInCheck = false;
 
                 newFEN = board.boardToFEN();
@@ -233,16 +231,8 @@ new p5(function(p5){
                   }).forceRender();
                   if (board.kingInCheck()){
                       board.isInCheck = true;
-                      numDefenses = board.defendCheck();
                   } else board.isInCheck = false;
       
-                  if (board.isInCheck && numDefenses === 0){
-                      if (board.whiteToMove){
-                          print('black wins');
-                      } else print('white wins');
-                  }
-                  else if (board.calculateNumLegalMoves() === 0) print('stalemate');
-
             }
             
             
@@ -266,7 +256,7 @@ new p5(function(p5){
             console.log(PGNToFind); //don't remove this, it doesn't work without it
             if (PGNToFind !== '') {
                 oldPosFEN = pgn.find(moveCounterToFind, PGNToFind);
-                console.log(oldPosFEN);
+                console.log(oldPosFEN); //this also can't be removed (idek)
             }
         }, 1);
 

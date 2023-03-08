@@ -619,10 +619,13 @@ export default class Board {
                     var row_temp = piece.row + options.dy;
    
                     while(this.isOnBoard(row_temp,col_temp)){ //while hasn't gone outside of the array
-                        if (this.occSquares[row_temp][col_temp] === 0 && this.checkNextMoveBitmap(piece, row_temp, col_temp)){
-                            arr.push(row_temp + '' + col_temp);
+                        if (this.occSquares[row_temp][col_temp] === 0){
+                            if (this.checkNextMoveBitmap(piece, row_temp, col_temp)){
+                                arr.push(row_temp + '' + col_temp);
+                            }
                         }
                         else{ //if a piece has been hit
+                            console.log(this.occSquares[row_temp][col_temp]);
                             if ((this.occSquares[row_temp][col_temp].colour & piece.colour) === 0 && this.checkNextMoveBitmap(piece, row_temp, col_temp)){ // opposite colours
                                 arr.push(row_temp + '' + col_temp);
                             }
