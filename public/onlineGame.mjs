@@ -511,8 +511,10 @@ new p5(function (p5) {
             if (pieceAtMouse.type === PieceType.king) {
                 //king moves need the bitmap before due to castling through a check
                 if (board.checkNextMoveBitmap(pieceAtMouse, destCoords.y, destCoords.x) === true) {
-                    if (board.isLegalKingMove(pieceAtMouse, destCoords.y, destCoords.x)) isLegal = true;
-
+                    if (board.isLegalKingMove(pieceAtMouse, destCoords.y, destCoords.x)){ 
+                        isLegal = true;
+                        console.log('kings asdasdasdlla');
+                    }
                 }
             } else {
                 if (board.isLegalMove(pieceAtMouse, destCoords.y, destCoords.x)) {

@@ -120,8 +120,7 @@ export function FENToBoard(FEN){
 
 export function instantiateNewBoard(board, FEN){
     var newBoard;
-    console.log('instahjasdghjasdghjasdghj');
-    console.log(board);
+
     newBoard = new Board(FEN, board.moveCounter, board.whiteToMove, board.blackShortCastlingRights, board.blackLongCastlingRights, board.whiteShortCastlingRights, board.whiteLongCastlingRights);
 
     newBoard.pawnMovedTwoSquares = board.pawnMovedTwoSquares;
@@ -358,20 +357,17 @@ export default class Board {
         if (!this.isInCheck && (destCol - piece.col) >= 2 && piece.row === destRow && (this.checkKingRank(piece, 1))){ //if attempts to short castle
             if((this.whiteToMove && this.whiteShortCastlingRights) || (!this.whiteToMove && this.blackShortCastlingRights)){ //if white attempted
                 this.shortCastles = true; //is a legal castle move
-                this.removeCastlingRights(true, false);
                 return true;
             }
         }  
         else if(!this.isInCheck && destCol - piece.col <= -2 && piece.row === destRow && this.checkKingRank(piece, -1)){ //if attempts to long castle and checks if there are pieces in the way (dir 1 = right)
             if((this.whiteToMove && this.whiteLongCastlingRights) || (!this.whiteToMove && this.blackLongCastlingRights)){ //if white attempted
                 this.longCastles = true;
-                this.removeCastlingRights(false, true);
                 return true;
             }
         }else{
             if(!(Math.abs(destRow - piece.row) > 1) && !(Math.abs(destCol - piece.col) > 1)) {
                 if((this.occSquares[destRow][destCol] === 0) || (piece.colour & this.occSquares[destRow][destCol].colour) === 0){
-                    this.removeCastlingRights(true,true);
                     return true;
                 }
             }
