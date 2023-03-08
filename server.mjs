@@ -228,13 +228,12 @@ io.on('connection', (socket) => {
 
       if (piece.type !== PieceType.pawn) board.pawnMovedTwoSquares = false;
 
-      console.log('fuck me?');
-      console.log(board.enPassentTaken);
       if (piece.colour === PieceType.black) {
         board.moveCounter++; //after blacks move -> the move counter always increases
       }
       if (board.enPassentTaken){
         board.updateEnPassentMove(piece, data.fCoordsY, data.fCoordsX);
+        board.enPassentTaken = false;
       } else board.updatePiecePos(piece, data.fCoordsY, data.fCoordsX);
 
       //create a new bitmap for the current legal position for board.kingInCheck()
