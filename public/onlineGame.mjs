@@ -378,7 +378,8 @@ new p5(function (p5) {
                 },
                 td: {
                     'text-align': 'center',
-                    'border': 'none'
+                    'border': 'none',
+                    'font-size': 'calc(0.3vw + 0.5vw)'
                 }
             }
         }).render(document.getElementById("game-moves-container"));
@@ -397,7 +398,7 @@ new p5(function (p5) {
 
         SPACING = Math.floor((BLOCK_SIZE * (1 - PIECE_SCALE)) / 2);
 
-        board = new Board('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR', 1, true, true, true, true, true);
+        board = new Board('r3k2r/8/8/8/8/8/8/R3K2R', 1, true, true, true, true, true);
 
         console.log(board.whiteLongCastlingRights);
         board.maskBitMap(board.findMaskSquares(!board.whiteToMove, board.occSquares));
@@ -410,7 +411,7 @@ new p5(function (p5) {
         //r3k3/1pp2ppp/8/8/1q6/3PKPP1/8/8
         //r3k2r/5N2/8/8/8/8/PPPPPPP1/RNBQKBNR
         //1r1k1r2/6n1/2q5/8/8/5Q2/1N6/R2K3R
-        //'rnbqkbnr/1ppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR'
+        //'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR'
         //rnbqkbnr/p1pppppp/1p6/4P3/8/5NP1/PPPP1PBP/RNBQK2R
         //'rnbqk1nr/p4ppp/1p1b4/8/8/5NP1/P2K1PBP/RNBQ3R'
 

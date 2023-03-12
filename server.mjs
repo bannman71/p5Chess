@@ -133,7 +133,7 @@ io.on('connection', (socket) => {
           }
 
           if (!gameRooms[roomCode]){
-            let board = new Board('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR', 1, true, true, true, true, true)
+            let board = new Board('r3k2r/8/8/8/8/8/8/R3K2R', 1, true, true, true, true, true)
             let whiteTimer = new ServerTimer(matchmaking[i].time, matchmaking[j].increment);
             let blackTimer = new ServerTimer(matchmaking[i].time, matchmaking[j].increment);
             let pgn = new PGN();

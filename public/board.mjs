@@ -368,6 +368,7 @@ export default class Board {
         }else{
             if(!(Math.abs(destRow - piece.row) > 1) && !(Math.abs(destCol - piece.col) > 1)) {
                 if((this.occSquares[destRow][destCol] === 0) || (piece.colour & this.occSquares[destRow][destCol].colour) === 0){
+                    this.removeCastlingRights(true, true);
                     return true;
                 }
             }
@@ -531,11 +532,11 @@ export default class Board {
                 if (!this.isInCheck){
                     if (this.whiteToMove){
                         if (this.whiteShortCastlingRights && this.checkKingRank(piece, 1)) arr.push(piece.row + '' + 6); //short castles
-                        else if (this.whiteLongCastlingRights && this.checkKingRank(piece, -1)) arr.push(piece.row + '' + 2); //long castles
+                        if (this.whiteLongCastlingRights && this.checkKingRank(piece, -1)) arr.push(piece.row + '' + 2); //long castles
                     }
                     else{
                         if (this.blackShortCastlingRights && this.checkKingRank(piece, 1)) arr.push(piece.row + '' + 6); //short castles
-                        else if (this.blackLongCastlingRights && this.checkKingRank(piece, -1)) arr.push(piece.row + '' + 2); //long castles
+                        if (this.blackLongCastlingRights && this.checkKingRank(piece, -1)) arr.push(piece.row + '' + 2); //long castles
                     }
                 }
                 break; 
@@ -653,20 +654,26 @@ export default class Board {
     checkKingRank(king,dir){ //checks if there are pieces on the way of castling
         for (let i = dir; Math.abs(i) <= 4; i += dir){
             if (this.maskMap[king.row][king.col + i] !== 0){ //if piece has been hit
-                if (Math.abs(i) < 2 && this.maskMap[king.row][king.col + i] === 1) {
+                console.log(this.maskMap[king.row][king.col + i]);
+                if (Math.abs(i) <= 2 && this.maskMap[king.row][king.col + i] === 1) {
+                    console.log('yea thats happened')
                     return false;
                 }
 
                 //if piece is same colour rook on the 'h' square
-                if ((king.col + i === 7) && (this.maskMap[king.row][king.col + i] !== 0)) {
+                if ((king.col + i === 7) && (this.occSquares[king.row][king.col + i].type === PieceType.rook)) {
+                    console.log('yea');
                     return true;
 
                 }
                 //if piece is same colour rook on 'a' square
-                else if((king.col + i == 0) && this.maskMap[king.row][king.col + i] !== 0) return true;
-                else return false;
+                else if((king.col + i === 0) && (this.occSquares[king.row][king.col + i].type === PieceType.rook)){ 
+                    console.log('yeae1');
+                    return true;
+                }
             }
         }
+        console.log('false ' + dir);
         return false;
     }
 
